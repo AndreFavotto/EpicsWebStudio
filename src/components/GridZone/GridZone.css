@@ -1,0 +1,9 @@
+.grid-zone {
+  flex: 1;
+  position: relative;
+  background-color: #fafafa;
+  border: 1px dashed #aaa;
+  background-image: linear-gradient(#eee 1px, transparent 1px),
+    linear-gradient(90deg, #eee 1px, transparent 1px);
+  background-size: 20px 20px;
+}
