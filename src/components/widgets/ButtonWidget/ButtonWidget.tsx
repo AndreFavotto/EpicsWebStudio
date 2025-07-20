@@ -1,40 +1,70 @@
 import React from "react";
+import { Button } from "@mui/material";
+import { useEditorContext } from "../../Utils/EditorContext";
 import type { Widget } from "../../../types/widgets";
+import { DEFAULT_COLORS } from "../../../shared/constants";
+
+const buttonMetadata = {
+  componentName: "ButtonWidget",
+  properties: {
+    width:           { selType: "number",        label: "Width",            default: 100 },
+    height:          { selType: "number",        label: "Height",           default: 40 },
+    label:           { selType: "string",        label: "Label",            default: "Button" },
+    pv:              { selType: "string",        label: "PV Name",          default: "" },
+    labelFromPV:     { selType: "boolean",       label: "Use PV Label",     default: false },
+    backgroundColor: { selType: "colorSelector", label: "Background Color", default: DEFAULT_COLORS.buttonColor},
+    textColor:       { selType: "colorSelector", label: "Text Color",       default: DEFAULT_COLORS.textColor},
+    actionValue:     { selType: "any",           label: "Action Value",     default: "" },
+    disabled:        { selType: "boolean",       label: "Disabled" ,        default: false },
+    tooltip:         { selType: "string",        label: "Tooltip",          default: "" },
+  }
+};
 
 type Props = {
-  widget: Widget;
-  // Optional callbacks for builder mode (drag/resize handlers, click, etc)
-  onClick?: () => void;
+  data: Widget;
 };
 
-const meta = {
-  label: "Button",
-  componentName: "ButtonWidget",
-  defaultWidth: 100,
-  defaultHeight: 40,
-};
+const ButtonWidget: React.FC<Props> = ({data}) => {
+    const { mode, selectWidget } = useEditorContext();
+    const {
+      label,
+      pv,
+      labelFromPV,
+      backgroundColor,
+      textColor,
+      actionValue,
+      disabled,
+      tooltip,
+    } = data.properties;
 
-const ButtonWidget: React.FC<Props> = ({ widget, onClick }) => {
+    const handleClick = (e: React.MouseEvent, actionValue: any) => {
+      if (mode === "edit") {
+        e.stopPropagation();
+        selectWidget(data.id);
+      } else {
+        // In runtime mode, write to the PV or perform the action
+      }
+    };
+
     return (
-    <button
-      style={{
-        height: "100%",     // fill parent controlled by Rnd
-        width: "100%",      // fill parent controlled by Rnd
-        cursor: onClick ? "pointer" : "default",
-        userSelect: "none",
-        borderRadius: 4,
-        fontSize: 14,
-        backgroundColor: "#007bff",
-        color: "white",
-        border: "none",
-      }}
-      onClick={onClick}
-      type="button"
-    >
-      {widget.label}
-    </button>
+      <Button
+        sx={{
+          width: "100%",
+          height: "100%",
+          marginTop: "auto",
+          marginBottom: "auto",
+          marginLeft: "auto",
+          marginRight: "auto",
+          backgroundColor: backgroundColor,
+          color: textColor,
+        }}
+        disabled={disabled}
+        variant="contained"
+        onClick={(e) => handleClick(e, actionValue)}
+      >
+      {label}
+      </Button>
   );
 };
 
-export { meta as buttonMetadata };
-export { ButtonWidget };
+export { buttonMetadata, ButtonWidget };

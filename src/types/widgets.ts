@@ -5,10 +5,6 @@ export type PalleteEntry = {
 
 export type Widget = {
   id: string;
-  label: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
   componentName: string;
+  properties: Record<string, any>;
 };

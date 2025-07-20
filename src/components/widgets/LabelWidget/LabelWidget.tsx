@@ -3,19 +3,26 @@ import "./LabelWidget.css"; // Assuming you have some styles for the LabelWidget
 import type { Widget } from "../../../types/widgets";
 
 const meta = {
-  label: "Label",
   componentName: "LabelWidget",
-  defaultWidth: 100,
-  defaultHeight: 40,
+  properties: {
+    width:          { selType: "number",        label: "Width",            default: 100 },
+    height:         { selType: "number",        label: "Height",           default: 40 },
+    label:          { selType: "string",        label: "Label",            default: "Label" },
+    labelPlacement: { selType: "select",        label: "Label Placement",  default: "end", options: ["start", "top", "bottom", "end"] },
+    color:          { selType: "colorSelector", label: "Background Color", default: "primary" },
+    textColor:      { selType: "colorSelector", label: "Text Color",       default: "inherit" },
+    disabled:       { selType: "boolean",       label: "Disabled" ,        default: false },
+    tooltip:        { selType: "string",        label: "Tooltip",          default: "" },
+  }
 };
 
 type Props = {
-  widget: Widget;
+  data: Widget;
   // Optional callbacks for builder mode (drag/resize handlers, click, etc)
   onClick?: () => void;
 };
 
-const LabelWidget: React.FC<Props> = ({ widget }) => {
+const LabelWidget: React.FC<Props> = ({ data }) => {
     return (
     <><div
         style={{
@@ -27,7 +34,7 @@ const LabelWidget: React.FC<Props> = ({ widget }) => {
         backgroundColor: "#b4b5b6ff",
         color: "black",
         border: "none",
-      }}>{widget.label}</div></>
+      }}>{data.properties.label}</div></>
   );
 };
 

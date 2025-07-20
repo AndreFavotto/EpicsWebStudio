@@ -1,11 +1,11 @@
 import React from "react";
 import "./SideBar.css"
 import type { PalleteEntry } from "../../types/widgets";
-import { widgetRegistry } from "../../registry/widgetRegistry";
+import { widgetRegistry } from "../Utils/WidgetRegistry";
 
 const palette: PalleteEntry[] = Object.entries(widgetRegistry).map(
   ([componentName, entry]) => ({
-    widgetLabel: entry.metadata.label,
+    widgetLabel: entry.properties.label.default,
     componentName,
   })
 );
