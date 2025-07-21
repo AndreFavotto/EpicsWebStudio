@@ -1,7 +1,0 @@
-.properties-panel{
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  background-color: var(--background-color);
-  height: 90vh;
-}

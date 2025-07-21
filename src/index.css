@@ -8,21 +8,20 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* default-colors */
-  --background-color: #d5e0e6;
+  --title-bar-color: rgb(87, 148, 189);
+  --background-color: #f2f2f2;
   --text-color: #000000;
   --button-color: #9b9b9eff;
   --label-color: #ffffff00;
   --input-color: #e9e0d3;
+  --read-color: #c7c7c7;
   --light-gray: #aaa;
-  --grid-line-color: #c5d1d8;
+  --grid-line-color: #e0e0e0;
 }
 
 body {
-  margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
 }
 
 h1 {
@@ -30,15 +29,9 @@ h1 {
   line-height: 1.1;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }

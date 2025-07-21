@@ -2,21 +2,26 @@ import React from "react";
 import { Button } from "@mui/material";
 import { useEditorContext } from "../../Utils/EditorContext";
 import type { Widget } from "../../../types/widgets";
-import { DEFAULT_COLORS } from "../../../shared/constants";
+import * as CONSTS from "../../../shared/constants";
 
-const buttonMetadata = {
-  componentName: "ButtonWidget",
+const actionButtonMetadata = {
+  componentName: "ActionButton",
+  category: "Controls",
   properties: {
-    width:           { selType: "number",        label: "Width",            default: 100 },
-    height:          { selType: "number",        label: "Height",           default: 40 },
-    label:           { selType: "string",        label: "Label",            default: "Button" },
-    pv:              { selType: "string",        label: "PV Name",          default: "" },
-    labelFromPV:     { selType: "boolean",       label: "Use PV Label",     default: false },
-    backgroundColor: { selType: "colorSelector", label: "Background Color", default: DEFAULT_COLORS.buttonColor},
-    textColor:       { selType: "colorSelector", label: "Text Color",       default: DEFAULT_COLORS.textColor},
-    actionValue:     { selType: "any",           label: "Action Value",     default: "" },
+    /* common */
+    x:               { selType: "number",        label: "X",                default: "" },
+    y:               { selType: "number",        label: "Y",                default: "" },
     disabled:        { selType: "boolean",       label: "Disabled" ,        default: false },
     tooltip:         { selType: "string",        label: "Tooltip",          default: "" },
+    textColor:       { selType: "colorSelector", label: "Text Color",       default: CONSTS.DEFAULT_COLORS.textColor},
+    borderRadius:    { selType: "number",        label: "Border Radius",    default: 1 },
+    pv:              { selType: "string",        label: "PV Name",          default: "" },
+    /* specific */
+    width:           { selType: "number",        label: "Width",            default: 100 },
+    height:          { selType: "number",        label: "Height",           default: 40 },
+    label:           { selType: "string",        label: "Label",            default: "Action Button" },
+    backgroundColor: { selType: "colorSelector", label: "Background Color", default: CONSTS.DEFAULT_COLORS.buttonColor},
+    actionValue:     { selType: "any",           label: "Action Value",     default: "" },
   }
 };
 
@@ -24,21 +29,21 @@ type Props = {
   data: Widget;
 };
 
-const ButtonWidget: React.FC<Props> = ({data}) => {
+const ActionButton: React.FC<Props> = ({data}) => {
     const { mode, selectWidget } = useEditorContext();
     const {
-      label,
-      pv,
-      labelFromPV,
-      backgroundColor,
-      textColor,
-      actionValue,
       disabled,
       tooltip,
+      textColor,
+      borderRadius,
+      pv,
+      label,
+      backgroundColor,
+      actionValue,
     } = data.properties;
 
     const handleClick = (e: React.MouseEvent, actionValue: any) => {
-      if (mode === "edit") {
+      if (mode === CONSTS.EDIT_MODE) {
         e.stopPropagation();
         selectWidget(data.id);
       } else {
@@ -57,6 +62,7 @@ const ButtonWidget: React.FC<Props> = ({data}) => {
           marginRight: "auto",
           backgroundColor: backgroundColor,
           color: textColor,
+          borderRadius: borderRadius,
         }}
         disabled={disabled}
         variant="contained"
@@ -67,4 +73,4 @@ const ButtonWidget: React.FC<Props> = ({data}) => {
   );
 };
 
-export { buttonMetadata, ButtonWidget };
+export { actionButtonMetadata, ActionButton };

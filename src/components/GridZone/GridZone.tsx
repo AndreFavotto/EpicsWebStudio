@@ -1,17 +1,16 @@
-import React from "react";
-import "./GridZone.css";
+import React, { useEffect } from "react";
 import { Rnd } from "react-rnd";
 import type { ReactNode } from "react";
 import type { PalleteEntry, Widget } from "../../types/widgets";
 import { widgetRegistry } from "../Utils/WidgetRegistry";
 import { useEditorContext} from "../Utils/EditorContext";
-import { DEFAULT_COLORS } from "../../shared/constants";
+import * as CONSTS from "../../shared/constants";
 
 const gridMetadata = {
-  componentName: "GridZone", // Not used in the registry, but kept for consistency
+  componentName: "GridZone",
   properties: {
-    backgroundColor: { selType: "colorSelector", label: "Background Color", default: DEFAULT_COLORS.inputColor},
-    lineColor:       { selType: "colorSelector", label: "Grid Line Color", default: DEFAULT_COLORS.gridLineColor },
+    backgroundColor: { selType: "colorSelector", label: "Background Color", default: CONSTS.DEFAULT_COLORS.inputColor},
+    lineColor:       { selType: "colorSelector", label: "Grid Line Color", default: CONSTS.DEFAULT_COLORS.gridLineColor },
     size:            { selType: "number", label: "Grid Size", default: 20 },
   }
 };
@@ -22,8 +21,21 @@ function renderWidget(widget: Widget): ReactNode {
 }
 
 const GridZone: React.FC = () => {
-  const { mode, widgets, setWidgets, updateWidget, selectWidget, gridProps} = useEditorContext();
-  // on mount, set the selected widget to the grid zone
+  const { mode, widgets, setWidgets, updateWidget, selectWidget, selectedWidget, gridProps, propertyEditorFocused} = useEditorContext();
+ 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (mode !== CONSTS.EDIT_MODE) return;
+      if (propertyEditorFocused) return;
+      if (e.key === "Delete" && selectedWidget?.id) {
+        setWidgets(prev => prev.filter(w => w.id !== selectedWidget.id));
+        selectWidget(null);
+      }
+    };
+  
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [mode, propertyEditorFocused, selectedWidget?.id]);
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
@@ -56,12 +68,11 @@ const GridZone: React.FC = () => {
     const newWidget: Widget = {
       id: `${entry.componentName}-${Date.now()}`,
       componentName: entry.componentName,
+      category: droppedWidget.category,
       properties: {
         ...widgetProperties,
         x,
         y,
-        width: widgetProperties.width ?? 100,
-        height: widgetProperties.height ?? 40,
       },
     };
 
@@ -69,13 +80,14 @@ const GridZone: React.FC = () => {
   };
 
   return (
-    <div className="grid-zone" 
+    <div className="gridZone" 
       onDragOver={handleDragOver} 
       onDrop={handleDrop} 
       onClick={handleClick}
       style={{
+        width: "100%",
+        height: "100%",
         backgroundColor: gridProps.backgroundColor,
-        border: `1px solid ${gridProps.lineColor}`,
         backgroundImage: `linear-gradient(${gridProps.lineColor} 1px, transparent 1px), linear-gradient(90deg, ${gridProps.lineColor} 1px, transparent 1px)`,
         backgroundSize: `${gridProps.size}px ${gridProps.size}px`,
       }}
@@ -109,9 +121,7 @@ const GridZone: React.FC = () => {
             });
           }}
         >
-        <div className="widget-container">
-          {renderWidget(item)}
-        </div>
+        {renderWidget(item)}
       </Rnd>
       ))}
     </div>

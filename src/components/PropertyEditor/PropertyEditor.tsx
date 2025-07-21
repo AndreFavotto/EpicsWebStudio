@@ -1,56 +1,168 @@
-import React from "react";
-import "./PropertyEditor.css";
+import React, { useState, useEffect } from "react";
 import { useEditorContext } from "../Utils/EditorContext";
 import { widgetRegistry } from "../Utils/WidgetRegistry";
 import { gridMetadata } from "../GridZone/GridZone";
+import {
+  TextField,
+  List,
+  Divider,
+  ListItem,
+  ListItemText,
+  FormControlLabel,
+  Checkbox,
+  Box,
+  Typography,
+  Drawer,
+  Toolbar
+} from "@mui/material";
 
 const PropertyEditor: React.FC = () => {
-  const { selectedWidget, updateWidget, gridProps, updateGridProps } = useEditorContext();
+  const { selectedWidget, updateWidgetProperty, gridProps, updateGridProps, setPropertyEditorFocused} = useEditorContext();
 
-  const renderPropertyFields = (
-    obj: Record<string, any>,
-    propsMeta: Record<string, any>,
-    onChange: (key: string, value: any) => void
-  ) => {
-    return Object.entries(propsMeta).map(([key, meta]) => (
-      <div key={key}>
-        <label>{meta.label}</label>
-        <input
-          type="text"
-          value={obj[key] ?? ""}
-          onChange={(e) => onChange(key, e.target.value)}
-        />
-      </div>
-    ));
-  };
+const renderPropertyFields = (
+  obj: Record<string, any>,
+  propsMeta: Record<string, any>,
+  onChange: (key: string, value: any) => void
+) => {
+  return Object.entries(propsMeta).map(([key, meta]) => {
+    const value = obj[key] ?? "";
+    const label = meta.label;
+    const type = meta.selType;
 
-  if (!selectedWidget) {
-    // Grid is selected
-    return (
-      <div className="properties-panel">
-        <h4>Edit Grid</h4>
-        {renderPropertyFields(gridProps, gridMetadata.properties, (key, value) =>
-          updateGridProps({ ...gridProps, [key]: value })
-        )}
-      </div>
-    );
+    const FieldWrapper: React.FC<{
+      render: (val: any, setVal: (v: any) => void) => React.JSX.Element;
+      initial: any;
+    }> = ({ render, initial }) => {
+      const [localVal, setLocalVal] = useState(initial);
+
+      const commit = () => {
+        if (localVal !== initial) onChange(key, localVal);
+      };
+
+      return render(localVal, setLocalVal);
+    };
+
+    switch (type) {
+      case "string":
+      case "number":
+      case "any":
+        return (
+          <ListItem key={key} disablePadding sx={{ px: 2, py: 1 }}>
+            <FieldWrapper
+              initial={value}
+              render={(localVal, setLocalVal) => (
+                <TextField
+                  fullWidth
+                  label={label}
+                  variant="outlined"
+                  size="small"
+                  type={type === "number" ? "number" : "text"}
+                  value={localVal}
+                  onChange={(e) =>
+                    setLocalVal(
+                      type === "number" ? Number(e.target.value) : e.target.value
+                    )
+                  }
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  onBlur={() => {
+                    if (localVal !== value) onChange(key, localVal);
+                  }}
+                />
+              )}
+            />
+          </ListItem>
+        );
+
+      case "boolean":
+        return (
+          <ListItem key={key} disablePadding sx={{ px: 2, py: 1 }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={!!value}
+                  onChange={(e) => onChange(key, e.target.checked)}
+                />
+              }
+              label={label}
+            />
+          </ListItem>
+        );
+
+      case "colorSelector":
+        return (
+          <ListItem key={key} disablePadding sx={{ px: 2, py: 1 }}>
+            <FieldWrapper
+              initial={value}
+              render={(localVal, setLocalVal) => (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 2, width: "100%" }}>
+                  <Typography variant="body2">{label}</Typography>
+                  <input
+                    type="color"
+                    value={localVal}
+                    onChange={(e) => setLocalVal(e.target.value)}
+                    onBlur={() => {
+                      if (localVal !== value) onChange(key, localVal);
+                    }}
+                  />
+                </Box>
+              )}
+            />
+          </ListItem>
+        );
+
+      default:
+        return null;
+    }
+  });
+};
+
+  const header = selectedWidget
+    ? `Edit: ${selectedWidget.properties.label}`
+    : "Edit Grid";
+
+  const propsMeta = selectedWidget
+    ? widgetRegistry[selectedWidget.componentName].properties
+    : gridMetadata.properties;
+
+  const propsValues = selectedWidget
+    ? selectedWidget.properties
+    : gridProps;
+
+  const onChange = (key: string, value: any) => {
+  if (selectedWidget) {
+    updateWidgetProperty(selectedWidget.id, key, value);
+  } else {
+    updateGridProps({ ...gridProps, [key]: value });
   }
-
-  const widgetProps = widgetRegistry[selectedWidget.componentName].properties;
+};
 
   return (
-    <div className="properties-panel">
-      <h4>Edit: {selectedWidget.properties.label}</h4>
-      {renderPropertyFields(selectedWidget.properties, widgetProps, (key, value) =>
-        updateWidget({
-          ...selectedWidget,
-          properties: {
-            ...selectedWidget.properties,
-            [key]: value,
+     <Drawer
+        onFocus={() => setPropertyEditorFocused(true)}
+        onBlur={() => setPropertyEditorFocused(false)}
+        variant="permanent"
+        anchor="right"
+        sx={{
+          width: "20rem",
+          [`& .MuiDrawer-paper`]: {
+            width: "20rem",
+            boxSizing: 'border-box',
           },
-        })
-      )}
-    </div>
+        }}
+      >
+      <Toolbar />
+      <List>
+        <ListItem>
+          <ListItemText primary={header} />
+        </ListItem>
+        <Divider />
+        {renderPropertyFields(propsValues, propsMeta, onChange)}
+      </List>
+    </Drawer>
   );
 };
 

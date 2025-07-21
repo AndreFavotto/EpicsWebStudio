@@ -1,18 +1,39 @@
-import { buttonMetadata, ButtonWidget } from "../widgets/ButtonWidget/ButtonWidget";
-import { labelMetadata, LabelWidget } from "../widgets/LabelWidget/LabelWidget";
-import { textInputMetadata, TextInputWidget } from "../widgets/TextInputWidget/TextInputWidget";
+import { actionButtonMetadata, ActionButton } from "../widgets/ActionButton/ActionButton";
+import { labelMetadata, TextLabel } from "../widgets/TextLabel/TextLabel";
+import { textInputMetadata, TextInput } from "../widgets/TextInput/TextInput";
+import { textUpdateMetadata, TextUpdate } from "../widgets/TextUpdate/TextUpdate";
+import { circleMetadata, Circle } from "../widgets/Circle/Circle";
+import { rectangleMetadata, Rectangle } from "../widgets/Rectangle/Rectangle";
 
 export const widgetRegistry = {
-  [buttonMetadata.componentName]: {
-    properties: buttonMetadata.properties,
-    component: ButtonWidget,
+  [actionButtonMetadata.componentName]: {
+    properties: actionButtonMetadata.properties,
+    component: ActionButton,
+    category: actionButtonMetadata.category,
   },
   [labelMetadata.componentName]: {
     properties: labelMetadata.properties,
-    component: LabelWidget,
+    component: TextLabel,
+    category: labelMetadata.category,
+  },
+  [circleMetadata.componentName]: {
+    properties: circleMetadata.properties,
+    component: Circle,
+    category: circleMetadata.category,
+  },
+  [rectangleMetadata.componentName]: {
+    properties: rectangleMetadata.properties,
+    component: Rectangle,
+    category: rectangleMetadata.category,
   },
   [textInputMetadata.componentName]: {
     properties: textInputMetadata.properties,
-    component: TextInputWidget,
+    component: TextInput,
+    category: textInputMetadata.category,
+  },
+  [textUpdateMetadata.componentName]: {
+    properties: textUpdateMetadata.properties,
+    component: TextUpdate,
+    category: textUpdateMetadata.category,
   },
 };
