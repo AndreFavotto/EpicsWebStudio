@@ -1,5 +1,8 @@
-.selected {
-  border: 2px solid #2196f3;
-  box-shadow: 0 0 4px rgba(33, 150, 243, 0.5);
+.selectable {
+  overflow: hidden;
 }
-  
+
+.selected {
+  border: 2px dashed #2196f3;
+  box-shadow: 0 0 2px rgba(33, 150, 243, 0.5);
+}

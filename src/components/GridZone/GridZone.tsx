@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
 import type { ReactNode } from "react";
 import type { PalleteEntry, Widget } from "../../types/widgets";
@@ -23,21 +23,24 @@ function renderWidget(widget: Widget): ReactNode {
 }
 
 const GridZone: React.FC = () => {
-  const { mode, widgets, setWidgets, updateWidget, selectWidget, selectedWidget, gridProps, propertyEditorFocused} = useEditorContext();
+  const { mode, editorWidgets, setEditorWidgets, updateWidget, setSelectedWidgets, selectedWidgets, gridProps, propertyEditorFocused} = useEditorContext();
+  const selectoRef = useRef<Selecto>(null);
+  const [isDragging, setIsDragging] = useState(false);
  
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (mode !== CONSTS.EDIT_MODE) return;
       if (propertyEditorFocused) return;
-      if (e.key === "Delete" && selectedWidget?.id) {
-        setWidgets(prev => prev.filter(w => w.id !== selectedWidget.id));
-        selectWidget(null);
+      if (e.key === "Delete" && selectedWidgets.length > 0) {
+        setEditorWidgets(prev => prev.filter(w => !selectedWidgets.map(sw => sw.id).includes(w.id)));
+        setSelectedWidgets([]);
       }
     };
   
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [mode, propertyEditorFocused, selectedWidget?.id]);
+  }, [mode, propertyEditorFocused, selectedWidgets, setEditorWidgets, setSelectedWidgets]);
+  
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
@@ -72,7 +75,7 @@ const GridZone: React.FC = () => {
       },
     };
 
-    setWidgets((prev) => [...prev, newWidget]);
+    setEditorWidgets((prev) => [...prev, newWidget]);
   };
 
   return (
@@ -90,7 +93,7 @@ const GridZone: React.FC = () => {
         position: "relative",
       }}
     >
-      {widgets.map((item, index) => (
+      {editorWidgets.map((item, index) => (
         <Rnd
           key={index}
           size={{ width: item.properties.width, height: item.properties.height }}
@@ -98,7 +101,10 @@ const GridZone: React.FC = () => {
           bounds="parent"
           id={item.id}
           className="selectable"
+          onDrag={() => setIsDragging(true)}
           onDragStop={(e, d) => {
+            setIsDragging(false);
+            setSelectedWidgets([]);
             updateWidget({
               ...item,
               properties: {
@@ -108,7 +114,9 @@ const GridZone: React.FC = () => {
               },
             });
           }}
+          onResizeStart={() => setIsDragging(true)}
           onResizeStop={(e, direction, ref, delta, position) => {
+            setIsDragging(false);
             updateWidget({
               ...item,
               properties: {
@@ -124,24 +132,29 @@ const GridZone: React.FC = () => {
         {renderWidget(item)}
       </Rnd>
       ))}
-
-   <Selecto
-      container={document.getElementById("gridZone")}
-      selectableTargets={[".selectable"]}
-      hitRate={100}
-      selectByClick={true}
-      selectFromInside={false}
-      toggleContinueSelect={["shift"]}
-      onSelectEnd={e => {
-        e.added.forEach(el => {
-          el.classList.add("selected");
-          selectWidget(el.id); // for now only the last selected will be the active one
-        });
-        e.removed.forEach(el => {
-          el.classList.remove("selected");
-        });
-    }}
-  />
+    {isDragging ? null : (
+      <Selecto
+          ref={selectoRef}
+          container={document.getElementById("gridZone")}
+          selectableTargets={[".selectable"]}
+          hitRate={100}
+          selectByClick={true}
+          selectFromInside={true}
+          preventDragFromInside={true}
+          toggleContinueSelect={["ctrl"]}
+          onSelectEnd={e => {
+            console.log(e)
+            if (e.added.length === 0 && e.removed.length === 0) {
+              // If nothing was added nor removed, reset selection
+              selectoRef.current?.setSelectedTargets([]);
+              setSelectedWidgets([]);
+            } else{
+              const selectedIds = e.selected.map(el => el.id);
+              setSelectedWidgets(selectedIds);
+            }
+          }}
+        />)
+      }
     </div>
   );
 };

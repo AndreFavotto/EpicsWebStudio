@@ -1,4 +1,3 @@
-// EditorContext.tsx
 import { createContext, useContext, useState, useMemo } from "react";
 import type { Widget } from "../../types/widgets";
 import type { Mode } from "../../shared/constants";
@@ -7,12 +6,12 @@ import * as CONSTS from "../../shared/constants";
 type EditorContextType = {
   mode: Mode;
   setMode: (mode: Mode) => void;
-  selectedWidget: Widget | null;
-  selectWidget: (id: string | null) => void;
+  selectedWidgets: Widget[];
+  setSelectedWidgets: (ids: string[]) => void;
   updateWidget: (w: Widget) => void;
-  updateWidgetProperty: (id: string, property: string, value: any) => void; 
-  widgets: Widget[];
-  setWidgets: React.Dispatch<React.SetStateAction<Widget[]>>;
+  updateWidgetProperty: (id: string, property: string, value: any) => void;
+  editorWidgets: Widget[];
+  setEditorWidgets: React.Dispatch<React.SetStateAction<Widget[]>>;
   gridProps: Record<string, any>;
   updateGridProps: (props: Record<string, any>) => void;
   propertyEditorFocused: boolean;
@@ -22,33 +21,45 @@ type EditorContextType = {
 const EditorContext = createContext<EditorContextType | undefined>(undefined);
 
 export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [widgets, setWidgets] = useState<Widget[]>([]);
+  const [editorWidgets, setEditorWidgets] = useState<Widget[]>([]);
   const [mode, setMode] = useState<Mode>(CONSTS.EDIT_MODE);
-  const [selectedWidgetId, setSelectedWidgetId] = useState<string | null>(null);
+  const [selectedWidgetIds, setSelectedWidgetIds] = useState<string[]>([]);
   const [propertyEditorFocused, setPropertyEditorFocused] = useState(false);
   const [gridProps, setGridProps] = useState({
     size: 20,
     backgroundColor: CONSTS.DEFAULT_COLORS.backgroundColor,
     lineColor: CONSTS.DEFAULT_COLORS.gridLineColor,
   });
-  const selectedWidget = useMemo(
-    () => widgets.find(w => w.id === selectedWidgetId) || null,
-    [widgets, selectedWidgetId]
-  );
 
-  /* Set a widget as selected */
-  const selectWidget = (id: string | null) => {
-    setSelectedWidgetId(id);
+  const selectedWidgets = useMemo(() => (
+    editorWidgets.filter(w => selectedWidgetIds.includes(w.id))
+  ), [editorWidgets, selectedWidgetIds]);
+
+  const setSelectedWidgets = (ids: string[]) => {
+    // Remove 'selected' class from previously selected widgets
+    console.log("Setting selected widgets:", ids);
+    selectedWidgetIds.forEach(prevId => {
+      if (!ids.includes(prevId)) {
+        document.getElementById(prevId)?.classList.remove("selected");
+        console.log(`Widget ${prevId} deselected`);
+      }
+    });
+    // Add 'selected' class to newly selected widgets
+    ids.forEach(id => {
+      if (!selectedWidgetIds.includes(id)) {
+        document.getElementById(id)?.classList.add("selected");
+        console.log(`Widget ${id} selected`);
+      }
+    });
+    setSelectedWidgetIds(ids);
   };
 
-  /* Update a specific property of a widget (all props) */
   const updateWidget = (updated: Widget) => {
-    setWidgets(prev => prev.map(w => (w.id === updated.id ? updated : w)));
+    setEditorWidgets(prev => prev.map(w => (w.id === updated.id ? updated : w)));
   };
 
-  /* Update a specific property of a widget */
   const updateWidgetProperty = (id: string, property: string, value: any) => {
-    setWidgets(prev => prev.map(w => {
+    setEditorWidgets(prev => prev.map(w => {
       if (w.id !== id) return w;
       return {
         ...w,
@@ -59,20 +70,19 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       };
     }));
   };
-  
-  /* Update grid properties */
+
   const updateGridProps = (props: Record<string, any>) => {
     setGridProps(prev => ({ ...prev, ...props }));
   };
 
   return (
     <EditorContext.Provider value={{
-      widgets,
-      setWidgets,
+      editorWidgets,
+      setEditorWidgets,
       updateWidget,
       updateWidgetProperty,
-      selectedWidget,
-      selectWidget,
+      selectedWidgets,
+      setSelectedWidgets,
       mode,
       setMode,
       gridProps,
