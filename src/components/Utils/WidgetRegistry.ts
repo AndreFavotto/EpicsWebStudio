@@ -2,7 +2,7 @@ import { actionButtonMetadata, ActionButton } from "../widgets/ActionButton/Acti
 import { labelMetadata, TextLabel } from "../widgets/TextLabel/TextLabel";
 import { textInputMetadata, TextInput } from "../widgets/TextInput/TextInput";
 import { textUpdateMetadata, TextUpdate } from "../widgets/TextUpdate/TextUpdate";
-import { circleMetadata, Circle } from "../widgets/Circle/Circle";
+import { ellipseMetadata, Ellipse } from "../widgets/Ellipse/Ellipse";
 import { rectangleMetadata, Rectangle } from "../widgets/Rectangle/Rectangle";
 
 export const widgetRegistry = {
@@ -16,10 +16,10 @@ export const widgetRegistry = {
     component: TextLabel,
     category: labelMetadata.category,
   },
-  [circleMetadata.componentName]: {
-    properties: circleMetadata.properties,
-    component: Circle,
-    category: circleMetadata.category,
+  [ellipseMetadata.componentName]: {
+    properties: ellipseMetadata.properties,
+    component: Ellipse,
+    category: ellipseMetadata.category,
   },
   [rectangleMetadata.componentName]: {
     properties: rectangleMetadata.properties,

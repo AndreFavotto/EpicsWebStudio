@@ -29,7 +29,7 @@ type Props = {
 };
 
 const TextInput: React.FC<Props> = ({ data }) => {
-  const { mode, selectWidget } = useEditorContext();
+  const { mode } = useEditorContext();
   const {
       disabled,
       tooltip,
@@ -40,10 +40,7 @@ const TextInput: React.FC<Props> = ({ data }) => {
     } = data.properties;
 
     const handleClick = (e: React.MouseEvent) => {
-      if (mode === CONSTS.EDIT_MODE) {
-        e.stopPropagation();
-        selectWidget(data.id);
-      } // no action on click in runtime mode
+      // no action on click in runtime mode
     };
 
     //TODO: write to PV or handle input change in runtime mode

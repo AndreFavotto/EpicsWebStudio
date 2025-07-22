@@ -1,46 +1,35 @@
-// Circle.tsx
+// Ellipse.tsx
 import React from "react";
 import type { Widget } from "../../../types/widgets";
-import { useEditorContext } from "../../Utils/EditorContext";
 import * as CONSTS from "../../../shared/constants";
 
-const circleMetadata = {
-  componentName: "Circle",
+const ellipseMetadata = {
+  componentName: "Ellipse",
   category: "Basic",
   properties: {
     x:               { selType: "number",        label: "X",          default: 0 },
     y:               { selType: "number",        label: "Y",          default: 0 },
     width:           { selType: "number",        label: "Width",      default: 80 },
     height:          { selType: "number",        label: "Height",     default: 80 },
-    label:           { selType: "string",        label: "Label",      default: "Circle" },
-    backgroundColor: { selType: "colorSelector", label: "Color",      default: "#cccccc" },
+    label:           { selType: "string",        label: "Label",      default: "Ellipse" },
+    backgroundColor: { selType: "colorSelector", label: "Color",      default: CONSTS.DEFAULT_COLORS.lightGray },
     tooltip:         { selType: "string",        label: "Tooltip",    default: "" },
   }
 };
 
 type Props = {
   data: Widget;
-  onClick?: () => void;
 };
 
-const Circle: React.FC<Props> = ({ data }) => {
-  const { mode, selectWidget } = useEditorContext();
+const Ellipse: React.FC<Props> = ({ data }) => {
   const {
     backgroundColor,
     tooltip,
   } = data.properties;
 
-  const handleClick = (e: React.MouseEvent) => {
-    if (mode === CONSTS.EDIT_MODE) {
-      e.stopPropagation();
-      selectWidget(data.id);
-    }
-  };
-
   return (
     <div
       title={tooltip}
-      onClick={handleClick}
       style={{
         width: "100%",
         height: "100%",
@@ -51,4 +40,4 @@ const Circle: React.FC<Props> = ({ data }) => {
   );
 };
 
-export { circleMetadata, Circle };
+export { ellipseMetadata, Ellipse };

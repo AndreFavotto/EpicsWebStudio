@@ -30,7 +30,7 @@ type Props = {
 };
 
 const ActionButton: React.FC<Props> = ({data}) => {
-    const { mode, selectWidget } = useEditorContext();
+    const { mode } = useEditorContext();
     const {
       disabled,
       tooltip,
@@ -43,11 +43,9 @@ const ActionButton: React.FC<Props> = ({data}) => {
     } = data.properties;
 
     const handleClick = (e: React.MouseEvent, actionValue: any) => {
-      if (mode === CONSTS.EDIT_MODE) {
-        e.stopPropagation();
-        selectWidget(data.id);
-      } else {
-        // In runtime mode, write to the PV or perform the action
+      if (mode === CONSTS.RUNTIME_MODE) {
+        // Handle action in runtime mode, e.g., send actionValue to a PV or perform an action
+        console.log("Button clicked with action value:", actionValue);
       }
     };
 

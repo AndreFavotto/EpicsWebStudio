@@ -1,6 +1,5 @@
 import React from "react";
 import type { Widget } from "../../../types/widgets";
-import { useEditorContext } from "../../Utils/EditorContext";
 import * as CONSTS from "../../../shared/constants";
 
 const labelMetadata = {
@@ -24,40 +23,30 @@ const labelMetadata = {
 
 type Props = {
   data: Widget;
-  // Optional callbacks for builder mode (drag/resize handlers, click, etc)
-  onClick?: () => void;
 };
 
 const TextLabel: React.FC<Props> = ({ data }) => {
-  const { mode, selectWidget } = useEditorContext();
-      const {
-        label,
-        backgroundColor,
-        textColor,
-        borderRadius,
-        fontSize,
-        disabled,
-        tooltip,
-      } = data.properties;
-      const handleClick = (e: React.MouseEvent) => {
-        if (mode === CONSTS.EDIT_MODE) {
-          e.stopPropagation();
-          selectWidget(data.id);
-        }
-      };
+    const {
+      label,
+      backgroundColor,
+      textColor,
+      borderRadius,
+      fontSize,
+      disabled,
+      tooltip,
+    } = data.properties;
     return (
     <div className="textLabel"
-         onClick= {handleClick}
-         style={{
-           width: "100%",
-           height: "100%",
-           borderRadius: borderRadius,
-           fontSize: fontSize,
-           backgroundColor: backgroundColor,
-           color: textColor,
-           border: "none",
-         }}>
-        {label}
+      style={{
+        width: "100%",
+        height: "100%",
+        borderRadius: borderRadius,
+        fontSize: fontSize,
+        backgroundColor: backgroundColor,
+        color: textColor,
+        border: "none",
+      }}>
+      {label}
     </div>
   );
 };

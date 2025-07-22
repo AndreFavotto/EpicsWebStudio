@@ -25,43 +25,35 @@ const textUpdateMetadata = {
 
 type Props = {
   data: Widget;
-  // Optional callbacks for builder mode (drag/resize handlers, click, etc)
-  onClick?: () => void;
 };
 
 const TextUpdate: React.FC<Props> = ({ data }) => {
-  const { mode, selectWidget } = useEditorContext();
-      const {
-        disabled,
-        tooltip,
-        textColor,
-        pv,
-        label,
-        backgroundColor,
-        borderRadius,
-        fontSize,
-        pvValue,
-      } = data.properties;
-      const handleClick = (e: React.MouseEvent) => {
-        if (mode === CONSTS.EDIT_MODE) {
-          e.stopPropagation();
-          selectWidget(data.id);
-        } 
-      };
-    return (
-      <div className="textUpdate"
-        onClick= {handleClick}
-        style={{
-          width: "100%",
-          height: "100%",
-          borderRadius: borderRadius,
-          fontSize: fontSize,
-          backgroundColor: backgroundColor,
-          color: textColor,
-          border: "none",
-      }}>
-        {pvValue || pv || label}
-    </div>
+  const { mode } = useEditorContext();
+  const {
+    disabled,
+    tooltip,
+    textColor,
+    pv,
+    label,
+    backgroundColor,
+    borderRadius,
+    fontSize,
+    pvValue,
+  } = data.properties;
+
+  return (
+    <div className="textUpdate"
+      style={{
+        width: "100%",
+        height: "100%",
+        borderRadius: borderRadius,
+        fontSize: fontSize,
+        backgroundColor: backgroundColor,
+        color: textColor,
+        border: "none",
+    }}>
+      {pvValue || pv || label}
+  </div>
   );
 };
 

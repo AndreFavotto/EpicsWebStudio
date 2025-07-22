@@ -5,6 +5,8 @@ import type { PalleteEntry, Widget } from "../../types/widgets";
 import { widgetRegistry } from "../Utils/WidgetRegistry";
 import { useEditorContext} from "../Utils/EditorContext";
 import * as CONSTS from "../../shared/constants";
+import Selecto from "react-selecto";
+import "./GridZone.css";
 
 const gridMetadata = {
   componentName: "GridZone",
@@ -38,12 +40,6 @@ const GridZone: React.FC = () => {
   }, [mode, propertyEditorFocused, selectedWidget?.id]);
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-  };
-
-  const handleClick = () => {
-    if (mode === "edit") {
-      selectWidget(null);
-    }
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -80,24 +76,28 @@ const GridZone: React.FC = () => {
   };
 
   return (
-    <div className="gridZone" 
+    <div 
+      id="gridZone" 
+      className="gridZone" 
       onDragOver={handleDragOver} 
       onDrop={handleDrop} 
-      onClick={handleClick}
       style={{
         width: "100%",
         height: "100%",
         backgroundColor: gridProps.backgroundColor,
         backgroundImage: `linear-gradient(${gridProps.lineColor} 1px, transparent 1px), linear-gradient(90deg, ${gridProps.lineColor} 1px, transparent 1px)`,
         backgroundSize: `${gridProps.size}px ${gridProps.size}px`,
+        position: "relative",
       }}
     >
-      {widgets.map((item) => (
+      {widgets.map((item, index) => (
         <Rnd
-          key={item.id}
+          key={index}
           size={{ width: item.properties.width, height: item.properties.height }}
           position={{ x: item.properties.x, y: item.properties.y }}
           bounds="parent"
+          id={item.id}
+          className="selectable"
           onDragStop={(e, d) => {
             updateWidget({
               ...item,
@@ -124,6 +124,24 @@ const GridZone: React.FC = () => {
         {renderWidget(item)}
       </Rnd>
       ))}
+
+   <Selecto
+      container={document.getElementById("gridZone")}
+      selectableTargets={[".selectable"]}
+      hitRate={100}
+      selectByClick={true}
+      selectFromInside={false}
+      toggleContinueSelect={["shift"]}
+      onSelectEnd={e => {
+        e.added.forEach(el => {
+          el.classList.add("selected");
+          selectWidget(el.id); // for now only the last selected will be the active one
+        });
+        e.removed.forEach(el => {
+          el.classList.remove("selected");
+        });
+    }}
+  />
     </div>
   );
 };
