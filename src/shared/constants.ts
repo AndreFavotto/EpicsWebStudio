@@ -12,5 +12,5 @@ export const DEFAULT_COLORS = {
 
 export const EDIT_MODE = "edit";
 export const RUNTIME_MODE = "runtime";
-
+export const PVWS_URL = "ws://localhost:8080/pvws/pv";
 export type Mode = typeof EDIT_MODE | typeof RUNTIME_MODE;

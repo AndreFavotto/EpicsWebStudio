@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useMemo } from "react";
+import { createContext, useContext, useEffect, useState, useRef, useMemo } from "react";
 import type { Widget } from "../../types/widgets";
 import type { Mode } from "../../shared/constants";
 import * as CONSTS from "../../shared/constants";
