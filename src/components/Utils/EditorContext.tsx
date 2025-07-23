@@ -31,21 +31,22 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     lineColor: CONSTS.DEFAULT_COLORS.gridLineColor,
   });
 
-  const selectedWidgets = useMemo(() => (
-    editorWidgets.filter(w => selectedWidgetIds.includes(w.id))
-  ), [editorWidgets, selectedWidgetIds]);
+  const selectedWidgets = useMemo(
+    () => editorWidgets.filter((w) => selectedWidgetIds.includes(w.id)),
+    [editorWidgets, selectedWidgetIds]
+  );
 
   const setSelectedWidgets = (ids: string[]) => {
     // Remove 'selected' class from previously selected widgets
     console.log("Setting selected widgets:", ids);
-    selectedWidgetIds.forEach(prevId => {
+    selectedWidgetIds.forEach((prevId) => {
       if (!ids.includes(prevId)) {
         document.getElementById(prevId)?.classList.remove("selected");
         console.log(`Widget ${prevId} deselected`);
       }
     });
     // Add 'selected' class to newly selected widgets
-    ids.forEach(id => {
+    ids.forEach((id) => {
       if (!selectedWidgetIds.includes(id)) {
         document.getElementById(id)?.classList.add("selected");
         console.log(`Widget ${id} selected`);
@@ -55,41 +56,45 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const updateWidget = (updated: Widget) => {
-    setEditorWidgets(prev => prev.map(w => (w.id === updated.id ? updated : w)));
+    setEditorWidgets((prev) => prev.map((w) => (w.id === updated.id ? updated : w)));
   };
 
   const updateWidgetProperty = (id: string, property: string, value: any) => {
-    setEditorWidgets(prev => prev.map(w => {
-      if (w.id !== id) return w;
-      return {
-        ...w,
-        properties: {
-          ...w.properties,
-          [property]: value,
-        }
-      };
-    }));
+    setEditorWidgets((prev) =>
+      prev.map((w) => {
+        if (w.id !== id) return w;
+        return {
+          ...w,
+          properties: {
+            ...w.properties,
+            [property]: value,
+          },
+        };
+      })
+    );
   };
 
   const updateGridProps = (props: Record<string, any>) => {
-    setGridProps(prev => ({ ...prev, ...props }));
+    setGridProps((prev) => ({ ...prev, ...props }));
   };
 
   return (
-    <EditorContext.Provider value={{
-      editorWidgets,
-      setEditorWidgets,
-      updateWidget,
-      updateWidgetProperty,
-      selectedWidgets,
-      setSelectedWidgets,
-      mode,
-      setMode,
-      gridProps,
-      updateGridProps,
-      propertyEditorFocused,
-      setPropertyEditorFocused,
-    }}>
+    <EditorContext.Provider
+      value={{
+        editorWidgets,
+        setEditorWidgets,
+        updateWidget,
+        updateWidgetProperty,
+        selectedWidgets,
+        setSelectedWidgets,
+        mode,
+        setMode,
+        gridProps,
+        updateGridProps,
+        propertyEditorFocused,
+        setPropertyEditorFocused,
+      }}
+    >
       {children}
     </EditorContext.Provider>
   );

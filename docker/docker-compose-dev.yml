@@ -7,7 +7,7 @@ services:
         GIT_TAG: ${GIT_TAG}
     volumes:
       - ..:/app # Mount the source code for development
-    image: epicswebsuite-dev:${GIT_TAG} 
+    image: epicswebsuite-dev:${GIT_TAG}
     container_name: epicswebsuite-dev
     network_mode: "host"
     environment:
@@ -23,7 +23,7 @@ services:
         PVWS_GIT_TAG: ${PVWS_GIT_TAG}
         PVWS_PORT: ${PVWS_PORT}
     image: epicswebsuite-pvws:${PVWS_DOCKER_TAG}
-    container_name: epicswebsuite-pvws 
+    container_name: epicswebsuite-pvws
     network_mode: "host"
     restart: always
     volumes:

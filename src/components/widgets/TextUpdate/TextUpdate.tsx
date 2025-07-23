@@ -3,6 +3,7 @@ import type { Widget } from "../../../types/widgets";
 import { useEditorContext } from "../../Utils/EditorContext";
 import * as CONSTS from "../../../shared/constants";
 
+/* prettier-ignore */
 const textUpdateMetadata = {
   componentName: "TextUpdate",
   category: "Monitoring",
@@ -29,20 +30,11 @@ type Props = {
 
 const TextUpdate: React.FC<Props> = ({ data }) => {
   const { mode } = useEditorContext();
-  const {
-    disabled,
-    tooltip,
-    textColor,
-    pv,
-    label,
-    backgroundColor,
-    borderRadius,
-    fontSize,
-    pvValue,
-  } = data.properties;
+  const { disabled, tooltip, textColor, pv, label, backgroundColor, borderRadius, fontSize, pvValue } = data.properties;
 
   return (
-    <div className="textUpdate"
+    <div
+      className="textUpdate"
       style={{
         width: "100%",
         height: "100%",
@@ -51,9 +43,10 @@ const TextUpdate: React.FC<Props> = ({ data }) => {
         backgroundColor: backgroundColor,
         color: textColor,
         border: "none",
-    }}>
+      }}
+    >
       {pvValue || pv || label}
-  </div>
+    </div>
   );
 };
 

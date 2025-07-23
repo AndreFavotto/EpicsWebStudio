@@ -13,11 +13,12 @@ import {
   Box,
   Typography,
   Drawer,
-  Toolbar
+  Toolbar,
 } from "@mui/material";
 
 const PropertyEditor: React.FC = () => {
-  const { selectedWidgets, updateWidgetProperty, gridProps, updateGridProps, setPropertyEditorFocused} = useEditorContext();
+  const { selectedWidgets, updateWidgetProperty, gridProps, updateGridProps, setPropertyEditorFocused } =
+    useEditorContext();
   const editingWidget = selectedWidgets[0];
   const renderPropertyFields = (
     obj: Record<string, any>,
@@ -58,11 +59,7 @@ const PropertyEditor: React.FC = () => {
                     size="small"
                     type={type === "number" ? "number" : "text"}
                     value={localVal}
-                    onChange={(e) =>
-                      setLocalVal(
-                        type === "number" ? Number(e.target.value) : e.target.value
-                      )
-                    }
+                    onChange={(e) => setLocalVal(type === "number" ? Number(e.target.value) : e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.currentTarget.blur();
@@ -81,12 +78,7 @@ const PropertyEditor: React.FC = () => {
           return (
             <ListItem key={key} disablePadding sx={{ px: 2, py: 1 }}>
               <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={!!value}
-                    onChange={(e) => onChange(key, e.target.checked)}
-                  />
-                }
+                control={<Checkbox checked={!!value} onChange={(e) => onChange(key, e.target.checked)} />}
                 label={label}
               />
             </ListItem>
@@ -98,7 +90,14 @@ const PropertyEditor: React.FC = () => {
               <FieldWrapper
                 initial={value}
                 render={(localVal, setLocalVal) => (
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2, width: "100%" }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      width: "100%",
+                    }}
+                  >
                     <Typography variant="body2">{label}</Typography>
                     <input
                       type="color"
@@ -120,40 +119,34 @@ const PropertyEditor: React.FC = () => {
     });
   };
 
-  const header = editingWidget
-    ? `Edit: ${editingWidget.properties.label}`
-    : "Edit Grid";
+  const header = editingWidget ? `Edit: ${editingWidget.properties.label}` : "Edit Grid";
 
-  const propsMeta = editingWidget
-    ? widgetRegistry[editingWidget.componentName].properties
-    : gridMetadata.properties;
+  const propsMeta = editingWidget ? widgetRegistry[editingWidget.componentName].properties : gridMetadata.properties;
 
-  const propsValues = editingWidget
-    ? editingWidget.properties
-    : gridProps;
+  const propsValues = editingWidget ? editingWidget.properties : gridProps;
 
   const onChange = (key: string, value: any) => {
-  if (editingWidget) {
-    updateWidgetProperty(editingWidget.id, key, value);
-  } else {
-    updateGridProps({ ...gridProps, [key]: value });
-  }
-};
+    if (editingWidget) {
+      updateWidgetProperty(editingWidget.id, key, value);
+    } else {
+      updateGridProps({ ...gridProps, [key]: value });
+    }
+  };
 
   return (
-     <Drawer
-        onFocus={() => setPropertyEditorFocused(true)}
-        onBlur={() => setPropertyEditorFocused(false)}
-        variant="permanent"
-        anchor="right"
-        sx={{
+    <Drawer
+      onFocus={() => setPropertyEditorFocused(true)}
+      onBlur={() => setPropertyEditorFocused(false)}
+      variant="permanent"
+      anchor="right"
+      sx={{
+        width: "20rem",
+        [`& .MuiDrawer-paper`]: {
           width: "20rem",
-          [`& .MuiDrawer-paper`]: {
-            width: "20rem",
-            boxSizing: 'border-box',
-          },
-        }}
-      >
+          boxSizing: "border-box",
+        },
+      }}
+    >
       <Toolbar />
       <List>
         <ListItem>

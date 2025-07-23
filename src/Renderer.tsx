@@ -27,5 +27,4 @@ const Renderer: React.FC<Props> = ({ layout }) => {
   );
 };
 
-
 export default Renderer;

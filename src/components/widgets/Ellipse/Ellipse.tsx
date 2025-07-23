@@ -2,7 +2,7 @@
 import React from "react";
 import type { Widget } from "../../../types/widgets";
 import * as CONSTS from "../../../shared/constants";
-
+/* prettier-ignore */
 const ellipseMetadata = {
   componentName: "Ellipse",
   category: "Basic",
@@ -22,10 +22,7 @@ type Props = {
 };
 
 const Ellipse: React.FC<Props> = ({ data }) => {
-  const {
-    backgroundColor,
-    tooltip,
-  } = data.properties;
+  const { backgroundColor, tooltip } = data.properties;
 
   return (
     <div

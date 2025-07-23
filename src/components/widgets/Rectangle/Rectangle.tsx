@@ -2,7 +2,7 @@
 import React from "react";
 import type { Widget } from "../../../types/widgets";
 import * as CONSTS from "../../../shared/constants";
-
+/* prettier-ignore */
 const rectangleMetadata = {
   componentName: "Rectangle",
   category: "Basic",
@@ -24,11 +24,7 @@ type Props = {
 };
 
 const Rectangle: React.FC<Props> = ({ data }) => {
-  const {
-    backgroundColor,
-    borderRadius,
-    tooltip,
-  } = data.properties;
+  const { backgroundColor, borderRadius, tooltip } = data.properties;
 
   return (
     <div

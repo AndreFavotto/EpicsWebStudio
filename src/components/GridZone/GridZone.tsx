@@ -3,17 +3,18 @@ import { Rnd } from "react-rnd";
 import type { ReactNode } from "react";
 import type { PalleteEntry, Widget } from "../../types/widgets";
 import { widgetRegistry } from "../Utils/WidgetRegistry";
-import { useEditorContext} from "../Utils/EditorContext";
+import { useEditorContext } from "../Utils/EditorContext";
 import * as CONSTS from "../../shared/constants";
 import Selecto from "react-selecto";
 import "./GridZone.css";
 
+/* prettier-ignore */
 const gridMetadata = {
   componentName: "GridZone",
   properties: {
     backgroundColor: { selType: "colorSelector", label: "Background Color", default: CONSTS.DEFAULT_COLORS.inputColor},
-    lineColor:       { selType: "colorSelector", label: "Grid Line Color", default: CONSTS.DEFAULT_COLORS.gridLineColor },
-    size:            { selType: "number", label: "Grid Size", default: 20 },
+    lineColor:       { selType: "colorSelector", label: "Grid Line Color",  default: CONSTS.DEFAULT_COLORS.gridLineColor},
+    size:            { selType: "number",        label: "Grid Size",        default: 20 },
   }
 };
 
@@ -23,24 +24,32 @@ function renderWidget(widget: Widget): ReactNode {
 }
 
 const GridZone: React.FC = () => {
-  const { mode, editorWidgets, setEditorWidgets, updateWidget, setSelectedWidgets, selectedWidgets, gridProps, propertyEditorFocused} = useEditorContext();
+  const {
+    mode,
+    editorWidgets,
+    setEditorWidgets,
+    updateWidget,
+    setSelectedWidgets,
+    selectedWidgets,
+    gridProps,
+    propertyEditorFocused,
+  } = useEditorContext();
   const selectoRef = useRef<Selecto>(null);
   const [isDragging, setIsDragging] = useState(false);
- 
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (mode !== CONSTS.EDIT_MODE) return;
-      if (propertyEditorFocused) return;
+      if (mode !== CONSTS.EDIT_MODE || propertyEditorFocused) return;
       if (e.key === "Delete" && selectedWidgets.length > 0) {
-        setEditorWidgets(prev => prev.filter(w => !selectedWidgets.map(sw => sw.id).includes(w.id)));
+        setEditorWidgets((prev) => prev.filter((w) => !selectedWidgets.map((sw) => sw.id).includes(w.id)));
         setSelectedWidgets([]);
       }
     };
-  
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [mode, propertyEditorFocused, selectedWidgets, setEditorWidgets, setSelectedWidgets]);
-  
+
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
@@ -79,11 +88,11 @@ const GridZone: React.FC = () => {
   };
 
   return (
-    <div 
-      id="gridZone" 
-      className="gridZone" 
-      onDragOver={handleDragOver} 
-      onDrop={handleDrop} 
+    <div
+      id="gridZone"
+      className="gridZone"
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
       style={{
         width: "100%",
         height: "100%",
@@ -96,7 +105,10 @@ const GridZone: React.FC = () => {
       {editorWidgets.map((item, index) => (
         <Rnd
           key={index}
-          size={{ width: item.properties.width, height: item.properties.height }}
+          size={{
+            width: item.properties.width,
+            height: item.properties.height,
+          }}
           position={{ x: item.properties.x, y: item.properties.y }}
           bounds="parent"
           id={item.id}
@@ -129,11 +141,11 @@ const GridZone: React.FC = () => {
             });
           }}
         >
-        {renderWidget(item)}
-      </Rnd>
+          {renderWidget(item)}
+        </Rnd>
       ))}
-    {isDragging ? null : (
-      <Selecto
+      {isDragging ? null : (
+        <Selecto
           ref={selectoRef}
           container={document.getElementById("gridZone")}
           selectableTargets={[".selectable"]}
@@ -142,19 +154,19 @@ const GridZone: React.FC = () => {
           selectFromInside={true}
           preventDragFromInside={true}
           toggleContinueSelect={["ctrl"]}
-          onSelectEnd={e => {
-            console.log(e)
+          onSelectEnd={(e) => {
+            console.log(e);
             if (e.added.length === 0 && e.removed.length === 0) {
               // If nothing was added nor removed, reset selection
               selectoRef.current?.setSelectedTargets([]);
               setSelectedWidgets([]);
-            } else{
-              const selectedIds = e.selected.map(el => el.id);
+            } else {
+              const selectedIds = e.selected.map((el) => el.id);
               setSelectedWidgets(selectedIds);
             }
           }}
-        />)
-      }
+        />
+      )}
     </div>
   );
 };

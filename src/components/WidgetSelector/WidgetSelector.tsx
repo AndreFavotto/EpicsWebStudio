@@ -1,18 +1,18 @@
 import React from "react";
 import type { PalleteEntry } from "../../types/widgets";
 import { widgetRegistry } from "../Utils/WidgetRegistry";
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import WidgetsIcon from '@mui/icons-material/Widgets';
-import Toolbar from '@mui/material/Toolbar';
-import Collapse from '@mui/material/Collapse';
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import Divider from "@mui/material/Divider";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemText from "@mui/material/ListItemText";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import WidgetsIcon from "@mui/icons-material/Widgets";
+import Toolbar from "@mui/material/Toolbar";
+import Collapse from "@mui/material/Collapse";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 
 type DraggableItemProps = {
   entry: PalleteEntry;
@@ -35,13 +35,11 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ entry }) => {
 };
 
 const WidgetSelector: React.FC = () => {
-  const palette: PalleteEntry[] = Object.entries(widgetRegistry).map(
-    ([componentName, entry]) => ({
-      widgetLabel: entry.properties.label.default,
-      category: entry.category || "Uncategorized",
-      componentName,
-    })
-  );
+  const palette: PalleteEntry[] = Object.entries(widgetRegistry).map(([componentName, entry]) => ({
+    widgetLabel: entry.properties.label.default,
+    category: entry.category || "Uncategorized",
+    componentName,
+  }));
 
   const categories = React.useMemo(() => {
     const grouped: Record<string, PalleteEntry[]> = {};
@@ -58,7 +56,7 @@ const WidgetSelector: React.FC = () => {
   const [openCategories, setOpenCategories] = React.useState<Record<string, boolean>>({});
 
   const toggleCategory = (category: string) => {
-    setOpenCategories(prev => ({
+    setOpenCategories((prev) => ({
       ...prev,
       [category]: !prev[category],
     }));
@@ -71,8 +69,8 @@ const WidgetSelector: React.FC = () => {
         width: "15rem",
         [`& .MuiDrawer-paper`]: {
           width: "15rem",
-          boxSizing: 'border-box',
-        }
+          boxSizing: "border-box",
+        },
       }}
     >
       <Toolbar />

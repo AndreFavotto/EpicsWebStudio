@@ -3,7 +3,7 @@ import { Button } from "@mui/material";
 import { useEditorContext } from "../../Utils/EditorContext";
 import type { Widget } from "../../../types/widgets";
 import * as CONSTS from "../../../shared/constants";
-
+/* prettier-ignore */
 const actionButtonMetadata = {
   componentName: "ActionButton",
   category: "Controls",
@@ -29,45 +29,36 @@ type Props = {
   data: Widget;
 };
 
-const ActionButton: React.FC<Props> = ({data}) => {
-    const { mode } = useEditorContext();
-    const {
-      disabled,
-      tooltip,
-      textColor,
-      borderRadius,
-      pv,
-      label,
-      backgroundColor,
-      actionValue,
-    } = data.properties;
+const ActionButton: React.FC<Props> = ({ data }) => {
+  const { mode } = useEditorContext();
+  const { disabled, tooltip, textColor, borderRadius, pv, label, backgroundColor, actionValue } = data.properties;
 
-    const handleClick = (e: React.MouseEvent, actionValue: any) => {
-      if (mode === CONSTS.RUNTIME_MODE) {
-        // Handle action in runtime mode, e.g., send actionValue to a PV or perform an action
-        console.log("Button clicked with action value:", actionValue);
-      }
-    };
+  const handleClick = (e: React.MouseEvent, actionValue: any) => {
+    if (mode === CONSTS.RUNTIME_MODE) {
+      // Handle action in runtime mode, e.g., send actionValue to a PV or perform an action
+      console.log("Button clicked with action value:", actionValue);
+    }
+  };
 
-    return (
-      <Button
-        sx={{
-          width: "100%",
-          height: "100%",
-          marginTop: "auto",
-          marginBottom: "auto",
-          marginLeft: "auto",
-          marginRight: "auto",
-          backgroundColor: backgroundColor,
-          color: textColor,
-          borderRadius: borderRadius,
-        }}
-        disabled={disabled}
-        variant="contained"
-        onClick={(e) => handleClick(e, actionValue)}
-      >
+  return (
+    <Button
+      sx={{
+        width: "100%",
+        height: "100%",
+        marginTop: "auto",
+        marginBottom: "auto",
+        marginLeft: "auto",
+        marginRight: "auto",
+        backgroundColor: backgroundColor,
+        color: textColor,
+        borderRadius: borderRadius,
+      }}
+      disabled={disabled}
+      variant="contained"
+      onClick={(e) => handleClick(e, actionValue)}
+    >
       {label}
-      </Button>
+    </Button>
   );
 };
 

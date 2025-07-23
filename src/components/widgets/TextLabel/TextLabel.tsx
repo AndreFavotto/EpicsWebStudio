@@ -1,7 +1,7 @@
 import React from "react";
 import type { Widget } from "../../../types/widgets";
 import * as CONSTS from "../../../shared/constants";
-
+/* prettier-ignore */
 const labelMetadata = {
   componentName: "TextLabel",
   category: "Basic",
@@ -26,17 +26,10 @@ type Props = {
 };
 
 const TextLabel: React.FC<Props> = ({ data }) => {
-    const {
-      label,
-      backgroundColor,
-      textColor,
-      borderRadius,
-      fontSize,
-      disabled,
-      tooltip,
-    } = data.properties;
-    return (
-    <div className="textLabel"
+  const { label, backgroundColor, textColor, borderRadius, fontSize, disabled, tooltip } = data.properties;
+  return (
+    <div
+      className="textLabel"
       style={{
         width: "100%",
         height: "100%",
@@ -45,7 +38,8 @@ const TextLabel: React.FC<Props> = ({ data }) => {
         backgroundColor: backgroundColor,
         color: textColor,
         border: "none",
-      }}>
+      }}
+    >
       {label}
     </div>
   );
