@@ -1,0 +1,3 @@
+[submodule "external/pvws"]
+	path = external/pvws
+	url = https://github.com/AndreFavotto/pvws.git

@@ -1,0 +1,33 @@
+services:
+  epicswebsuite:
+    build:
+      target: prod
+      args:
+        GIT_REPO: ${GIT_REPO}
+        GIT_TAG: ${GIT_TAG}
+        PROD_PORT: ${PROD_PORT}
+    image: epicswebsuite:${GIT_TAG}
+    container_name: epicswebsuite
+    network_mode: "host"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - epicswebsuite-pvws
+
+  epicswebsuite-pvws:
+    build:
+      context: ./pvws
+      args:
+        PVWS_SOURCE: ${PVWS_SOURCE}
+        PVWS_GIT_TAG: ${PVWS_GIT_TAG}
+        PVWS_PORT: ${PVWS_PORT}
+    image: epicswebsuite-pvws:${PVWS_DOCKER_TAG}
+    container_name: epicswebsuite-pvws
+    network_mode: "host"
+    restart: always
+    volumes:
+      - ./setenv.sh:/usr/local/tomcat/bin/setenv.sh
+    healthcheck:
+      test: curl -sS http://localhost:${PVWS_PORT}/pvws/ | grep -c "img/connected.png" > /dev/null
+      timeout: "5s"
+      retries: 10
