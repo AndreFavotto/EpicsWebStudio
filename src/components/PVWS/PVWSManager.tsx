@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
-import { PVWSClient } from "../../epics/PVWSClient";
-import { useEditorContext } from "./EditorContext";
+import { PVWSClient } from "./PVWSClient";
+import { useEditorContext } from "../Utils/EditorContext";
 import * as CONSTS from "../../shared/constants";
 
 export const PVWSManager: React.FC = () => {
@@ -24,32 +24,28 @@ export const PVWSManager: React.FC = () => {
     });
   };
 
+  const handleConnect = (connected: boolean) => {
+    if (connected) {
+      clientRef.current?.subscribe(pvs);
+    }
+  };
+
   // Connect only once when entering runtime mode
   useEffect(() => {
     if (mode === CONSTS.RUNTIME_MODE && clientRef.current === null) {
-      const client = new PVWSClient();
+      const client = new PVWSClient(CONSTS.PVWS_URL, handleConnect, handleMessage);
       clientRef.current = client;
-      client.connect(CONSTS.PVWS_URL, handleMessage, () => {
-        client.subscribe(pvs);
-      });
     }
 
     // Cleanup on exit from runtime mode
     return () => {
       if (mode !== CONSTS.RUNTIME_MODE) {
-        clientRef.current?.unsubscribe(pvs);
+        clientRef.current?.clear(pvs);
         clientRef.current?.close();
         clientRef.current = null;
       }
     };
   }, [mode]);
-
-  // Subscribe to new PVs only when the list changes, without reconnecting
-  useEffect(() => {
-    if (mode === CONSTS.RUNTIME_MODE && clientRef.current?.isConnected()) {
-      clientRef.current.subscribe(pvs);
-    }
-  }, [pvs]);
 
   return null;
 };
