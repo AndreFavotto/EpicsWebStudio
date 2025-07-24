@@ -4,7 +4,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { DEFAULT_COLORS } from "../../shared/constants";
+import { COLORS } from "../../shared/constants";
 
 export default function NavBar() {
   const handleRuntimeClick = () => {
@@ -18,7 +18,7 @@ export default function NavBar() {
         position="fixed"
         sx={{
           zIndex: (theme) => theme.zIndex.drawer + 1,
-          backgroundColor: DEFAULT_COLORS.titleBarColor,
+          backgroundColor: COLORS.titleBarColor,
         }}
       >
         <Toolbar>

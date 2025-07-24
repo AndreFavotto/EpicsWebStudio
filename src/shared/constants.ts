@@ -1,4 +1,4 @@
-export const DEFAULT_COLORS = {
+export const COLORS = {
   titleBarColor: getComputedStyle(document.documentElement, null).getPropertyValue("--title-bar-color").trim(),
   backgroundColor: getComputedStyle(document.documentElement, null).getPropertyValue("--background-color").trim(),
   textColor: getComputedStyle(document.documentElement, null).getPropertyValue("--text-color").trim(),
@@ -8,6 +8,7 @@ export const DEFAULT_COLORS = {
   readColor: getComputedStyle(document.documentElement, null).getPropertyValue("--read-color").trim(),
   lightGray: getComputedStyle(document.documentElement, null).getPropertyValue("--light-gray").trim(),
   gridLineColor: getComputedStyle(document.documentElement, null).getPropertyValue("--grid-line-color").trim(),
+  transparent: getComputedStyle(document.documentElement, null).getPropertyValue("--transparent").trim(),
 };
 
 export const EDIT_MODE = "edit";

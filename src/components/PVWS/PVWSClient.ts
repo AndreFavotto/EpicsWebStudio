@@ -1,15 +1,8 @@
 import { toByteArray } from "./base64";
+import type { PVWSMessage } from "../../types/widgets";
 
 type ConnectHandler = (connected: boolean) => void;
-type MessageHandler = (message: PVUpdate) => void;
-
-interface PVUpdate {
-  type?: string;
-  pv?: string;
-  readonly?: boolean;
-  value?: any;
-  [key: string]: any;
-}
+type MessageHandler = (message: PVWSMessage) => void;
 
 export class PVWSClient {
   private url: string;
@@ -17,13 +10,13 @@ export class PVWSClient {
   private message_handler: MessageHandler;
 
   private socket!: WebSocket;
-  private idle: boolean = true;
+  private idle = true;
   private idle_timer: ReturnType<typeof setInterval> | null = null;
 
-  private values: Record<string, PVUpdate> = {};
+  private values: Record<string, PVWSMessage> = {};
 
-  reconnect_ms: number = 10000;
-  idle_check_ms: number = 30000;
+  reconnect_ms = 10000;
+  idle_check_ms = 30000;
 
   constructor(url: string, connect_handler: ConnectHandler, message_handler: MessageHandler) {
     this.url = url;
@@ -35,16 +28,14 @@ export class PVWSClient {
     this.connect_handler(false);
     this.socket = new WebSocket(this.url);
     this.socket.onopen = (event) => this.handleConnection(event);
-    this.socket.onmessage = (event) => this.handleMessage(event.data);
+    this.socket.onmessage = (event) => this.handleMessage(event.data as string);
     this.socket.onclose = (event) => this.handleClose(event);
     this.socket.onerror = (event) => this.handleError(event);
   }
 
   private handleConnection(_event: Event): void {
     this.connect_handler(true);
-    if (this.idle_timer == null) {
-      this.idle_timer = setInterval(() => this.checkIdleTimeout(), this.idle_check_ms);
-    }
+    this.idle_timer ??= setInterval(() => this.checkIdleTimeout(), this.idle_check_ms);
   }
 
   private checkIdleTimeout(): void {
@@ -64,36 +55,44 @@ export class PVWSClient {
 
   private handleMessage(message: string): void {
     this.idle = false;
-    let jm: PVUpdate = JSON.parse(message);
+    const uncheckedMessage = JSON.parse(message) as unknown;
+    if (typeof uncheckedMessage !== "object" || uncheckedMessage === null) {
+      console.error("Received invalid socket message:", message);
+      return;
+    }
+    if (!("type" in uncheckedMessage || "pv" in uncheckedMessage || "value" in uncheckedMessage)) {
+      console.error("Received invalid message:", message);
+      return;
+    }
+    // at this point, trust the message is a PVWSMessage
+    const jm: PVWSMessage = uncheckedMessage as PVWSMessage;
 
     if (jm.type === "update") {
       if (jm.b64dbl !== undefined) {
-        const bytes = toByteArray(jm.b64dbl);
+        const bytes = toByteArray(jm.b64dbl as string);
         jm.value = Array.from(new Float64Array(bytes.buffer));
         delete jm.b64dbl;
       } else if (jm.b64flt !== undefined) {
-        const bytes = toByteArray(jm.b64flt);
+        const bytes = toByteArray(jm.b64flt as string);
         jm.value = Array.from(new Float32Array(bytes.buffer));
         delete jm.b64flt;
       } else if (jm.b64srt !== undefined) {
-        const bytes = toByteArray(jm.b64srt);
+        const bytes = toByteArray(jm.b64srt as string);
         jm.value = Array.from(new Int16Array(bytes.buffer));
         delete jm.b64srt;
       } else if (jm.b64int !== undefined) {
-        const bytes = toByteArray(jm.b64int);
+        const bytes = toByteArray(jm.b64int as string);
         jm.value = Array.from(new Int32Array(bytes.buffer));
         delete jm.b64int;
       } else if (jm.b64byt !== undefined) {
-        const bytes = toByteArray(jm.b64byt);
+        const bytes = toByteArray(jm.b64byt as string);
         jm.value = Array.from(new Uint8Array(bytes.buffer));
         delete jm.b64byt;
       }
 
       let value = this.values[jm.pv ?? ""];
 
-      if (value === undefined) {
-        value = { pv: jm.pv, readonly: true };
-      }
+      value ??= { pv: jm.pv, type: "update", readonly: true };
 
       Object.assign(value, jm);
       this.values[jm.pv ?? ""] = value;

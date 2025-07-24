@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { useEditorContext } from "../Utils/EditorContext";
-import { widgetRegistry } from "../Utils/WidgetRegistry";
-import { gridMetadata } from "../GridZone/GridZone";
+import React, { useState } from "react";
+import { useEditorContext } from "../../Utils/EditorContext";
+import type { WidgetProperties, PropertyValue, PropertyKey } from "../../types/widgets";
 import {
   TextField,
   List,
@@ -17,38 +16,37 @@ import {
 } from "@mui/material";
 
 const PropertyEditor: React.FC = () => {
-  const { selectedWidgets, updateWidgetProperty, gridProps, updateGridProps, setPropertyEditorFocused } =
-    useEditorContext();
-  const editingWidget = selectedWidgets[0];
+  const { selectedWidgetIDs, editorWidgets, updateWidgetProperty, setPropertyEditorFocused } = useEditorContext();
+  // show the first selected widget or the grid properties
+  const GridWidget = editorWidgets[0];
+  let editingWidget;
+  if (selectedWidgetIDs.length > 0) {
+    editingWidget = editorWidgets.find((w) => w.id === selectedWidgetIDs[0]) ?? GridWidget;
+  } else {
+    editingWidget = GridWidget;
+  }
+
   const renderPropertyFields = (
-    obj: Record<string, any>,
-    propsMeta: Record<string, any>,
-    onChange: (key: string, value: any) => void
+    properties: WidgetProperties,
+    onChange: (propName: PropertyKey, newVal: PropertyValue) => void
   ) => {
-    return Object.entries(propsMeta).map(([key, meta]) => {
-      const value = obj[key] ?? "";
-      const label = meta.label;
-      const type = meta.selType;
+    return Object.entries(properties).map(([propName, prop]) => {
+      const { selType, label, value } = prop;
 
       const FieldWrapper: React.FC<{
-        render: (val: any, setVal: (v: any) => void) => React.JSX.Element;
-        initial: any;
-      }> = ({ render, initial }) => {
-        const [localVal, setLocalVal] = useState(initial);
-
-        const commit = () => {
-          if (localVal !== initial) onChange(key, localVal);
-        };
-
+        render: (val: PropertyValue, setVal: (v: PropertyValue) => void) => React.JSX.Element;
+        initial: PropertyValue;
+      }> = (props) => {
+        const { render, initial } = props;
+        const [localVal, setLocalVal] = useState<PropertyValue>(initial);
         return render(localVal, setLocalVal);
       };
 
-      switch (type) {
-        case "string":
+      switch (selType) {
+        case "text":
         case "number":
-        case "any":
           return (
-            <ListItem key={key} disablePadding sx={{ px: 2, py: 1 }}>
+            <ListItem key={propName} disablePadding sx={{ px: 2, py: 1 }}>
               <FieldWrapper
                 initial={value}
                 render={(localVal, setLocalVal) => (
@@ -57,16 +55,17 @@ const PropertyEditor: React.FC = () => {
                     label={label}
                     variant="outlined"
                     size="small"
-                    type={type === "number" ? "number" : "text"}
+                    type={selType}
                     value={localVal}
-                    onChange={(e) => setLocalVal(type === "number" ? Number(e.target.value) : e.target.value)}
+                    onChange={(e) => setLocalVal(selType === "number" ? Number(e.target.value) : e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.currentTarget.blur();
+                        e.preventDefault();
                       }
                     }}
                     onBlur={() => {
-                      if (localVal !== value) onChange(key, localVal);
+                      if (localVal !== value) onChange(propName as PropertyKey, localVal);
                     }}
                   />
                 )}
@@ -76,9 +75,11 @@ const PropertyEditor: React.FC = () => {
 
         case "boolean":
           return (
-            <ListItem key={key} disablePadding sx={{ px: 2, py: 1 }}>
+            <ListItem key={propName} disablePadding sx={{ px: 2, py: 1 }}>
               <FormControlLabel
-                control={<Checkbox checked={!!value} onChange={(e) => onChange(key, e.target.checked)} />}
+                control={
+                  <Checkbox checked={!!value} onChange={(e) => onChange(propName as PropertyKey, e.target.checked)} />
+                }
                 label={label}
               />
             </ListItem>
@@ -86,7 +87,7 @@ const PropertyEditor: React.FC = () => {
 
         case "colorSelector":
           return (
-            <ListItem key={key} disablePadding sx={{ px: 2, py: 1 }}>
+            <ListItem key={propName} disablePadding sx={{ px: 2, py: 1 }}>
               <FieldWrapper
                 initial={value}
                 render={(localVal, setLocalVal) => (
@@ -101,10 +102,10 @@ const PropertyEditor: React.FC = () => {
                     <Typography variant="body2">{label}</Typography>
                     <input
                       type="color"
-                      value={localVal}
+                      value={localVal as string}
                       onChange={(e) => setLocalVal(e.target.value)}
                       onBlur={() => {
-                        if (localVal !== value) onChange(key, localVal);
+                        if (localVal !== value) onChange(propName as PropertyKey, localVal);
                       }}
                     />
                   </Box>
@@ -113,24 +114,19 @@ const PropertyEditor: React.FC = () => {
             </ListItem>
           );
 
+        // case "select":
         default:
           return null;
       }
     });
   };
 
-  const header = editingWidget ? `Edit: ${editingWidget.properties.label}` : "Edit Grid";
+  const header = `Edit ${editingWidget.componentName}`;
 
-  const propsMeta = editingWidget ? widgetRegistry[editingWidget.componentName].properties : gridMetadata.properties;
+  const properties = editingWidget.editableProperties;
 
-  const propsValues = editingWidget ? editingWidget.properties : gridProps;
-
-  const onChange = (key: string, value: any) => {
-    if (editingWidget) {
-      updateWidgetProperty(editingWidget.id, key, value);
-    } else {
-      updateGridProps({ ...gridProps, [key]: value });
-    }
+  const onChange = (propName: PropertyKey, newValue: PropertyValue) => {
+    updateWidgetProperty(editingWidget.id, propName, newValue);
   };
 
   return (
@@ -153,7 +149,7 @@ const PropertyEditor: React.FC = () => {
           <ListItemText primary={header} />
         </ListItem>
         <Divider />
-        {renderPropertyFields(propsValues, propsMeta, onChange)}
+        {renderPropertyFields(properties, onChange)}
       </List>
     </Drawer>
   );

@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef } from "react";
 import { PVWSClient } from "./PVWSClient";
-import { useEditorContext } from "../Utils/EditorContext";
+import { useEditorContext } from "../../Utils/EditorContext";
 import * as CONSTS from "../../shared/constants";
+import type { PVWSMessage } from "../../types/widgets";
 
 export const PVWSManager: React.FC = () => {
   const { mode, editorWidgets, updateWidgetProperty } = useEditorContext();
@@ -10,15 +11,15 @@ export const PVWSManager: React.FC = () => {
   const pvs = useMemo(() => {
     const set = new Set<string>();
     for (const w of editorWidgets) {
-      if (w.properties?.pv) set.add(w.properties.pv);
+      if (w.editableProperties?.pv) set.add(w.editableProperties.pv as string);
     }
     return Array.from(set);
   }, [editorWidgets]);
 
-  const handleMessage = (msg: any) => {
+  const handleMessage = (msg: PVWSMessage) => {
     const { pvName, value } = msg;
     editorWidgets.forEach((w) => {
-      if (w.properties?.pv === pvName) {
+      if (w.editableProperties?.pv === pvName) {
         updateWidgetProperty(w.id, "pvValue", value);
       }
     });

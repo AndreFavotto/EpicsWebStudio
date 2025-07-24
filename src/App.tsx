@@ -1,31 +1,30 @@
 import React from "react";
 import "./App.css";
-import { GridZone } from "./components/GridZone/GridZone";
+import { GridZone } from "./components/GridZone/";
 import WidgetSelector from "./components/WidgetSelector/WidgetSelector";
-import { EditorProvider } from "./components/Utils/EditorContext";
 import PropertyEditor from "./components/PropertyEditor/PropertyEditor";
 import NavBar from "./components/NavBar/NavBar";
-
+import { useEditorContext } from "./Utils/EditorContext";
 const App: React.FC = () => {
+  const { editorWidgets } = useEditorContext();
+  const gridProperties = editorWidgets[0].editableProperties;
   return (
-    <EditorProvider>
-      <div className="app">
-        <div className="appBar">
-          <NavBar />
+    <div className="app">
+      <div className="appBar">
+        <NavBar />
+      </div>
+      <div className="designerArea">
+        <div className="widgetSelector">
+          <WidgetSelector />
         </div>
-        <div className="designerArea">
-          <div className="widgetSelector">
-            <WidgetSelector />
-          </div>
-          <div className="grid">
-            <GridZone />
-          </div>
-          <div className="propertyEditor">
-            <PropertyEditor />
-          </div>
+        <div className="grid">
+          <GridZone.component data={gridProperties} />
+        </div>
+        <div className="propertyEditor">
+          <PropertyEditor />
         </div>
       </div>
-    </EditorProvider>
+    </div>
   );
 };
 

@@ -1,6 +1,6 @@
 import React from "react";
-import type { PalleteEntry } from "../../types/widgets";
-import { widgetRegistry } from "../Utils/WidgetRegistry";
+import type { Widget } from "../../types/widgets";
+import WidgetRegistry from "../../Utils/WidgetRegistry";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
@@ -15,36 +15,37 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 
 type DraggableItemProps = {
-  entry: PalleteEntry;
+  item: Widget;
 };
 
-const DraggableItem: React.FC<DraggableItemProps> = ({ entry }) => {
+const DraggableItem: React.FC<DraggableItemProps> = ({ item }) => {
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
-    e.dataTransfer.setData("application/json", JSON.stringify(entry));
+    e.dataTransfer.setData("application/json", JSON.stringify(item));
   };
+
   return (
     <ListItem disablePadding>
       <ListItemButton draggable onDragStart={handleDragStart}>
         <ListItemIcon>
           <WidgetsIcon />
         </ListItemIcon>
-        <ListItemText primary={entry.widgetLabel} />
+        <ListItemText primary={item.widgetLabel} />
       </ListItemButton>
     </ListItem>
   );
 };
 
 const WidgetSelector: React.FC = () => {
-  const palette: PalleteEntry[] = Object.entries(widgetRegistry).map(([componentName, entry]) => ({
-    widgetLabel: entry.properties.label.default,
-    category: entry.category || "Uncategorized",
-    componentName,
-  }));
+  // Convert WidgetRegistry to a Record<string, Widget>
+  const palette: Record<string, Widget> = Object.fromEntries(
+    Object.values(WidgetRegistry).map((w) => [w.componentName, w])
+  ) as Record<string, Widget>;
 
+  // Group by category
   const categories = React.useMemo(() => {
-    const grouped: Record<string, PalleteEntry[]> = {};
-    for (const entry of palette) {
-      const category = entry.category;
+    const grouped: Record<string, Widget[]> = {};
+    for (const entry of Object.values(palette)) {
+      const category = entry.category || "Uncategorized";
       if (!grouped[category]) {
         grouped[category] = [];
       }
@@ -83,8 +84,8 @@ const WidgetSelector: React.FC = () => {
             </ListItemButton>
             <Collapse in={openCategories[category]} timeout="auto" unmountOnExit>
               <List component="div" disablePadding>
-                {items.map((entry, index) => (
-                  <DraggableItem key={entry.componentName + index} entry={entry} />
+                {items.map((item) => (
+                  <DraggableItem key={item.componentName} item={item} />
                 ))}
               </List>
             </Collapse>
