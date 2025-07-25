@@ -22,14 +22,14 @@ export const PROPERTY_SCHEMAS = {
   width:           defineProp({ selType: "number",        label: "Width",            value: 100 as number }),
   pvName:          defineProp({ selType: "text",          label: "PV Name",          value: "" as string }),
   disabled:        defineProp({ selType: "boolean",       label: "Disabled",         value: false }),
-  backgroundColor: defineProp({ selType: "colorSelector", label: "Background Color", value: COLORS.backgroundColor as string}),
-  textColor:       defineProp({ selType: "colorSelector", label: "Text Color",       value: COLORS.textColor as string}),
+  backgroundColor: defineProp({ selType: "colorSelector", label: "Background Color", value: COLORS.backgroundColor }),
+  textColor:       defineProp({ selType: "colorSelector", label: "Text Color",       value: COLORS.textColor }),
   fontSize:        defineProp({ selType: "number",        label: "Font Size",        value: 14 as number }),
   borderRadius:    defineProp({ selType: "number",        label: "Border Radius",    value: 2  as number }),
   label:           defineProp({ selType: "text",          label: "Label",            value: ""  as string }),
   actionValue:     defineProp({ selType: "text",          label: "Action Value",     value: ""  as string }),
   tooltip:         defineProp({ selType: "text",          label: "Tooltip",          value: ""  as string }),
-  gridLineColor:   defineProp({ selType: "colorSelector", label: "Grid Line Color",  value: COLORS.gridLineColor as string }),
+  gridLineColor:   defineProp({ selType: "colorSelector", label: "Grid Line Color",  value: COLORS.gridLineColor }),
   gridSize:        defineProp({ selType: "number",        label: "Grid Size",        value: 20 as number }),
   pvValue:         defineProp({ selType: "number",        label: "Grid Size",        value: "" as PropertyValue })
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import type { Widget, WidgetUpdate } from "../../../types/widgets";
+import type { WidgetUpdate } from "../../../types/widgets";
 import { useEditorContext } from "../../../Utils/EditorContext";
 import { TextField } from "@mui/material";
 
@@ -7,7 +7,7 @@ const TextInputComp: React.FC<WidgetUpdate> = ({ data }) => {
   const { mode } = useEditorContext();
   const { disabled, tooltip, textColor, pvName, label, backgroundColor } = data;
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (_e: React.MouseEvent) => {
     // no action on click in runtime mode
   };
 

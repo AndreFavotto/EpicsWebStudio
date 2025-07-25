@@ -14,9 +14,9 @@ import Collapse from "@mui/material/Collapse";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 
-type DraggableItemProps = {
+interface DraggableItemProps {
   item: Widget;
-};
+}
 
 const DraggableItem: React.FC<DraggableItemProps> = ({ item }) => {
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {

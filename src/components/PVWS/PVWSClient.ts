@@ -55,17 +55,20 @@ export class PVWSClient {
 
   private handleMessage(message: string): void {
     this.idle = false;
-    const uncheckedMessage = JSON.parse(message) as unknown;
-    if (typeof uncheckedMessage !== "object" || uncheckedMessage === null) {
-      console.error("Received invalid socket message:", message);
-      return;
+
+    function isPVWSMessage(obj: unknown): obj is PVWSMessage {
+      return typeof obj === "object" && obj !== null && ("pv" in obj || "value" in obj);
     }
-    if (!("type" in uncheckedMessage || "pv" in uncheckedMessage || "value" in uncheckedMessage)) {
+
+    const uncheckedMessage: unknown = JSON.parse(message);
+
+    if (!isPVWSMessage(uncheckedMessage)) {
       console.error("Received invalid message:", message);
       return;
     }
+
     // at this point, trust the message is a PVWSMessage
-    const jm: PVWSMessage = uncheckedMessage as PVWSMessage;
+    const jm = uncheckedMessage;
 
     if (jm.type === "update") {
       if (jm.b64dbl !== undefined) {

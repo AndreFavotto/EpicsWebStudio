@@ -1,5 +1,5 @@
 import React from "react";
-import type { Widget, WidgetUpdate } from "../../../types/widgets";
+import type { WidgetUpdate } from "../../../types/widgets";
 
 const TextLabelComp: React.FC<WidgetUpdate> = ({ data }) => {
   const { label, backgroundColor, textColor, borderRadius, fontSize, tooltip } = data;

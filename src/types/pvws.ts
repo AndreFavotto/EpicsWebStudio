@@ -1,6 +1,6 @@
 export type PVWSMessageType = "update" | "ping" | "subscribe" | "clear" | "list" | "write";
 
-export type PVWSMessage = {
+export interface PVWSMessage {
   type: PVWSMessageType;
   pv: string;
 
@@ -8,7 +8,7 @@ export type PVWSMessage = {
   readonly?: boolean;
 
   /** The current value (for simple VNumber or VEnum). */
-  value?: number | string;
+  value?: number | string | boolean;
 
   /** Text representation of the value (for VString or VEnum). */
   text?: string;
@@ -46,4 +46,4 @@ export type PVWSMessage = {
 
   /** Allow extra properties (future extensions). */
   [key: string]: unknown;
-};
+}

@@ -2,14 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
 import type { ReactNode } from "react";
 import type { Widget, WidgetUpdate } from "../../types/widgets";
-import WidgetRegistryModule from "../../Utils/WidgetRegistry";
+import WidgetRegistry from "../../Utils/WidgetRegistry";
 import { useEditorContext } from "../../Utils/EditorContext";
 import * as CONSTS from "../../shared/constants";
 import Selecto from "react-selecto";
 import "./GridZone.css";
-
-// Make the registry indexable by componentName
-const WidgetRegistry = WidgetRegistryModule as Record<string, Widget>;
 
 function renderWidget(widget: Widget): ReactNode {
   const Comp = WidgetRegistry[widget.componentName]?.component;
@@ -35,7 +32,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (mode !== CONSTS.EDIT_MODE || propertyEditorFocused) return;
       if (e.key === "Delete" && selectedWidgetIDs.length > 0) {
-        setEditorWidgets((prev) => prev.filter((w) => !selectedWidgetIDs.includes(w.id!)));
+        setEditorWidgets((prev) => prev.filter((w) => !selectedWidgetIDs.includes(w.id)));
         setSelectedWidgetIDs([]);
       }
     };

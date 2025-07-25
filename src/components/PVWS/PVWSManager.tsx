@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { PVWSClient } from "./PVWSClient";
 import { useEditorContext } from "../../Utils/EditorContext";
 import * as CONSTS from "../../shared/constants";
-import type { PVWSMessage } from "../../types/widgets";
+import type { PVWSMessage } from "../../types/pvws";
 
 export const PVWSManager: React.FC = () => {
   const { mode, editorWidgets, updateWidgetProperty } = useEditorContext();
@@ -16,23 +16,22 @@ export const PVWSManager: React.FC = () => {
     return Array.from(set);
   }, [editorWidgets]);
 
-  const handleMessage = (msg: PVWSMessage) => {
-    const { pvName, value } = msg;
-    editorWidgets.forEach((w) => {
-      if (w.editableProperties?.pv === pvName) {
-        updateWidgetProperty(w.id, "pvValue", value);
-      }
-    });
-  };
-
-  const handleConnect = (connected: boolean) => {
-    if (connected) {
-      clientRef.current?.subscribe(pvs);
-    }
-  };
-
   // Connect only once when entering runtime mode
   useEffect(() => {
+    const handleMessage = (msg: PVWSMessage) => {
+      const { pvName, value } = msg;
+      editorWidgets.forEach((w) => {
+        if (w.editableProperties?.pvName === pvName) {
+          updateWidgetProperty(w.id, "pvValue", value!);
+        }
+      });
+    };
+
+    const handleConnect = (connected: boolean) => {
+      if (connected) {
+        clientRef.current?.subscribe(pvs);
+      }
+    };
     if (mode === CONSTS.RUNTIME_MODE && clientRef.current === null) {
       const client = new PVWSClient(CONSTS.PVWS_URL, handleConnect, handleMessage);
       clientRef.current = client;
@@ -46,7 +45,7 @@ export const PVWSManager: React.FC = () => {
         clientRef.current = null;
       }
     };
-  }, [mode]);
+  }, [mode, pvs, editorWidgets, updateWidgetProperty]);
 
   return null;
 };

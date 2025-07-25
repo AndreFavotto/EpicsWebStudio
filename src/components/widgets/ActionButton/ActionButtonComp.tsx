@@ -1,14 +1,14 @@
 import React from "react";
 import { Button } from "@mui/material";
 import { useEditorContext } from "../../../Utils/EditorContext";
-import type { WidgetUpdate } from "../../../types/widgets";
+import type { PropertyValue, WidgetUpdate } from "../../../types/widgets";
 import * as CONSTS from "../../../shared/constants";
 
 const ActionButtonComp: React.FC<WidgetUpdate> = ({ data }) => {
   const { mode } = useEditorContext();
   const { disabled, tooltip, textColor, borderRadius, pvName, label, backgroundColor, actionValue } = data;
 
-  const handleClick = (e: React.MouseEvent, actionValue: any) => {
+  const handleClick = (e: React.MouseEvent, actionValue: PropertyValue) => {
     if (mode === CONSTS.RUNTIME_MODE) {
       // Handle action in runtime mode, e.g., send actionValue to a PV or perform an action
       console.log("Button clicked with action value:", actionValue);

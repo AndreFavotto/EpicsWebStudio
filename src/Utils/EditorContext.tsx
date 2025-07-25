@@ -86,6 +86,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useEditorContext = () => {
   const ctx = useContext(EditorContext);
   if (!ctx) throw new Error("EditorContext not found");
