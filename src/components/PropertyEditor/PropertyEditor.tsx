@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useEditorContext } from "../../Utils/EditorContext";
+import { useEditorContext } from "../Utils/EditorContext";
 import type { WidgetProperties, PropertyValue, PropertyKey } from "../../types/widgets";
 import {
   TextField,
@@ -102,7 +102,7 @@ const PropertyEditor: React.FC = () => {
                     <Typography variant="body2">{label}</Typography>
                     <input
                       type="color"
-                      value={localVal as string}
+                      value={value as string}
                       onChange={(e) => setLocalVal(e.target.value)}
                       onBlur={() => {
                         if (localVal !== value) onChange(propName as PropertyKey, localVal);

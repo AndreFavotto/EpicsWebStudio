@@ -18,7 +18,6 @@ export const TextInput: Widget = {
     backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.inputColor },
     textColor: PROPERTY_SCHEMAS.textColor,
     borderRadius: PROPERTY_SCHEMAS.borderRadius,
-    actionValue: PROPERTY_SCHEMAS.actionValue,
     pvName: PROPERTY_SCHEMAS.pvName,
     tooltip: PROPERTY_SCHEMAS.tooltip,
     disabled: PROPERTY_SCHEMAS.disabled,

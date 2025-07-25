@@ -8,7 +8,7 @@ export interface PVWSMessage {
   readonly?: boolean;
 
   /** The current value (for simple VNumber or VEnum). */
-  value?: number | string | boolean;
+  value?: number | string | boolean | number[];
 
   /** Text representation of the value (for VString or VEnum). */
   text?: string;

@@ -8,14 +8,14 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* default-colors */
-  --title-bar-color: rgb(87, 148, 189);
+  --title-bar-color: #5794bd;
   --background-color: #f2f2f2;
   --text-color: #000000;
-  --button-color: #9b9b9eff;
+  --button-color: #a1a1a1;
   --label-color: #ffffff00;
   --input-color: #e9e0d3;
   --read-color: #c7c7c7;
-  --light-gray: #aaa;
+  --light-gray: #aaaaaa;
   --grid-line-color: #e0e0e0;
   --transparent: #ffffff00;
 }

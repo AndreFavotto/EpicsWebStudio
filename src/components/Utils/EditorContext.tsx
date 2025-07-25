@@ -1,9 +1,9 @@
 import { createContext, useContext, useState } from "react";
-import type { Widget, PropertyKey, PropertyValue } from "../types/widgets";
-import { PROPERTY_SCHEMAS } from "../types/widgets";
-import type { Mode } from "../shared/constants";
-import * as CONSTS from "../shared/constants";
-import { GridZone } from "../components/GridZone";
+import type { Widget, PropertyKey, PropertyValue } from "../../types/widgets";
+import { PROPERTY_SCHEMAS } from "../../types/widgets";
+import type { Mode } from "../../shared/constants";
+import * as CONSTS from "../../shared/constants";
+import { GridZone } from "../../components/GridZone";
 
 interface EditorContextType {
   mode: Mode;

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { PVWSClient } from "./PVWSClient";
-import { useEditorContext } from "../../Utils/EditorContext";
+import { useEditorContext } from "../Utils/EditorContext";
 import * as CONSTS from "../../shared/constants";
 import type { PVWSMessage } from "../../types/pvws";
 
@@ -11,7 +11,7 @@ export const PVWSManager: React.FC = () => {
   const pvs = useMemo(() => {
     const set = new Set<string>();
     for (const w of editorWidgets) {
-      if (w.editableProperties?.pv) set.add(w.editableProperties.pv as string);
+      if (w.editableProperties?.pvName) set.add(w.editableProperties.pvName.value);
     }
     return Array.from(set);
   }, [editorWidgets]);

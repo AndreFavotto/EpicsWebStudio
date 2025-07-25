@@ -1,6 +1,6 @@
 import React from "react";
 import type { Widget } from "../../types/widgets";
-import WidgetRegistry from "../../Utils/WidgetRegistry";
+import WidgetRegistry from "../Utils/WidgetRegistry";
 import Drawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";

@@ -1,7 +1,7 @@
 import { COLORS } from "../shared/constants";
 
 export type PropertySelectorType = "text" | "number" | "boolean" | "colorSelector" | "select";
-export type PropertyValue = string | number | boolean;
+export type PropertyValue = string | number | number[] | boolean;
 export interface WidgetProperty<T extends PropertyValue = PropertyValue> {
   selType: PropertySelectorType;
   label: string;

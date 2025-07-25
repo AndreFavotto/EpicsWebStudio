@@ -1,6 +1,6 @@
 import React from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
-import { useEditorContext } from "../../../Utils/EditorContext";
+import { useEditorContext } from "../../Utils/EditorContext";
 
 const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
   const { mode } = useEditorContext();
