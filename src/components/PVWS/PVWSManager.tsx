@@ -19,9 +19,9 @@ export const PVWSManager: React.FC = () => {
   // Connect only once when entering runtime mode
   useEffect(() => {
     const handleMessage = (msg: PVWSMessage) => {
-      const { pvName, value } = msg;
+      const { pv, value } = msg;
       editorWidgets.forEach((w) => {
-        if (w.editableProperties?.pvName === pvName) {
+        if (w.editableProperties?.pvName?.value === pv) {
           updateWidgetProperty(w.id, "pvValue", value!);
         }
       });
@@ -34,6 +34,7 @@ export const PVWSManager: React.FC = () => {
     };
     if (mode === CONSTS.RUNTIME_MODE && clientRef.current === null) {
       const client = new PVWSClient(CONSTS.PVWS_URL, handleConnect, handleMessage);
+      client.open();
       clientRef.current = client;
     }
 

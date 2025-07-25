@@ -4,11 +4,14 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { COLORS } from "../../shared/constants";
+import { COLORS, RUNTIME_MODE, EDIT_MODE } from "../../shared/constants";
+import { useEditorContext } from "../Utils/EditorContext";
 
 export default function NavBar() {
+  const { mode, setMode } = useEditorContext();
   const handleRuntimeClick = () => {
-    window.open("/runtime", "_blank");
+    if (mode == RUNTIME_MODE) setMode(EDIT_MODE);
+    else setMode(RUNTIME_MODE);
   };
 
   return (
@@ -39,7 +42,7 @@ export default function NavBar() {
               },
             }}
           >
-            Runtime Mode
+            {mode == EDIT_MODE ? "Preview" : "Edit"}
           </Button>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ mr: 3 }}>

@@ -1,5 +1,5 @@
 import { toByteArray } from "./base64";
-import type { PVWSMessage } from "../../types/widgets";
+import type { PVWSMessage } from "../../types/pvws";
 
 type ConnectHandler = (connected: boolean) => void;
 type MessageHandler = (message: PVWSMessage) => void;
@@ -9,13 +9,14 @@ export class PVWSClient {
   private connect_handler: ConnectHandler;
   private message_handler: MessageHandler;
 
+  private isConnected = false;
   private socket!: WebSocket;
   private idle = true;
   private idle_timer: ReturnType<typeof setInterval> | null = null;
 
   private values: Record<string, PVWSMessage> = {};
 
-  reconnect_ms = 10000;
+  reconnect_ms = 5000;
   idle_check_ms = 30000;
 
   constructor(url: string, connect_handler: ConnectHandler, message_handler: MessageHandler) {
@@ -34,6 +35,7 @@ export class PVWSClient {
   }
 
   private handleConnection(_event: Event): void {
+    this.isConnected = true;
     this.connect_handler(true);
     this.idle_timer ??= setInterval(() => this.checkIdleTimeout(), this.idle_check_ms);
   }
@@ -55,7 +57,7 @@ export class PVWSClient {
 
   private handleMessage(message: string): void {
     this.idle = false;
-
+    console.log(message);
     function isPVWSMessage(obj: unknown): obj is PVWSMessage {
       return typeof obj === "object" && obj !== null && ("pv" in obj || "value" in obj);
     }
@@ -72,23 +74,23 @@ export class PVWSClient {
 
     if (jm.type === "update") {
       if (jm.b64dbl !== undefined) {
-        const bytes = toByteArray(jm.b64dbl as string);
+        const bytes = toByteArray(jm.b64dbl);
         jm.value = Array.from(new Float64Array(bytes.buffer));
         delete jm.b64dbl;
       } else if (jm.b64flt !== undefined) {
-        const bytes = toByteArray(jm.b64flt as string);
+        const bytes = toByteArray(jm.b64flt);
         jm.value = Array.from(new Float32Array(bytes.buffer));
         delete jm.b64flt;
       } else if (jm.b64srt !== undefined) {
-        const bytes = toByteArray(jm.b64srt as string);
+        const bytes = toByteArray(jm.b64srt);
         jm.value = Array.from(new Int16Array(bytes.buffer));
         delete jm.b64srt;
       } else if (jm.b64int !== undefined) {
-        const bytes = toByteArray(jm.b64int as string);
+        const bytes = toByteArray(jm.b64int);
         jm.value = Array.from(new Int32Array(bytes.buffer));
         delete jm.b64int;
       } else if (jm.b64byt !== undefined) {
-        const bytes = toByteArray(jm.b64byt as string);
+        const bytes = toByteArray(jm.b64byt);
         jm.value = Array.from(new Uint8Array(bytes.buffer));
         delete jm.b64byt;
       }
@@ -112,6 +114,7 @@ export class PVWSClient {
   }
 
   private handleClose(event: CloseEvent): void {
+    this.isConnected = false;
     this.stopIdleCheck();
     this.connect_handler(false);
     let message = `Web socket closed (${event.code}`;
@@ -120,8 +123,8 @@ export class PVWSClient {
     }
     message += ")";
     console.log(message);
-    console.log(`Scheduling re-connect to ${this.url} in ${this.reconnect_ms}ms`);
-    setTimeout(() => this.open(), this.reconnect_ms);
+    // console.log(`Scheduling re-connect to ${this.url} in ${this.reconnect_ms}ms`);
+    // setTimeout(() => this.open(), this.reconnect_ms);
   }
 
   ping(): void {
@@ -129,13 +132,16 @@ export class PVWSClient {
   }
 
   subscribe(pvs: string | string[]): void {
+    if (!this.isConnected) return;
     if (!Array.isArray(pvs)) {
       pvs = [pvs];
     }
+    console.log("subscribing", { type: "subscribe", pvs });
     this.socket.send(JSON.stringify({ type: "subscribe", pvs }));
   }
 
   clear(pvs: string | string[]): void {
+    if (!this.isConnected) return;
     if (!Array.isArray(pvs)) {
       pvs = [pvs];
     }
@@ -147,14 +153,17 @@ export class PVWSClient {
   }
 
   list(): void {
+    if (!this.isConnected) return;
     this.socket.send(JSON.stringify({ type: "list" }));
   }
 
   write(pv: string, value: number | string): void {
+    if (!this.isConnected) return;
     this.socket.send(JSON.stringify({ type: "write", pv, value }));
   }
 
   close(): void {
+    if (!this.isConnected) return;
     this.stopIdleCheck();
     this.socket.close();
   }
