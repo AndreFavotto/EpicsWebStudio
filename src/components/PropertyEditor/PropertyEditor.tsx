@@ -20,7 +20,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useEditorContext } from "../Utils/EditorContext";
 import type { WidgetProperties, PropertyValue, PropertyKey } from "../../types/widgets";
-import { PROPERTY_EDITOR_WIDTH } from "../../shared/constants";
+import { PROPERTY_EDITOR_WIDTH, EDIT_MODE } from "../../shared/constants";
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: PROPERTY_EDITOR_WIDTH,
@@ -79,14 +79,11 @@ const ToggleButton = styled(IconButton)<{ open: boolean }>(({ theme, open }) => 
 }));
 
 const PropertyEditor: React.FC = () => {
-  const { selectedWidgetIDs, editorWidgets, updateWidgetProperty, setPropertyEditorFocused } = useEditorContext();
+  const { mode, selectedWidgetIDs, editorWidgets, updateWidgetProperty, setPropertyEditorFocused } = useEditorContext();
 
   const GridWidget = editorWidgets[0];
 
-  const isOnlyGridSelected = useMemo(() => {
-    if (selectedWidgetIDs.length === 0) return true;
-    return selectedWidgetIDs[0] === GridWidget.id;
-  }, [selectedWidgetIDs, GridWidget.id]);
+  const isOnlyGridSelected = selectedWidgetIDs.length === 0;
 
   const [open, setOpen] = useState(false);
   const [manuallyOpened, setManuallyOpened] = useState(false);
@@ -206,7 +203,7 @@ const PropertyEditor: React.FC = () => {
       }
     });
   };
-
+  if (mode !== EDIT_MODE) return;
   return (
     <>
       {/* Floating toggle button only when collapsed */}

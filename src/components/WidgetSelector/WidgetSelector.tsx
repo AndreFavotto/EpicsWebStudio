@@ -1,5 +1,5 @@
 import * as React from "react";
-import { WIDGET_SELECTOR_WIDTH } from "../../shared/constants";
+import { WIDGET_SELECTOR_WIDTH, EDIT_MODE } from "../../shared/constants";
 import type { Widget } from "../../types/widgets";
 import WidgetRegistry from "../Utils/WidgetRegistry";
 import { useEditorContext } from "../Utils/EditorContext";
@@ -104,7 +104,7 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, open }) => {
 };
 
 const WidgetSelector: React.FC = () => {
-  const { wdgSelectorOpen, setWdgSelectorOpen } = useEditorContext();
+  const { mode, wdgSelectorOpen, setWdgSelectorOpen } = useEditorContext();
   const palette: Record<string, Widget> = React.useMemo(
     () => Object.fromEntries(Object.values(WidgetRegistry).map((w) => [w.widgetName, w])) as Record<string, Widget>,
     []
@@ -119,7 +119,7 @@ const WidgetSelector: React.FC = () => {
     }
     return grouped;
   }, [palette]);
-
+  if (mode !== EDIT_MODE) return;
   return (
     <Box sx={{ display: "flex" }}>
       <Drawer variant="permanent" open={wdgSelectorOpen}>

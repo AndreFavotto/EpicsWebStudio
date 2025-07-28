@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import type { Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../Utils/WidgetRegistry";
 import { useEditorContext } from "../Utils/EditorContext";
-import * as CONSTS from "../../shared/constants";
+import { EDIT_MODE } from "../../shared/constants";
 import Selecto from "react-selecto";
 import "./GridZone.css";
 
@@ -31,7 +31,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (mode !== CONSTS.EDIT_MODE || propertyEditorFocused) return;
+      if (mode !== EDIT_MODE || propertyEditorFocused) return;
       if (e.key === "Delete" && selectedWidgetIDs.length > 0) {
         setEditorWidgets((prev) => prev.filter((w) => !selectedWidgetIDs.includes(w.id)));
         setSelectedWidgetIDs([]);
@@ -116,6 +116,8 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           bounds="parent"
           id={item.id}
           className="selectable"
+          disableDragging={mode != EDIT_MODE}
+          enableResizing={mode == EDIT_MODE}
           onDrag={() => setIsDragging(true)}
           onDragStop={(_e, d) => {
             setIsDragging(false);
@@ -176,7 +178,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           {renderWidget(item)}
         </Rnd>
       ))}
-      {!isDragging && (
+      {!isDragging && mode == EDIT_MODE && (
         <Selecto
           ref={selectoRef}
           container={document.getElementById("gridZone")}
