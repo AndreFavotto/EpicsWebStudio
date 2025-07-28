@@ -79,11 +79,24 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, open }) => {
   return (
     <ListItem disablePadding sx={{ display: "block" }}>
       <Tooltip title={item.widgetLabel} placement="right">
-        <ListItemButton draggable onDragStart={handleDragStart} sx={{ minHeight: 40, px: 2 }}>
-          <ListItemIcon sx={{ minWidth: 0, justifyContent: "center", mr: 2 }}>
+        <ListItemButton
+          draggable
+          onDragStart={handleDragStart}
+          sx={{ minHeight: 40, justifyContent: open ? "initial" : "center" }}
+        >
+          <ListItemIcon
+            sx={{
+              minWidth: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              mr: open ? 2 : 0,
+              height: 40,
+            }}
+          >
             {item.widgetIcon ? <item.widgetIcon /> : <WidgetsIcon />}
           </ListItemIcon>
-          <ListItemText primary={item.widgetLabel} sx={open ? { opacity: 1 } : { opacity: 0 }} />
+          {open && <ListItemText primary={item.widgetLabel} />}
         </ListItemButton>
       </Tooltip>
     </ListItem>
