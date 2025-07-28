@@ -1,4 +1,5 @@
 import { COLORS } from "../shared/constants";
+import type { SvgIconProps } from "@mui/material/SvgIcon";
 
 export type PropertySelectorType = "text" | "number" | "boolean" | "colorSelector" | "select";
 export type PropertyValue = string | number | number[] | boolean;
@@ -40,10 +41,12 @@ export type WidgetProperties = Partial<typeof PROPERTY_SCHEMAS>;
 export interface WidgetUpdate {
   data: WidgetProperties;
 }
+export type WidgetIconType = React.FC<SvgIconProps>;
 export interface Widget {
   id: string;
   widgetLabel: string;
-  componentName: string;
+  widgetIcon?: WidgetIconType;
+  widgetName: string;
   component: React.FC<WidgetUpdate>;
   category: string;
   pvValue?: string;

@@ -2,11 +2,13 @@ import { TextUpdateComp } from "./TextUpdateComp";
 import { PROPERTY_SCHEMAS } from "../../../types/widgets";
 import { COLORS } from "../../../shared/constants";
 import type { Widget } from "../../../types/widgets";
+import TextsmsIcon from "@mui/icons-material/Textsms";
 
 export const TextUpdate: Widget = {
   id: "__TextUpdate__",
-  componentName: "TextUpdate",
   component: TextUpdateComp,
+  widgetName: "TextUpdate",
+  widgetIcon: TextsmsIcon,
   widgetLabel: "Text Update",
   category: "Monitoring",
   editableProperties: {

@@ -9,7 +9,7 @@ import Selecto from "react-selecto";
 import "./GridZone.css";
 
 function renderWidget(widget: Widget): ReactNode {
-  const Comp = WidgetRegistry[widget.componentName]?.component;
+  const Comp = WidgetRegistry[widget.widgetName]?.component;
   return Comp ? <Comp data={widget.editableProperties} /> : <div>Unknown widget</div>;
 }
 
@@ -53,10 +53,9 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       return;
     }
     const entry = JSON.parse(data) as Widget;
-
-    const droppedComp = WidgetRegistry[entry.componentName];
+    const droppedComp = WidgetRegistry[entry.widgetName];
     if (!droppedComp) {
-      console.warn(`Unknown component: ${entry.componentName}`);
+      console.warn(`Unknown component: ${entry.widgetName}`);
       return;
     }
 
@@ -74,10 +73,10 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
     if (editableProperties.y) editableProperties.y.value = y;
 
     const newWidget: Widget = {
-      id: `${entry.componentName}-${Date.now()}`,
+      id: `${entry.widgetName}-${Date.now()}`,
       widgetLabel: droppedComp.widgetLabel,
-      componentName: droppedComp.componentName,
       component: droppedComp.component,
+      widgetName: droppedComp.widgetName,
       category: droppedComp.category,
       editableProperties,
     };

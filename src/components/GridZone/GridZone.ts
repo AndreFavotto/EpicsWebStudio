@@ -5,8 +5,8 @@ import { GridZoneComp } from "./GridZoneComp";
 // not added to registry, but kept as a special type of widget for consistency
 export const GridZone: Widget = {
   id: "grid",
-  componentName: "GridZone",
   component: GridZoneComp,
+  widgetName: "GridZone",
   widgetLabel: "GridZone",
   category: "Grid",
   editableProperties: {

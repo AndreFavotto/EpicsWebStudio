@@ -2,11 +2,13 @@ import { COLORS } from "../../../shared/constants";
 import type { Widget } from "../../../types/widgets";
 import { PROPERTY_SCHEMAS } from "../../../types/widgets";
 import { RectangleComp } from "./RectangleComp";
+import RectangleIcon from "@mui/icons-material/Rectangle";
 
 export const Rectangle: Widget = {
   id: "__Rectangle__",
-  componentName: "Rectangle",
   component: RectangleComp,
+  widgetName: "Rectangle",
+  widgetIcon: RectangleIcon,
   widgetLabel: "Rectangle",
   category: "Basic",
   editableProperties: {

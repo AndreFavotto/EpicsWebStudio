@@ -15,3 +15,5 @@ export const EDIT_MODE = "edit";
 export const RUNTIME_MODE = "runtime";
 export const PVWS_URL = "ws://localhost:8080/pvws/pv";
 export type Mode = typeof EDIT_MODE | typeof RUNTIME_MODE;
+export const WIDGET_SELECTOR_WIDTH = 200; //px
+export const PROPERTY_EDITOR_WIDTH = 320; //px

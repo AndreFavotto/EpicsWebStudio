@@ -16,6 +16,8 @@ interface EditorContextType {
   setEditorWidgets: React.Dispatch<React.SetStateAction<Widget[]>>;
   propertyEditorFocused: boolean;
   setPropertyEditorFocused: React.Dispatch<React.SetStateAction<boolean>>;
+  wdgSelectorOpen: boolean;
+  setWdgSelectorOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const EditorContext = createContext<EditorContextType | undefined>(undefined);
@@ -25,6 +27,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [mode, setMode] = useState<Mode>(CONSTS.EDIT_MODE);
   const [selectedWidgetIDs, setSelectedWidgets] = useState<string[]>([]);
   const [propertyEditorFocused, setPropertyEditorFocused] = useState(false);
+  const [wdgSelectorOpen, setWdgSelectorOpen] = useState(false);
 
   const setSelectedWidgetIDs = (ids: string[]) => {
     selectedWidgetIDs.forEach((prevId) => {
@@ -79,6 +82,8 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         setMode,
         propertyEditorFocused,
         setPropertyEditorFocused,
+        wdgSelectorOpen,
+        setWdgSelectorOpen,
       }}
     >
       {children}

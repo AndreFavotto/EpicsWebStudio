@@ -2,11 +2,13 @@ import { COLORS } from "../../../shared/constants";
 import type { Widget } from "../../../types/widgets";
 import { PROPERTY_SCHEMAS } from "../../../types/widgets";
 import { EllipseComp } from "./EllipseComp";
+import CircleIcon from "@mui/icons-material/Circle";
 
 export const Ellipse: Widget = {
   id: "__Ellipse__",
-  componentName: "Ellipse",
   component: EllipseComp,
+  widgetName: "Ellipse",
+  widgetIcon: CircleIcon,
   widgetLabel: "Ellipse",
   category: "Basic",
   editableProperties: {

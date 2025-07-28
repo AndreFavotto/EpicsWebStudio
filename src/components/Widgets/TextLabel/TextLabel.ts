@@ -2,11 +2,13 @@ import { COLORS } from "../../../shared/constants";
 import type { Widget } from "../../../types/widgets";
 import { PROPERTY_SCHEMAS } from "../../../types/widgets";
 import { TextLabelComp } from "./TextLabelComp";
+import TextFieldsIcon from "@mui/icons-material/TextFields";
 
 export const TextLabel: Widget = {
   id: "__TextLabel__",
-  componentName: "TextLabel",
   component: TextLabelComp,
+  widgetName: "TextLabel",
+  widgetIcon: TextFieldsIcon,
   widgetLabel: "Text Label",
   category: "Basic",
   editableProperties: {

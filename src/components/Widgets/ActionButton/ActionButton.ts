@@ -2,11 +2,13 @@ import { ActionButtonComp } from "./ActionButtonComp";
 import { PROPERTY_SCHEMAS } from "../../../types/widgets";
 import { COLORS } from "../../../shared/constants";
 import type { Widget } from "../../../types/widgets";
+import SendIcon from "@mui/icons-material/Send";
 
 export const ActionButton: Widget = {
   id: "__ActionButton__",
-  componentName: "ActionButton",
   component: ActionButtonComp,
+  widgetName: "ActionButton",
+  widgetIcon: SendIcon,
   widgetLabel: "Action Button",
   category: "Controls",
   editableProperties: {

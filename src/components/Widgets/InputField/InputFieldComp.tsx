@@ -3,7 +3,7 @@ import type { WidgetUpdate } from "../../../types/widgets";
 import { useEditorContext } from "../../Utils/EditorContext";
 import { TextField } from "@mui/material";
 
-const TextInputComp: React.FC<WidgetUpdate> = ({ data }) => {
+const InputFieldComp: React.FC<WidgetUpdate> = ({ data }) => {
   const { mode } = useEditorContext();
   const { disabled, tooltip, textColor, pvName, label, backgroundColor } = data;
 
@@ -44,4 +44,4 @@ const TextInputComp: React.FC<WidgetUpdate> = ({ data }) => {
   );
 };
 
-export { TextInputComp };
+export { InputFieldComp };
