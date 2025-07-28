@@ -13,5 +13,7 @@ export const GridZone: Widget = {
     backgroundColor: PROPERTY_SCHEMAS.backgroundColor,
     gridLineColor: PROPERTY_SCHEMAS.gridLineColor,
     gridSize: PROPERTY_SCHEMAS.gridSize,
+    gridLineVisible: PROPERTY_SCHEMAS.gridLineVisible,
+    snapToGrid: PROPERTY_SCHEMAS.snapToGrid,
   },
 } as const;

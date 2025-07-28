@@ -25,7 +25,8 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   } = useEditorContext();
 
   const selectoRef = useRef<Selecto>(null);
-
+  const snapToGrid = data.snapToGrid?.value;
+  const gridLineVisible = data.gridLineVisible?.value;
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
@@ -93,11 +94,12 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
         width: "100%",
         height: "100%",
         backgroundColor: data.backgroundColor!.value,
-        backgroundImage: `linear-gradient(${data.gridLineColor!.value} 1px, transparent 1px), linear-gradient(90deg, ${
-          data.gridLineColor!.value
-        } 1px, transparent 1px)`,
-        backgroundSize: `${data.gridSize!.value}px ${data.gridSize!.value}px`,
-        position: "relative",
+        backgroundImage: gridLineVisible
+          ? `linear-gradient(${data.gridLineColor!.value} 1px, transparent 1px), linear-gradient(90deg, ${
+              data.gridLineColor!.value
+            } 1px, transparent 1px)`
+          : "none",
+        backgroundSize: gridLineVisible ? `${data.gridSize!.value}px ${data.gridSize!.value}px` : "initial",
       }}
     >
       {editorWidgets.map((item) => (
@@ -118,33 +120,54 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           onDragStop={(_e, d) => {
             setIsDragging(false);
             setSelectedWidgetIDs([]);
+
+            const gridSize = snapToGrid ? data.gridSize?.value ?? 1 : 1;
+            const snappedX = snapToGrid ? Math.round(d.x / gridSize) * gridSize : d.x;
+            const snappedY = snapToGrid ? Math.round(d.y / gridSize) * gridSize : d.y;
+
             updateWidget({
               ...item,
               editableProperties: {
                 ...item.editableProperties,
-                x: item.editableProperties.x ? { ...item.editableProperties.x, value: d.x } : item.editableProperties.x,
-                y: item.editableProperties.y ? { ...item.editableProperties.y, value: d.y } : item.editableProperties.y,
+                x: item.editableProperties.x
+                  ? { ...item.editableProperties.x, value: snappedX }
+                  : item.editableProperties.x,
+                y: item.editableProperties.y
+                  ? { ...item.editableProperties.y, value: snappedY }
+                  : item.editableProperties.y,
               },
             });
           }}
           onResizeStart={() => setIsDragging(true)}
           onResizeStop={(_e, _direction, ref, _delta, position) => {
             setIsDragging(false);
+
+            const gridSize = snapToGrid ? data.gridSize?.value ?? 1 : 1;
+
+            const snappedWidth = snapToGrid
+              ? Math.round(parseInt(ref.style.width, 10) / gridSize) * gridSize
+              : parseInt(ref.style.width, 10);
+            const snappedHeight = snapToGrid
+              ? Math.round(parseInt(ref.style.height, 10) / gridSize) * gridSize
+              : parseInt(ref.style.height, 10);
+            const snappedX = snapToGrid ? Math.round(position.x / gridSize) * gridSize : position.x;
+            const snappedY = snapToGrid ? Math.round(position.y / gridSize) * gridSize : position.y;
+
             updateWidget({
               ...item,
               editableProperties: {
                 ...item.editableProperties,
                 width: item.editableProperties.width
-                  ? { ...item.editableProperties.width, value: parseInt(ref.style.width, 10) }
+                  ? { ...item.editableProperties.width, value: snappedWidth }
                   : item.editableProperties.width,
                 height: item.editableProperties.height
-                  ? { ...item.editableProperties.height, value: parseInt(ref.style.height, 10) }
+                  ? { ...item.editableProperties.height, value: snappedHeight }
                   : item.editableProperties.height,
                 x: item.editableProperties.x
-                  ? { ...item.editableProperties.x, value: position.x }
+                  ? { ...item.editableProperties.x, value: snappedX }
                   : item.editableProperties.x,
                 y: item.editableProperties.y
-                  ? { ...item.editableProperties.y, value: position.y }
+                  ? { ...item.editableProperties.y, value: snappedY }
                   : item.editableProperties.y,
               },
             });

@@ -31,7 +31,9 @@ export const PROPERTY_SCHEMAS = {
   actionValue:     defineProp({ selType: "text",          label: "Action Value",     value: ""  as string }),
   tooltip:         defineProp({ selType: "text",          label: "Tooltip",          value: ""  as string }),
   gridLineColor:   defineProp({ selType: "colorSelector", label: "Grid Line Color",  value: COLORS.gridLineColor }),
+  gridLineVisible: defineProp({ selType: "boolean",       label: "Grid Visible",     value: true }),
   gridSize:        defineProp({ selType: "number",        label: "Grid Size",        value: 20 as number }),
+  snapToGrid:      defineProp({ selType: "boolean",       label: "Snap items",       value: true }),
   pvValue:         defineProp({ selType: "number",        label: "Grid Size",        value: "" as PropertyValue })
 };
 
