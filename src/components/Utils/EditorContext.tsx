@@ -24,10 +24,15 @@ const EditorContext = createContext<EditorContextType | undefined>(undefined);
 
 export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [editorWidgets, setEditorWidgets] = useState<Widget[]>([GridZone]); // Grid is always present in the editor
-  const [mode, setMode] = useState<Mode>(CONSTS.EDIT_MODE);
+  const [mode, updateMode] = useState<Mode>(CONSTS.EDIT_MODE);
   const [selectedWidgetIDs, setSelectedWidgets] = useState<string[]>([]);
   const [propertyEditorFocused, setPropertyEditorFocused] = useState(false);
   const [wdgSelectorOpen, setWdgSelectorOpen] = useState(false);
+
+  const setMode = (newMode: Mode) => {
+    updateWidgetProperty("grid", "gridLineVisible", newMode == CONSTS.EDIT_MODE);
+    updateMode(newMode);
+  };
 
   const setSelectedWidgetIDs = (ids: string[]) => {
     selectedWidgetIDs.forEach((prevId) => {
@@ -35,7 +40,6 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         document.getElementById(prevId)?.classList.remove("selected");
       }
     });
-    // Add 'selected' class to newly selected widgets
     ids.forEach((id) => {
       if (!selectedWidgetIDs.includes(id)) {
         document.getElementById(id)?.classList.add("selected");
