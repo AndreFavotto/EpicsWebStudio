@@ -1,13 +1,14 @@
-import { createContext, useContext, useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef } from "react";
 import type { Widget, PropertyKey, PropertyValue } from "../../types/widgets";
-import { PROPERTY_SCHEMAS } from "../../types/widgets";
+import { PROPERTY_SCHEMAS } from "../../types/widgetProperties";
 import type { Mode } from "../../shared/constants";
 import * as CONSTS from "../../shared/constants";
 import { GridZone } from "../../components/GridZone";
 import { PVWSManager } from "../PVWS/PVWSManager";
 import type { PVWSMessage } from "../../types/pvws";
+import { EditorContext } from "./useEditorContext";
 
-interface EditorContextType {
+export interface EditorContextType {
   mode: Mode;
   setMode: (mode: Mode) => void;
   selectedWidgetIDs: string[];
@@ -23,8 +24,6 @@ interface EditorContextType {
   wdgSelectorOpen: boolean;
   setWdgSelectorOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-const EditorContext = createContext<EditorContextType | undefined>(undefined);
 
 export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [editorWidgets, setEditorWidgets] = useState<Widget[]>([GridZone]); // Grid is always present in the editor
@@ -147,11 +146,4 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       {children}
     </EditorContext.Provider>
   );
-};
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const useEditorContext = () => {
-  const ctx = useContext(EditorContext);
-  if (!ctx) throw new Error("EditorContext not found");
-  return ctx;
 };

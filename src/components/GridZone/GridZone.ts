@@ -1,4 +1,4 @@
-import { PROPERTY_SCHEMAS } from "../../types/widgets";
+import { PROPERTY_SCHEMAS } from "../../types/widgetProperties";
 import type { Widget } from "../../types/widgets";
 import { GridZoneComp } from "./GridZoneComp";
 

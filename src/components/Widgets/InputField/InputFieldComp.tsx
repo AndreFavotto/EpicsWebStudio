@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
-import { useEditorContext } from "../../Utils/EditorContext";
+import { useEditorContext } from "../../Utils/useEditorContext";
 import { TextField } from "@mui/material";
 import { RUNTIME_MODE } from "../../../shared/constants";
 

@@ -9,7 +9,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { COLORS, RUNTIME_MODE, EDIT_MODE } from "../../shared/constants";
-import { useEditorContext } from "../Utils/EditorContext";
+import { useEditorContext } from "../Utils/useEditorContext";
 import { WIDGET_SELECTOR_WIDTH } from "../../shared/constants";
 
 interface StyledAppBarProps extends MuiAppBarProps {

@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { useEditorContext } from "../Utils/EditorContext";
+import { useEditorContext } from "../Utils/useEditorContext";
 import type { WidgetProperties, PropertyValue, PropertyKey } from "../../types/widgets";
 import { PROPERTY_EDITOR_WIDTH, EDIT_MODE } from "../../shared/constants";
 

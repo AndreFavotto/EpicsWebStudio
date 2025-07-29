@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { useEditorContext } from "../../Utils/EditorContext";
+import { useEditorContext } from "../../Utils/useEditorContext";
 import type { WidgetUpdate } from "../../../types/widgets";
 import * as CONSTS from "../../../shared/constants";
 

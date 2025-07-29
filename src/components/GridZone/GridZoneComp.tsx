@@ -3,7 +3,7 @@ import { Rnd } from "react-rnd";
 import type { ReactNode } from "react";
 import type { Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../Utils/WidgetRegistry";
-import { useEditorContext } from "../Utils/EditorContext";
+import { useEditorContext } from "../Utils/useEditorContext";
 import { EDIT_MODE } from "../../shared/constants";
 import Selecto from "react-selecto";
 import "./GridZone.css";

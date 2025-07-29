@@ -1,8 +1,8 @@
 import { InputFieldComp } from "./InputFieldComp";
-import { PROPERTY_SCHEMAS } from "../../../types/widgets";
 import { COLORS } from "../../../shared/constants";
 import type { Widget } from "../../../types/widgets";
 import InputIcon from "@mui/icons-material/Input";
+import { PROPERTY_SCHEMAS, COMMON_PROPS, TEXT_PROPS } from "../../../types/widgetProperties";
 
 export const InputField: Widget = {
   id: "__InputField__",
@@ -12,16 +12,8 @@ export const InputField: Widget = {
   widgetLabel: "Input Field",
   category: "Controls",
   editableProperties: {
-    x: PROPERTY_SCHEMAS.x,
-    y: PROPERTY_SCHEMAS.y,
-    width: { ...PROPERTY_SCHEMAS.width, value: 120 },
-    height: { ...PROPERTY_SCHEMAS.height, value: 40 },
-    label: { ...PROPERTY_SCHEMAS.label, value: "Input Field" },
+    ...COMMON_PROPS,
+    ...TEXT_PROPS,
     backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.inputColor },
-    textColor: PROPERTY_SCHEMAS.textColor,
-    borderRadius: PROPERTY_SCHEMAS.borderRadius,
-    pvName: PROPERTY_SCHEMAS.pvName,
-    tooltip: PROPERTY_SCHEMAS.tooltip,
-    disabled: PROPERTY_SCHEMAS.disabled,
   },
 } as const;
