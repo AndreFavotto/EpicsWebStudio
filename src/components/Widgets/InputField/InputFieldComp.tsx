@@ -1,17 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
 import { useEditorContext } from "../../Utils/EditorContext";
 import { TextField } from "@mui/material";
+import { RUNTIME_MODE } from "../../../shared/constants";
 
 const InputFieldComp: React.FC<WidgetUpdate> = ({ data }) => {
-  const { mode } = useEditorContext();
-  const { disabled, tooltip, textColor, pvName, label, backgroundColor } = data;
+  const { mode, writePVValue } = useEditorContext();
+  const { disabled, tooltip, textColor, pvName, label, backgroundColor } = data.editableProperties;
 
-  const handleClick = (_e: React.MouseEvent) => {
-    // no action on click in runtime mode
+  const [inputValue, setInputValue] = useState("");
+
+  const handleWrite = (value: number | string) => {
+    if (mode !== RUNTIME_MODE) return;
+    if (pvName?.value) {
+      writePVValue(pvName.value, value);
+    }
   };
-
-  //TODO: write to PV or handle input change in runtime mode
 
   return (
     <TextField
@@ -24,7 +28,7 @@ const InputFieldComp: React.FC<WidgetUpdate> = ({ data }) => {
         marginRight: "auto",
         "& .MuiInputBase-root": {
           height: "100%",
-          alignItems: "stretch", // ensures input grows
+          alignItems: "stretch",
         },
         "& input": {
           height: "100%",
@@ -37,10 +41,14 @@ const InputFieldComp: React.FC<WidgetUpdate> = ({ data }) => {
       label={pvName?.value ?? label?.value}
       disabled={disabled?.value}
       size="small"
-      onClick={(e) => handleClick(e)}
-    >
-      {label?.value}
-    </TextField>
+      value={inputValue}
+      onChange={(e) => setInputValue(e.target.value)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          handleWrite(inputValue);
+        }
+      }}
+    />
   );
 };
 

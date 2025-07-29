@@ -10,10 +10,11 @@ import "./GridZone.css";
 
 function renderWidget(widget: Widget): ReactNode {
   const Comp = WidgetRegistry[widget.widgetName]?.component;
-  return Comp ? <Comp data={widget.editableProperties} /> : <div>Unknown widget</div>;
+  return Comp ? <Comp data={widget} /> : <div>Unknown widget</div>;
 }
 
 const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
+  const props = data.editableProperties;
   const {
     mode,
     editorWidgets,
@@ -25,8 +26,8 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   } = useEditorContext();
 
   const selectoRef = useRef<Selecto>(null);
-  const snapToGrid = data.snapToGrid?.value;
-  const gridLineVisible = data.gridLineVisible?.value;
+  const snapToGrid = props.snapToGrid?.value;
+  const gridLineVisible = props.gridLineVisible?.value;
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
@@ -93,13 +94,13 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       style={{
         width: "100%",
         height: "100%",
-        backgroundColor: data.backgroundColor!.value,
+        backgroundColor: props.backgroundColor!.value,
         backgroundImage: gridLineVisible
-          ? `linear-gradient(${data.gridLineColor!.value} 1px, transparent 1px), linear-gradient(90deg, ${
-              data.gridLineColor!.value
+          ? `linear-gradient(${props.gridLineColor!.value} 1px, transparent 1px), linear-gradient(90deg, ${
+              props.gridLineColor!.value
             } 1px, transparent 1px)`
           : "none",
-        backgroundSize: gridLineVisible ? `${data.gridSize!.value}px ${data.gridSize!.value}px` : "initial",
+        backgroundSize: gridLineVisible ? `${props.gridSize!.value}px ${props.gridSize!.value}px` : "initial",
       }}
     >
       {editorWidgets.map((item) => (
@@ -123,7 +124,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
             setIsDragging(false);
             setSelectedWidgetIDs([]);
 
-            const gridSize = snapToGrid ? data.gridSize?.value ?? 1 : 1;
+            const gridSize = snapToGrid ? props.gridSize?.value ?? 1 : 1;
             const snappedX = snapToGrid ? Math.round(d.x / gridSize) * gridSize : d.x;
             const snappedY = snapToGrid ? Math.round(d.y / gridSize) * gridSize : d.y;
 
@@ -144,7 +145,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           onResizeStop={(_e, _direction, ref, _delta, position) => {
             setIsDragging(false);
 
-            const gridSize = snapToGrid ? data.gridSize?.value ?? 1 : 1;
+            const gridSize = snapToGrid ? props.gridSize?.value ?? 1 : 1;
 
             const snappedWidth = snapToGrid
               ? Math.round(parseInt(ref.style.width, 10) / gridSize) * gridSize

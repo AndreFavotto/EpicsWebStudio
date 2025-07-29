@@ -3,7 +3,7 @@ import React from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
 
 const EllipseComp: React.FC<WidgetUpdate> = ({ data }) => {
-  const { backgroundColor, tooltip } = data;
+  const { backgroundColor, tooltip } = data.editableProperties;
 
   return (
     <div

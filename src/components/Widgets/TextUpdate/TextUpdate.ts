@@ -24,7 +24,6 @@ export const TextUpdate: Widget = {
     borderRadius: PROPERTY_SCHEMAS.borderRadius,
     actionValue: PROPERTY_SCHEMAS.actionValue,
     pvName: PROPERTY_SCHEMAS.pvName,
-    pvValue: PROPERTY_SCHEMAS.pvValue,
     disabled: PROPERTY_SCHEMAS.disabled,
   },
 } as const;

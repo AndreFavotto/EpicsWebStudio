@@ -3,7 +3,7 @@ import React from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
 
 const RectangleComp: React.FC<WidgetUpdate> = ({ data }) => {
-  const { backgroundColor, borderRadius, tooltip } = data;
+  const { backgroundColor, borderRadius, tooltip } = data.editableProperties;
 
   return (
     <div

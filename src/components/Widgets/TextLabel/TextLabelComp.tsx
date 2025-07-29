@@ -2,7 +2,7 @@ import React from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
 
 const TextLabelComp: React.FC<WidgetUpdate> = ({ data }) => {
-  const { label, backgroundColor, textColor, borderRadius, fontSize, tooltip } = data;
+  const { label, backgroundColor, textColor, borderRadius, fontSize, tooltip } = data.editableProperties;
   return (
     <div
       className="textLabel"

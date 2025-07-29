@@ -1,10 +1,9 @@
 import React from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
-import { useEditorContext } from "../../Utils/EditorContext";
 
 const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
-  const { mode } = useEditorContext();
-  const { disabled, tooltip, textColor, pvName, label, backgroundColor, borderRadius, fontSize, pvValue } = data;
+  const { disabled, tooltip, textColor, pvName, label, backgroundColor, borderRadius, fontSize } =
+    data.editableProperties;
 
   return (
     <div
@@ -19,7 +18,7 @@ const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
         border: "none",
       }}
     >
-      {pvValue?.value ?? pvName?.value ?? label?.value}
+      {data.pvValue ?? pvName?.value ?? label?.value}
     </div>
   );
 };
