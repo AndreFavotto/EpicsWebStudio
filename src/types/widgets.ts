@@ -1,5 +1,6 @@
 import { COLORS } from "../shared/constants";
 import type { SvgIconProps } from "@mui/material/SvgIcon";
+import type { PVWSMessageValue } from "./pvws";
 
 export type PropertySelectorType = "text" | "number" | "boolean" | "colorSelector" | "select";
 export type PropertyValue = string | number | number[] | boolean;
@@ -34,14 +35,14 @@ export const PROPERTY_SCHEMAS = {
   gridLineVisible: defineProp({ selType: "boolean",       label: "Grid Visible",     value: true }),
   gridSize:        defineProp({ selType: "number",        label: "Grid Size",        value: 20 as number }),
   snapToGrid:      defineProp({ selType: "boolean",       label: "Snap items",       value: true }),
-  pvValue:         defineProp({ selType: "number",        label: "Grid Size",        value: "" as PropertyValue })
 };
 
 export type PropertyKey = keyof typeof PROPERTY_SCHEMAS;
 
 export type WidgetProperties = Partial<typeof PROPERTY_SCHEMAS>;
+
 export interface WidgetUpdate {
-  data: WidgetProperties;
+  data: Widget;
 }
 export type WidgetIconType = React.FC<SvgIconProps>;
 export interface Widget {
@@ -51,6 +52,6 @@ export interface Widget {
   widgetName: string;
   component: React.FC<WidgetUpdate>;
   category: string;
-  pvValue?: string;
+  pvValue?: PVWSMessageValue;
   editableProperties: WidgetProperties;
 }

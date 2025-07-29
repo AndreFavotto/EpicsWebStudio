@@ -9,7 +9,7 @@ export class PVWSClient {
   private connect_handler: ConnectHandler;
   private message_handler: MessageHandler;
 
-  private isConnected = false;
+  private connected = false;
   private socket!: WebSocket;
   private idle = true;
   private idle_timer: ReturnType<typeof setInterval> | null = null;
@@ -35,7 +35,7 @@ export class PVWSClient {
   }
 
   private handleConnection(_event: Event): void {
-    this.isConnected = true;
+    this.connected = true;
     this.connect_handler(true);
     this.idle_timer ??= setInterval(() => this.checkIdleTimeout(), this.idle_check_ms);
   }
@@ -114,7 +114,7 @@ export class PVWSClient {
   }
 
   private handleClose(event: CloseEvent): void {
-    this.isConnected = false;
+    this.connected = false;
     this.stopIdleCheck();
     this.connect_handler(false);
     let message = `Web socket closed (${event.code}`;
@@ -127,12 +127,16 @@ export class PVWSClient {
     // setTimeout(() => this.open(), this.reconnect_ms);
   }
 
+  isConnected(): boolean {
+    return this.connected;
+  }
+
   ping(): void {
     this.socket.send(JSON.stringify({ type: "ping" }));
   }
 
   subscribe(pvs: string | string[]): void {
-    if (!this.isConnected) return;
+    if (!this.connected) return;
     if (!Array.isArray(pvs)) {
       pvs = [pvs];
     }
@@ -141,7 +145,7 @@ export class PVWSClient {
   }
 
   clear(pvs: string | string[]): void {
-    if (!this.isConnected) return;
+    if (!this.connected) return;
     if (!Array.isArray(pvs)) {
       pvs = [pvs];
     }
@@ -153,17 +157,17 @@ export class PVWSClient {
   }
 
   list(): void {
-    if (!this.isConnected) return;
+    if (!this.connected) return;
     this.socket.send(JSON.stringify({ type: "list" }));
   }
 
   write(pv: string, value: number | string): void {
-    if (!this.isConnected) return;
+    if (!this.connected) return;
     this.socket.send(JSON.stringify({ type: "write", pv, value }));
   }
 
   close(): void {
-    if (!this.isConnected) return;
+    if (!this.connected) return;
     this.stopIdleCheck();
     this.socket.close();
   }

@@ -5,11 +5,10 @@ import WidgetSelector from "./components/WidgetSelector/WidgetSelector";
 import PropertyEditor from "./components/PropertyEditor/PropertyEditor";
 import NavBar from "./components/NavBar/NavBar";
 import { useEditorContext } from "./components/Utils/EditorContext";
-import { PVWSManager } from "./components/PVWS/PVWSManager";
 
 const App: React.FC = () => {
   const { editorWidgets } = useEditorContext();
-  const gridProperties = editorWidgets[0].editableProperties;
+  const gridProperties = editorWidgets[0];
   return (
     <div className="app">
       <div className="appBar">
@@ -26,7 +25,6 @@ const App: React.FC = () => {
           <PropertyEditor />
         </div>
       </div>
-      <PVWSManager />
     </div>
   );
 };
