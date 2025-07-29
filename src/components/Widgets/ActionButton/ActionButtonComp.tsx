@@ -1,17 +1,19 @@
 import React from "react";
 import { Button } from "@mui/material";
 import { useEditorContext } from "../../Utils/EditorContext";
-import type { PropertyValue, WidgetUpdate } from "../../../types/widgets";
+import type { WidgetUpdate } from "../../../types/widgets";
 import * as CONSTS from "../../../shared/constants";
 
 const ActionButtonComp: React.FC<WidgetUpdate> = ({ data }) => {
-  const { mode } = useEditorContext();
-  const { disabled, tooltip, textColor, borderRadius, pvName, label, backgroundColor, actionValue } = data;
+  const { mode, writePVValue } = useEditorContext();
+  const { disabled, tooltip, textColor, borderRadius, pvName, label, backgroundColor, actionValue } =
+    data.editableProperties;
 
-  const handleClick = (e: React.MouseEvent, actionValue: PropertyValue) => {
+  const handleClick = (_e: React.MouseEvent) => {
     if (mode === CONSTS.RUNTIME_MODE) {
-      // Handle action in runtime mode, e.g., send actionValue to a PV or perform an action
-      console.log("Button clicked with action value:", actionValue);
+      if (pvName?.value && actionValue?.value) {
+        writePVValue(pvName.value, actionValue.value);
+      }
     }
   };
 
@@ -30,7 +32,7 @@ const ActionButtonComp: React.FC<WidgetUpdate> = ({ data }) => {
       }}
       disabled={disabled!.value}
       variant="contained"
-      onClick={(e) => handleClick(e, actionValue)}
+      onClick={(e) => handleClick(e)}
     >
       {label!.value}
     </Button>
