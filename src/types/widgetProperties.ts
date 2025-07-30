@@ -19,18 +19,19 @@ export const PROPERTY_SCHEMAS = {
   // Styling - Colors
   backgroundColor: defineProp({ selType: "colorSelector", label: "Background Color",  value: COLORS.backgroundColor }),
   textColor:       defineProp({ selType: "colorSelector", label: "Text Color",        value: COLORS.textColor }),
-  borderColor:     defineProp({ selType: "colorSelector", label: "Border Color",      value: COLORS.transparent }),
+  borderColor:     defineProp({ selType: "colorSelector", label: "Border Color",      value: COLORS.textColor }),
   gridLineColor:   defineProp({ selType: "colorSelector", label: "Grid Line Color",   value: COLORS.gridLineColor }),
   // Styling - Borders and Shadows
   borderWidth:     defineProp({ selType: "number",        label: "Border Width",      value: 1   as number }),
   borderRadius:    defineProp({ selType: "number",        label: "Border Radius",     value: 2   as number }),
-  borderStyle:     defineProp({ selType: "select",        label: "Border Style",      value: "solid", options: ["solid", "dashed", "dotted", "none"] }),
-  boxShadow:       defineProp({ selType: "text",          label: "Box Shadow",        value: ""  as string }),
+  borderStyle:     defineProp({ selType: "select",        label: "Border Style",      value: "none" as string,   options: ["solid", "dashed", "dotted", "none"] }),
+  boxShadow:       defineProp({ selType: "text",          label: "Box Shadow",        value: 0  as number }),
   // Styling - Font
   fontSize:        defineProp({ selType: "number",        label: "Font Size",         value: 14  as number }),
-  fontFamily:      defineProp({ selType: "text",          label: "Font Family",       value: "Arial" as string }),
-  fontWeight:      defineProp({ selType: "select",        label: "Font Weight",       value: "normal", options: ["normal", "bold", "lighter", "bolder"] }),
-  textAlign:       defineProp({ selType: "select",        label: "Text Align",        value: "left", options: ["left", "center", "right"] }),
+  fontFamily:      defineProp({ selType: "select",        label: "Font Family",       value: "Arial" as string,  options: ["Arial", "Helvetica"]}),
+  fontWeight:      defineProp({ selType: "select",        label: "Font Weight",       value: "normal" as string, options: ["light", "normal", "bold", "bolder"] }),
+  textHAlign:      defineProp({ selType: "select",        label: "Text Horiz. Align", value: "left" as string,   options: ["left", "center", "right"] }),
+  textVAlign:      defineProp({ selType: "select",        label: "Text Vert. Align",  value: "middle" as string, options: ["top", "middle", "bottom"] }),
   // Interactivity
   visible:         defineProp({ selType: "boolean",       label: "Visible",           value: true }),
   tooltip:         defineProp({ selType: "text",          label: "Tooltip",           value: ""  as string }),
@@ -69,5 +70,6 @@ export const TEXT_PROPS = {
   fontFamily: PROPERTY_SCHEMAS.fontFamily,
   fontWeight: PROPERTY_SCHEMAS.fontWeight,
   textColor: PROPERTY_SCHEMAS.textColor,
-  textAlign: PROPERTY_SCHEMAS.textAlign,
+  textVAlign: PROPERTY_SCHEMAS.textVAlign,
+  textHAlign: PROPERTY_SCHEMAS.textHAlign,
 };
