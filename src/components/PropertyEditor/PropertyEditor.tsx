@@ -8,11 +8,6 @@ import {
   Divider,
   ListItem,
   ListItemText,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Box,
-  Typography,
   IconButton,
   Tooltip,
 } from "@mui/material";
@@ -21,6 +16,10 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useEditorContext } from "../Utils/useEditorContext";
 import type { WidgetProperties, PropertyValue, PropertyKey } from "../../types/widgets";
 import { PROPERTY_EDITOR_WIDTH, EDIT_MODE } from "../../shared/constants";
+import TextFieldProperty from "./TextFieldProperty";
+import BooleanProperty from "./BooleanProperty";
+import ColorProperty from "./ColorProperty";
+import SelectProperty from "./SelectProperty";
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: PROPERTY_EDITOR_WIDTH,
@@ -81,7 +80,7 @@ const ToggleButton = styled(IconButton)<{ open: boolean }>(({ theme, open }) => 
 const PropertyEditor: React.FC = () => {
   const { mode, selectedWidgetIDs, editorWidgets, updateWidgetProperty, setPropertyEditorFocused } = useEditorContext();
 
-  const GridWidget = editorWidgets[0];
+  const GridWidget = useMemo(() => editorWidgets.find((w) => w.id === "grid"), [editorWidgets]);
 
   const isOnlyGridSelected = selectedWidgetIDs.length === 0;
 
@@ -106,104 +105,51 @@ const PropertyEditor: React.FC = () => {
 
   const editingWidget = useMemo(() => {
     if (!isOnlyGridSelected) {
+      // For now, consider only the first selected widget is the one to be edited
       return editorWidgets.find((w) => w.id === selectedWidgetIDs[0]) ?? GridWidget;
     }
     return GridWidget;
   }, [editorWidgets, selectedWidgetIDs, isOnlyGridSelected, GridWidget]);
 
+  if (!editingWidget) return null;
+
   const header = `Edit ${editingWidget.widgetLabel}`;
   const properties = editingWidget.editableProperties;
 
-  const onChange = (propName: PropertyKey, newValue: PropertyValue) => {
-    updateWidgetProperty(editingWidget.id, propName, newValue);
-  };
-
   const renderPropertyFields = (
     props: WidgetProperties,
-    onChange: (propName: PropertyKey, newVal: PropertyValue) => void
+    onChangeHandler: (propName: PropertyKey, newVal: PropertyValue) => void
   ) => {
     return Object.entries(props).map(([propName, prop]) => {
-      const { selType, label, value } = prop;
-
-      const FieldWrapper: React.FC<{
-        render: (val: PropertyValue, setVal: (v: PropertyValue) => void) => React.JSX.Element;
-        initial: PropertyValue;
-      }> = ({ render, initial }) => {
-        const [localVal, setLocalVal] = useState<PropertyValue>(initial);
-        return render(localVal, setLocalVal);
+      const { selType, label, value, options } = prop;
+      const commonProps = {
+        propName: propName as PropertyKey,
+        label: label,
+        value: value,
+        onChange: onChangeHandler,
       };
-
       switch (selType) {
         case "text":
         case "number":
-          return (
-            <ListItem key={propName} disablePadding sx={{ px: 2, py: 1 }}>
-              <FieldWrapper
-                initial={value}
-                render={(localVal, setLocalVal) => (
-                  <TextField
-                    fullWidth
-                    label={label}
-                    variant="outlined"
-                    size="small"
-                    type={selType}
-                    value={localVal}
-                    onChange={(e) => setLocalVal(selType === "number" ? Number(e.target.value) : e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.currentTarget.blur();
-                        e.preventDefault();
-                      }
-                    }}
-                    onBlur={() => {
-                      if (localVal !== value) onChange(propName as PropertyKey, localVal);
-                    }}
-                  />
-                )}
-              />
-            </ListItem>
-          );
-
+          return <TextFieldProperty key={propName} {...commonProps} selType={selType} />;
         case "boolean":
-          return (
-            <ListItem key={propName} disablePadding sx={{ px: 2, py: 1 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox checked={!!value} onChange={(e) => onChange(propName as PropertyKey, e.target.checked)} />
-                }
-                label={label}
-              />
-            </ListItem>
-          );
-
+          return <BooleanProperty key={propName} {...commonProps} />;
         case "colorSelector":
-          return (
-            <ListItem key={propName} disablePadding sx={{ px: 2, py: 1 }}>
-              <FieldWrapper
-                initial={value}
-                render={(localVal, setLocalVal) => (
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2, width: "100%" }}>
-                    <Typography variant="body2">{label}</Typography>
-                    <input
-                      type="color"
-                      value={value as string}
-                      onChange={(e) => setLocalVal(e.target.value)}
-                      onBlur={() => {
-                        if (localVal !== value) onChange(propName as PropertyKey, localVal);
-                      }}
-                    />
-                  </Box>
-                )}
-              />
-            </ListItem>
-          );
-
+          return <ColorProperty key={propName} {...commonProps} />;
+        case "select":
+          return <SelectProperty key={propName} {...commonProps} options={options ?? []} />;
         default:
           return null;
       }
     });
   };
-  if (mode !== EDIT_MODE) return;
+
+  if (mode !== EDIT_MODE) return null;
+
+  const handlePropChange = (propName: PropertyKey, newValue: PropertyValue) => {
+    updateWidgetProperty(editingWidget.id, propName, newValue);
+  };
+
   return (
     <>
       {/* Floating toggle button only when collapsed */}
@@ -221,9 +167,7 @@ const PropertyEditor: React.FC = () => {
         open={open}
         onFocus={() => setPropertyEditorFocused(true)}
         onBlur={() => setPropertyEditorFocused(false)}
-        PaperProps={{
-          elevation: 8,
-        }}
+        slotProps={{ paper: { elevation: 8 } }}
       >
         <Toolbar />
         <List sx={{ width: "100%" }}>
@@ -237,7 +181,7 @@ const PropertyEditor: React.FC = () => {
             <ListItemText primary={header} />
           </ListItem>
           <Divider />
-          {renderPropertyFields(properties, onChange)}
+          {renderPropertyFields(properties, handlePropChange)}
         </List>
       </Drawer>
     </>
