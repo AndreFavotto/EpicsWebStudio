@@ -14,6 +14,7 @@ const TextLabelComp: React.FC<WidgetUpdate> = ({ data }) => {
         width: "100%",
         height: "100%",
         display: "flex",
+        zIndex: p.zIndex?.value,
         justifyContent: mapHAlign(p.textHAlign?.value),
         alignItems: mapVAlign(p.textVAlign?.value),
         backgroundColor: p.backgroundColor?.value,

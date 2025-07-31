@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@mui/material";
 import { useEditorContext } from "../../Utils/useEditorContext";
 import type { WidgetUpdate } from "../../../types/widgets";
-import * as CONSTS from "../../../shared/constants";
+import { RUNTIME_MODE } from "../../../shared/constants";
 import { mapVAlign, mapHAlign } from "../../../shared/helpers";
 
 const ActionButtonComp: React.FC<WidgetUpdate> = ({ data }) => {
@@ -10,7 +10,7 @@ const ActionButtonComp: React.FC<WidgetUpdate> = ({ data }) => {
   const p = data.editableProperties;
 
   const handleClick = (_e: React.MouseEvent) => {
-    if (mode === CONSTS.RUNTIME_MODE) {
+    if (mode === RUNTIME_MODE) {
       if (p.pvName?.value && p.actionValue?.value) {
         writePVValue(p.pvName.value, p.actionValue.value);
       }
@@ -26,6 +26,7 @@ const ActionButtonComp: React.FC<WidgetUpdate> = ({ data }) => {
         width: "100%",
         height: "100%",
         display: "flex",
+        zIndex: p.zIndex?.value,
         justifyContent: mapHAlign(p.textHAlign?.value),
         alignItems: mapVAlign(p.textVAlign?.value),
         backgroundColor: p.backgroundColor?.value,

@@ -15,7 +15,7 @@ export const PROPERTY_SCHEMAS = {
   y:               defineProp({ selType: "number",        label: "Y",                 value: 100 as number }),
   width:           defineProp({ selType: "number",        label: "Width",             value: 100 as number }),
   height:          defineProp({ selType: "number",        label: "Height",            value: 40  as number }),
-  zIndex:          defineProp({ selType: "number",        label: "Z-Index",           value: 0   as number }),
+  zIndex:          defineProp({ selType: "number",        label: "Z-Index",           value: 1   as number }),
   // Styling - Colors
   backgroundColor: defineProp({ selType: "colorSelector", label: "Background Color",  value: COLORS.backgroundColor }),
   textColor:       defineProp({ selType: "colorSelector", label: "Text Color",        value: COLORS.textColor }),

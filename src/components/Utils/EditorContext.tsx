@@ -2,7 +2,7 @@ import { useState, useMemo, useRef } from "react";
 import type { Widget, PropertyKey, PropertyValue } from "../../types/widgets";
 import { PROPERTY_SCHEMAS } from "../../types/widgetProperties";
 import type { Mode } from "../../shared/constants";
-import * as CONSTS from "../../shared/constants";
+import { EDIT_MODE, GRID_ID } from "../../shared/constants";
 import { GridZone } from "../../components/GridZone";
 import { PVWSManager } from "../PVWS/PVWSManager";
 import type { PVWSMessage } from "../../types/pvws";
@@ -27,23 +27,24 @@ export interface EditorContextType {
 
 export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [editorWidgets, setEditorWidgets] = useState<Widget[]>([GridZone]); // Grid is always present in the editor
-  const [mode, updateMode] = useState<Mode>(CONSTS.EDIT_MODE);
+  const [mode, updateMode] = useState<Mode>(EDIT_MODE);
   const [selectedWidgetIDs, setSelectedWidgets] = useState<string[]>([]);
   const [propertyEditorFocused, setPropertyEditorFocused] = useState(false);
   const [wdgSelectorOpen, setWdgSelectorOpen] = useState(false);
   const PVWS = useRef<PVWSManager | null>(null);
 
   const setMode = (newMode: Mode) => {
-    const isEdit = newMode == CONSTS.EDIT_MODE;
+    const isEdit = newMode == EDIT_MODE;
     if (isEdit) {
       PVWS.current?.stop();
       PVWS.current = null;
       clearPVValues();
     } else {
+      setSelectedWidgetIDs([]);
       PVWS.current = new PVWSManager(updatePVValue);
       PVWS.current?.start(PVList);
     }
-    updateWidgetProperty("grid", "gridLineVisible", isEdit);
+    updateWidgetProperty(GRID_ID, "gridLineVisible", isEdit);
     updateMode(newMode);
   };
 

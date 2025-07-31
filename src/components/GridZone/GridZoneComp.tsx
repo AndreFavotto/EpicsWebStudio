@@ -4,9 +4,10 @@ import type { ReactNode } from "react";
 import type { Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../Utils/WidgetRegistry";
 import { useEditorContext } from "../Utils/useEditorContext";
-import { EDIT_MODE } from "../../shared/constants";
+import { EDIT_MODE, GRID_ID, MAX_WIDGET_ZINDEX, MIN_WIDGET_ZINDEX } from "../../shared/constants";
 import Selecto from "react-selecto";
 import "./GridZone.css";
+import ContextMenu from "../ContextMenu/ContextMenu";
 
 function renderWidget(widget: Widget): ReactNode {
   const Comp = WidgetRegistry[widget.widgetName]?.component;
@@ -29,6 +30,9 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const snapToGrid = props.snapToGrid?.value;
   const gridLineVisible = props.gridLineVisible?.value;
   const [isDragging, setIsDragging] = useState(false);
+  const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [contextMenuPos, setContextMenuPos] = useState({ x: 0, y: 0 });
+  const [contextMenuWdgID, setContextMenuWdgID] = useState("");
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -85,13 +89,30 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
     setEditorWidgets((prev) => [...prev, newWidget]);
   };
 
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const target = e.target as HTMLElement;
+    const clickedWidgetID = target.id === "gridZone" ? GRID_ID : target.parentElement?.id;
+    setContextMenuWdgID(clickedWidgetID ?? "");
+    setContextMenuPos({ x: e.clientX, y: e.clientY });
+    setContextMenuVisible(true);
+  };
+
+  useEffect(() => {
+    const handleClick = () => setContextMenuVisible(false);
+    window.addEventListener("click", handleClick);
+    return () => window.removeEventListener("click", handleClick);
+  }, []);
+
   return (
     <div
       id="gridZone"
       className="gridZone"
       onDragOver={handleDragOver}
       onDrop={handleDrop}
+      onContextMenu={handleContextMenu}
       style={{
+        zIndex: MIN_WIDGET_ZINDEX - 1, // Always behind all widgets
         width: "100%",
         height: "100%",
         backgroundColor: props.backgroundColor!.value,
@@ -113,6 +134,9 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           position={{
             x: item.editableProperties.x?.value ?? 0,
             y: item.editableProperties.y?.value ?? 0,
+          }}
+          style={{
+            zIndex: item.editableProperties.zIndex?.value ?? MAX_WIDGET_ZINDEX,
           }}
           bounds="parent"
           id={item.id}
@@ -200,6 +224,13 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           }}
         />
       )}
+      <ContextMenu
+        x={contextMenuPos.x}
+        y={contextMenuPos.y}
+        visible={contextMenuVisible}
+        widgetID={contextMenuWdgID}
+        onClose={() => setContextMenuVisible(false)}
+      />
     </div>
   );
 };

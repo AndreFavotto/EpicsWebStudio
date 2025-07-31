@@ -1,10 +1,11 @@
+import { GRID_ID } from "../../shared/constants";
 import { PROPERTY_SCHEMAS } from "../../types/widgetProperties";
 import type { Widget } from "../../types/widgets";
 import { GridZoneComp } from "./GridZoneComp";
 
-// not added to registry, but kept as a special type of widget for consistency
+// not added to registry, but treated as a special type of widget for consistency
 export const GridZone: Widget = {
-  id: "grid",
+  id: GRID_ID,
   component: GridZoneComp,
   widgetName: "GridZone",
   widgetLabel: "GridZone",

@@ -6,9 +6,10 @@ import { RUNTIME_MODE } from "../../../shared/constants";
 
 const InputFieldComp: React.FC<WidgetUpdate> = ({ data }) => {
   const { mode, writePVValue } = useEditorContext();
+  const [inputValue, setInputValue] = useState("");
   const p = data.editableProperties;
 
-  const [inputValue, setInputValue] = useState("");
+  if (!p.visible?.value) return null;
 
   const handleWrite = (value: number | string) => {
     if (mode !== RUNTIME_MODE) return;
@@ -35,6 +36,7 @@ const InputFieldComp: React.FC<WidgetUpdate> = ({ data }) => {
           height: "100%",
           boxSizing: "border-box",
         },
+        zIndex: p.zIndex?.value,
         backgroundColor: p.backgroundColor?.value,
         fontSize: p.fontSize?.value,
         fontFamily: p.fontFamily?.value,
