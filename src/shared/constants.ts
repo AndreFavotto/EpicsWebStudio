@@ -17,3 +17,6 @@ export const PVWS_URL = "ws://localhost:8080/pvws/pv";
 export type Mode = typeof EDIT_MODE | typeof RUNTIME_MODE;
 export const WIDGET_SELECTOR_WIDTH = 200; //px
 export const PROPERTY_EDITOR_WIDTH = 320; //px
+export const MIN_WIDGET_ZINDEX = 1;
+export const MAX_WIDGET_ZINDEX = 10;
+export const GRID_ID = "__grid__";

@@ -5,10 +5,11 @@ import WidgetSelector from "./components/WidgetSelector/WidgetSelector";
 import PropertyEditor from "./components/PropertyEditor/PropertyEditor";
 import NavBar from "./components/NavBar/NavBar";
 import { useEditorContext } from "./components/Utils/useEditorContext";
+import { GRID_ID } from "./shared/constants";
 
 const App: React.FC = () => {
   const { editorWidgets } = useEditorContext();
-  const gridProperties = useMemo(() => editorWidgets.find((w) => w.id === "grid"), [editorWidgets]);
+  const gridProperties = useMemo(() => editorWidgets.find((w) => w.id === GRID_ID), [editorWidgets]);
   return (
     <div className="app">
       <div className="appBar">
