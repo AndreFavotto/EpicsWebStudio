@@ -8,6 +8,7 @@ export interface WidgetProperty<T extends PropertyValue = PropertyValue> {
   selType: PropertySelectorType;
   label: string;
   value: T; //template (either one of PropertyValue types)
+  category: string;
   options?: string[];
 }
 
