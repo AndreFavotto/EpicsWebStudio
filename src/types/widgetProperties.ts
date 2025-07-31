@@ -25,11 +25,10 @@ export const PROPERTY_SCHEMAS = {
   borderWidth:     defineProp({ selType: "number",        label: "Border Width",      value: 1   as number }),
   borderRadius:    defineProp({ selType: "number",        label: "Border Radius",     value: 2   as number }),
   borderStyle:     defineProp({ selType: "select",        label: "Border Style",      value: "none" as string,   options: ["solid", "dashed", "dotted", "none"] }),
-  boxShadow:       defineProp({ selType: "text",          label: "Box Shadow",        value: 0  as number }),
   // Styling - Font
   fontSize:        defineProp({ selType: "number",        label: "Font Size",         value: 14  as number }),
-  fontFamily:      defineProp({ selType: "select",        label: "Font Family",       value: "Arial" as string,  options: ["Arial", "Helvetica"]}),
-  fontWeight:      defineProp({ selType: "select",        label: "Font Weight",       value: "normal" as string, options: ["light", "normal", "bold", "bolder"] }),
+  fontFamily:      defineProp({ selType: "select",        label: "Font Family",       value: "sans-serif" as string,  options: ["serif", "sans-serif", "monospace", "fantasy", "cursive"]}),
+  fontWeight:      defineProp({ selType: "select",        label: "Font Weight",       value: "normal" as string, options: ["lighter", "normal", "bold", "bolder"] }),
   textHAlign:      defineProp({ selType: "select",        label: "Text Horiz. Align", value: "left" as string,   options: ["left", "center", "right"] }),
   textVAlign:      defineProp({ selType: "select",        label: "Text Vert. Align",  value: "middle" as string, options: ["top", "middle", "bottom"] }),
   // Interactivity
@@ -43,7 +42,7 @@ export const PROPERTY_SCHEMAS = {
   //EPICS
   pvName:          defineProp({ selType: "text",          label: "PV Name",           value: ""  as string }),
   precisionFromPV: defineProp({ selType: "boolean",       label: "Disabled",          value: true }),
-  actionValue:     defineProp({ selType: "text",          label: "Action Value",      value: ""  as string }),
+  actionValue:     defineProp({ selType: "text",          label: "Action Value",      value: 1  as number | string}),
 };
 /* property groups */
 export const COMMON_PROPS = {
@@ -59,7 +58,6 @@ export const COMMON_PROPS = {
   borderRadius: PROPERTY_SCHEMAS.borderRadius,
   borderWidth: PROPERTY_SCHEMAS.borderWidth,
   borderStyle: PROPERTY_SCHEMAS.borderStyle,
-  boxShadow: PROPERTY_SCHEMAS.boxShadow,
   // Interaction
   visible: PROPERTY_SCHEMAS.visible,
   tooltip: PROPERTY_SCHEMAS.tooltip,

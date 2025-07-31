@@ -3,15 +3,20 @@ import React from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
 
 const EllipseComp: React.FC<WidgetUpdate> = ({ data }) => {
-  const { backgroundColor, tooltip } = data.editableProperties;
+  const p = data.editableProperties;
 
   return (
     <div
+      title={p.tooltip?.value ?? ""}
       style={{
         width: "100%",
         height: "100%",
-        backgroundColor: backgroundColor?.value,
+        display: "flex",
         borderRadius: "50%",
+        backgroundColor: p.backgroundColor?.value,
+        borderStyle: p.borderStyle?.value,
+        borderWidth: p.borderWidth?.value,
+        borderColor: p.borderColor?.value,
       }}
     />
   );

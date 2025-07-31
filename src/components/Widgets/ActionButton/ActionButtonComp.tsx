@@ -3,38 +3,46 @@ import { Button } from "@mui/material";
 import { useEditorContext } from "../../Utils/useEditorContext";
 import type { WidgetUpdate } from "../../../types/widgets";
 import * as CONSTS from "../../../shared/constants";
+import { mapVAlign, mapHAlign } from "../../../shared/helpers";
 
 const ActionButtonComp: React.FC<WidgetUpdate> = ({ data }) => {
   const { mode, writePVValue } = useEditorContext();
-  const { disabled, tooltip, textColor, borderRadius, pvName, label, backgroundColor, actionValue } =
-    data.editableProperties;
+  const p = data.editableProperties;
 
   const handleClick = (_e: React.MouseEvent) => {
     if (mode === CONSTS.RUNTIME_MODE) {
-      if (pvName?.value && actionValue?.value) {
-        writePVValue(pvName.value, actionValue.value);
+      if (p.pvName?.value && p.actionValue?.value) {
+        writePVValue(p.pvName.value, p.actionValue.value);
       }
     }
   };
 
+  if (!p.visible?.value) return null;
+
   return (
     <Button
+      title={p.tooltip?.value ?? ""}
       sx={{
         width: "100%",
         height: "100%",
-        marginTop: "auto",
-        marginBottom: "auto",
-        marginLeft: "auto",
-        marginRight: "auto",
-        backgroundColor: backgroundColor?.value,
-        color: textColor?.value,
-        borderRadius: borderRadius?.value,
+        display: "flex",
+        justifyContent: mapHAlign(p.textHAlign?.value),
+        alignItems: mapVAlign(p.textVAlign?.value),
+        backgroundColor: p.backgroundColor?.value,
+        fontSize: p.fontSize?.value,
+        fontFamily: p.fontFamily?.value,
+        fontWeight: p.fontWeight?.value,
+        color: p.textColor?.value,
+        borderRadius: p.borderRadius?.value,
+        borderStyle: p.borderStyle?.value,
+        borderWidth: p.borderWidth?.value,
+        borderColor: p.borderColor?.value,
       }}
-      disabled={disabled!.value}
+      disabled={p.disabled!.value}
       variant="contained"
       onClick={(e) => handleClick(e)}
     >
-      {label!.value}
+      {p.label!.value}
     </Button>
   );
 };

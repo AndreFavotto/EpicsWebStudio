@@ -3,16 +3,21 @@ import React from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
 
 const RectangleComp: React.FC<WidgetUpdate> = ({ data }) => {
-  const { backgroundColor, borderRadius, tooltip } = data.editableProperties;
+  const p = data.editableProperties;
 
   return (
     <div
+      title={p.tooltip?.value ?? ""}
       className="rectangle"
       style={{
         width: "100%",
         height: "100%",
-        backgroundColor: backgroundColor?.value,
-        borderRadius: borderRadius?.value,
+        display: "flex",
+        backgroundColor: p.backgroundColor?.value,
+        borderRadius: p.borderRadius?.value,
+        borderStyle: p.borderStyle?.value,
+        borderWidth: p.borderWidth?.value,
+        borderColor: p.borderColor?.value,
       }}
     />
   );

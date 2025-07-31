@@ -1,22 +1,33 @@
 import React from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
-
+import { mapVAlign, mapHAlign } from "../../../shared/helpers";
 const TextLabelComp: React.FC<WidgetUpdate> = ({ data }) => {
-  const { label, backgroundColor, textColor, borderRadius, fontSize, tooltip } = data.editableProperties;
+  const p = data.editableProperties;
+
+  if (!p.visible?.value) return null;
+
   return (
     <div
+      title={p.tooltip?.value ?? ""}
       className="textLabel"
       style={{
         width: "100%",
         height: "100%",
-        borderRadius: borderRadius?.value,
-        fontSize: fontSize?.value,
-        backgroundColor: backgroundColor?.value,
-        color: textColor?.value,
-        border: "none",
+        display: "flex",
+        justifyContent: mapHAlign(p.textHAlign?.value),
+        alignItems: mapVAlign(p.textVAlign?.value),
+        backgroundColor: p.backgroundColor?.value,
+        fontSize: p.fontSize?.value,
+        fontFamily: p.fontFamily?.value,
+        fontWeight: p.fontWeight?.value,
+        color: p.textColor?.value,
+        borderRadius: p.borderRadius?.value,
+        borderStyle: p.borderStyle?.value,
+        borderWidth: p.borderWidth?.value,
+        borderColor: p.borderColor?.value,
       }}
     >
-      {label?.value}
+      {p.label?.value}
     </div>
   );
 };
