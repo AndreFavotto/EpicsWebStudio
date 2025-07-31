@@ -28,7 +28,8 @@ export const PROPERTY_SCHEMAS = {
   // Styling - Font
   fontSize:        defineProp({ selType: "number",        label: "Font Size",         value: 14  as number }),
   fontFamily:      defineProp({ selType: "select",        label: "Font Family",       value: "sans-serif" as string,  options: ["serif", "sans-serif", "monospace", "fantasy", "cursive"]}),
-  fontWeight:      defineProp({ selType: "select",        label: "Font Weight",       value: "normal" as string, options: ["lighter", "normal", "bold", "bolder"] }),
+  fontBold:        defineProp({ selType: "boolean",       label: "Bold text",         value: false }),
+  fontItalic:      defineProp({ selType: "boolean",       label: "Italic text",       value: false }),
   textHAlign:      defineProp({ selType: "select",        label: "Text Horiz. Align", value: "left" as string,   options: ["left", "center", "right"] }),
   textVAlign:      defineProp({ selType: "select",        label: "Text Vert. Align",  value: "middle" as string, options: ["top", "middle", "bottom"] }),
   // Interactivity
@@ -66,7 +67,8 @@ export const COMMON_PROPS = {
 export const TEXT_PROPS = {
   fontSize: PROPERTY_SCHEMAS.fontSize,
   fontFamily: PROPERTY_SCHEMAS.fontFamily,
-  fontWeight: PROPERTY_SCHEMAS.fontWeight,
+  fontBold: PROPERTY_SCHEMAS.fontBold,
+  fontItalic: PROPERTY_SCHEMAS.fontItalic,
   textColor: PROPERTY_SCHEMAS.textColor,
   textVAlign: PROPERTY_SCHEMAS.textVAlign,
   textHAlign: PROPERTY_SCHEMAS.textHAlign,
