@@ -16,7 +16,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useEditorContext } from "../Utils/useEditorContext";
 import type { WidgetProperties, PropertyValue, PropertyKey, WidgetProperty } from "../../types/widgets";
-import { PROPERTY_EDITOR_WIDTH, EDIT_MODE } from "../../shared/constants";
+import { PROPERTY_EDITOR_WIDTH, EDIT_MODE, GRID_ID } from "../../shared/constants";
 import TextFieldProperty from "./TextFieldProperty";
 import BooleanProperty from "./BooleanProperty";
 import ColorProperty from "./ColorProperty";
@@ -92,7 +92,7 @@ const getGroupedProperties = (properties: WidgetProperties) => {
 
 const PropertyEditor: React.FC = () => {
   const { mode, selectedWidgetIDs, editorWidgets, updateWidgetProperty, setPropertyEditorFocused } = useEditorContext();
-  const GridWidget = useMemo(() => editorWidgets.find((w) => w.id === "grid"), [editorWidgets]);
+  const GridWidget = useMemo(() => editorWidgets.find((w) => w.id === GRID_ID), [editorWidgets]);
   const isOnlyGridSelected = selectedWidgetIDs.length === 0;
   const [open, setOpen] = useState(false);
   const [manuallyOpened, setManuallyOpened] = useState(false);
@@ -120,7 +120,11 @@ const PropertyEditor: React.FC = () => {
     return GridWidget;
   }, [editorWidgets, selectedWidgetIDs, isOnlyGridSelected, GridWidget]);
 
-  if (!editingWidget || mode !== EDIT_MODE) return null;
+  if (!editingWidget) {
+    console.warn("Invalid Grid or Widget ID: editingWidget not found");
+    return null;
+  }
+  if (mode !== EDIT_MODE) return null;
 
   const header = `Edit ${editingWidget.widgetLabel}`;
   const properties = editingWidget.editableProperties;

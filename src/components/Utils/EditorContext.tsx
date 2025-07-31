@@ -49,16 +49,6 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const setSelectedWidgetIDs = (ids: string[]) => {
-    selectedWidgetIDs.forEach((prevId) => {
-      if (!ids.includes(prevId)) {
-        document.getElementById(prevId)?.classList.remove("selected");
-      }
-    });
-    ids.forEach((id) => {
-      if (!selectedWidgetIDs.includes(id)) {
-        document.getElementById(id)?.classList.add("selected");
-      }
-    });
     setSelectedWidgets(ids);
   };
 

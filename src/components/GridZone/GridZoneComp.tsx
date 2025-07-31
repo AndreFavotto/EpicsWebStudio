@@ -75,8 +75,9 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    if (editableProperties.x) editableProperties.x.value = x;
-    if (editableProperties.y) editableProperties.y.value = y;
+    const gridSize = props.gridSize!.value;
+    if (editableProperties.x) editableProperties.x.value = snapToGrid ? Math.round(x / gridSize) * gridSize : x;
+    if (editableProperties.y) editableProperties.y.value = snapToGrid ? Math.round(y / gridSize) * gridSize : y;
 
     const newWidget: Widget = {
       id: `${entry.widgetName}-${Date.now()}`,
@@ -140,7 +141,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           }}
           bounds="parent"
           id={item.id}
-          className="selectable"
+          className={`selectable ${selectedWidgetIDs.includes(item.id) ? "selected" : ""}`}
           disableDragging={mode != EDIT_MODE}
           enableResizing={mode == EDIT_MODE}
           onDrag={() => setIsDragging(true)}
@@ -203,7 +204,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           {renderWidget(item)}
         </Rnd>
       ))}
-      {!isDragging && mode == EDIT_MODE && (
+      {!isDragging && !contextMenuVisible && mode == EDIT_MODE && (
         <Selecto
           ref={selectoRef}
           container={document.getElementById("gridZone")}
@@ -212,6 +213,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           selectByClick
           selectFromInside
           preventDragFromInside
+          preventClickEventOnDragStart
           toggleContinueSelect={["ctrl"]}
           onSelectEnd={(e) => {
             if (e.added.length === 0 && e.removed.length === 0) {

@@ -9,7 +9,7 @@ const InputFieldComp: React.FC<WidgetUpdate> = ({ data }) => {
   const p = data.editableProperties;
 
   if (!p.visible?.value) return null;
-
+  const isEditMode = mode === EDIT_MODE;
   const handleWrite = (value: number | string) => {
     if (mode !== RUNTIME_MODE) return;
     if (p.pvName?.value) {
@@ -20,6 +20,7 @@ const InputFieldComp: React.FC<WidgetUpdate> = ({ data }) => {
   return (
     <input
       title={p.tooltip?.value ?? ""}
+      readOnly={isEditMode}
       style={{
         width: "100%",
         height: "100%",
@@ -37,7 +38,7 @@ const InputFieldComp: React.FC<WidgetUpdate> = ({ data }) => {
         borderColor: p.borderColor?.value,
         boxSizing: "border-box",
         padding: "4px 8px",
-        pointerEvents: mode === EDIT_MODE ? "none" : "auto",
+        pointerEvents: isEditMode ? "none" : "auto",
       }}
       disabled={p.disabled?.value}
       placeholder={p.pvName?.value ?? p.label?.value}

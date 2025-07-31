@@ -114,14 +114,14 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, x, y, visible, onCl
         maxWidth: "100%",
         boxShadow: 3,
       }}
-      onContextMenu={(e) => e.preventDefault()}
     >
       <MenuList dense>
         {options.map((opt, index) => (
           <MenuItem
             key={index}
             disabled={opt.disabled}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               opt.action();
               onClose();
             }}

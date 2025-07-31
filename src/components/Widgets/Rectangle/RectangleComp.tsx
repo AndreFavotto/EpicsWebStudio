@@ -4,6 +4,7 @@ import type { WidgetUpdate } from "../../../types/widgets";
 
 const RectangleComp: React.FC<WidgetUpdate> = ({ data }) => {
   const p = data.editableProperties;
+  if (!p.visible?.value) return null;
 
   return (
     <div
