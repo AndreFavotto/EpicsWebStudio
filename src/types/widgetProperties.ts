@@ -38,6 +38,9 @@ export const PROPERTY_SCHEMAS = {
   gridLineVisible: defineProp({ selType: "boolean", label: "Grid Visible", value: true, category: "Grid" }),
   gridSize:        defineProp({ selType: "number", label: "Grid Size", value: 20 as number, category: "Grid" }),
   snapToGrid:      defineProp({ selType: "boolean", label: "Snap items", value: true, category: "Grid" }),
+  // Window options
+  windowWidth:     defineProp({ selType: "number", label: "Window Width", value: 800, category: "Window" }),
+  windowHeight:    defineProp({ selType: "number", label: "Window Height", value: 600, category: "Window" }),
   // EPICS
   pvName:          defineProp({ selType: "text", label: "PV Name", value: "" as string, category: "EPICS" }),
   precisionFromPV: defineProp({ selType: "boolean", label: "Disabled", value: true, category: "EPICS" }),

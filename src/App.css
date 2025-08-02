@@ -20,9 +20,10 @@
 }
 
 /* Central grid area */
-.grid {
-  flex: 1 1 auto;
-  height: 100%;
+#gridContainer {
+  height: calc(100% - 64px);
+  width: 100%;
+  position: absolute;
 }
 
 /* Property editor on the right */

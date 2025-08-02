@@ -19,7 +19,7 @@ const App: React.FC = () => {
         <div className="widgetSelector">
           <WidgetSelector />
         </div>
-        <div className="grid">
+        <div id="gridContainer">
           <GridZone.component data={gridProperties!} />
         </div>
         <div className="propertyEditor">
