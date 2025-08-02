@@ -106,7 +106,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, x, y, visible, onCl
   return (
     <Paper
       sx={{
-        position: "absolute",
+        position: "fixed",
         top: y,
         left: x,
         zIndex: MAX_WIDGET_ZINDEX + 1,
