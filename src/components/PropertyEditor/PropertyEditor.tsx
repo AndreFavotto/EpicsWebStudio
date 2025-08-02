@@ -16,7 +16,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useEditorContext } from "../Utils/useEditorContext";
 import type { WidgetProperties, PropertyValue, PropertyKey, WidgetProperty } from "../../types/widgets";
-import { PROPERTY_EDITOR_WIDTH, EDIT_MODE, GRID_ID } from "../../shared/constants";
+import { PROPERTY_EDITOR_WIDTH, EDIT_MODE, GRID_ID, MAX_WIDGET_ZINDEX } from "../../shared/constants";
 import TextFieldProperty from "./TextFieldProperty";
 import BooleanProperty from "./BooleanProperty";
 import ColorProperty from "./ColorProperty";
@@ -180,6 +180,7 @@ const PropertyEditor: React.FC = () => {
         onFocus={() => setPropertyEditorFocused(true)}
         onBlur={() => setPropertyEditorFocused(false)}
         slotProps={{ paper: { elevation: 8 } }}
+        sx={{ zIndex: MAX_WIDGET_ZINDEX + 1 }}
       >
         <Toolbar />
         <List sx={{ width: "100%" }}>
