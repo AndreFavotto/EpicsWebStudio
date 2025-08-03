@@ -154,6 +154,31 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
 
   const handleMouseUp = () => setIsPanning(false);
 
+  const handleDrag = (dx: number, dy: number) => {
+    setIsDragging(true);
+
+    setEditorWidgets((prev) =>
+      prev.map((w) => {
+        if (selectedWidgetIDs.includes(w.id)) {
+          return {
+            ...w,
+            editableProperties: {
+              ...w.editableProperties,
+              x: {
+                ...w.editableProperties.x,
+                value: w.editableProperties.x!.value + dx,
+              },
+              y: {
+                ...w.editableProperties.y,
+                value: w.editableProperties.y!.value + dy,
+              },
+            },
+          } as Widget;
+        }
+        return w;
+      })
+    );
+  };
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isPanning) {
@@ -227,7 +252,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
             className={`selectable ${selectedWidgetIDs.includes(item.id) ? "selected" : ""}`}
             disableDragging={mode != EDIT_MODE}
             enableResizing={mode == EDIT_MODE}
-            onDrag={() => setIsDragging(true)}
+            onDrag={(e, d) => handleDrag(d.deltaX, d.deltaY)}
             onDragStop={(_e, d) => {
               setIsDragging(false);
               const gridSize = snapToGrid ? props.gridSize?.value ?? 1 : 1;
