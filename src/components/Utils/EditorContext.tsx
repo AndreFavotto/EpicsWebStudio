@@ -16,6 +16,7 @@ export interface EditorContextType {
   updateWidget: (w: Widget) => void;
   updateWidgetProperties: (id: string, changes: PropertyUpdates) => void;
   selectedWidgetIDs: string[];
+  selectedWidgets: Widget[];
   setSelectedWidgetIDs: (ids: string[]) => void;
   writePVValue: (pv: string, newValue: number | string) => void;
   PVList: string[];
@@ -32,6 +33,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [propertyEditorFocused, setPropertyEditorFocused] = useState(false);
   const [wdgSelectorOpen, setWdgSelectorOpen] = useState(false);
   const PVWS = useRef<PVWSManager | null>(null);
+  const selectedWidgets = editorWidgets.filter((w) => selectedWidgetIDs.includes(w.id));
 
   const setMode = (newMode: Mode) => {
     const isEdit = newMode == EDIT_MODE;
@@ -128,6 +130,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         writePVValue,
         PVList,
         selectedWidgetIDs,
+        selectedWidgets,
         setSelectedWidgetIDs,
         mode,
         setMode,
