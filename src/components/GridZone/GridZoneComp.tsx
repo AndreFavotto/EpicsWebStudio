@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
-import { Rnd } from "react-rnd";
+import { Rnd, type Position, type RndDragEvent, type DraggableData } from "react-rnd";
 import type { ReactNode } from "react";
 import type { Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../Utils/WidgetRegistry";
@@ -20,7 +20,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
     mode,
     editorWidgets,
     setEditorWidgets,
-    updateWidget,
+    updateWidgetProperties,
     setSelectedWidgetIDs,
     selectedWidgetIDs,
     propertyEditorFocused,
@@ -39,6 +39,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const lastPosRef = useRef({ x: 0, y: 0 });
+  const gridSize = props.gridSize!.value;
 
   useLayoutEffect(() => {
     const container = document.getElementById("gridContainer");
@@ -54,6 +55,10 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       setPan({ x: centerX, y: centerY });
     }
   }, []);
+
+  const ensureGridPosition = (pos: number) => {
+    return snapToGrid ? Math.round(pos / gridSize) * gridSize : pos;
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -98,9 +103,8 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
     const userX = (rawX - pan.x) / zoom;
     const userY = (rawY - pan.y) / zoom;
 
-    const gridSize = props.gridSize!.value;
-    if (editableProperties.x) editableProperties.x.value = snapToGrid ? Math.round(userX / gridSize) * gridSize : userX;
-    if (editableProperties.y) editableProperties.y.value = snapToGrid ? Math.round(userY / gridSize) * gridSize : userY;
+    if (editableProperties.x) editableProperties.x.value = ensureGridPosition(userX);
+    if (editableProperties.y) editableProperties.y.value = ensureGridPosition(userY);
 
     const newWidget: Widget = {
       id: `${entry.widgetName}-${Date.now()}`,
@@ -154,31 +158,79 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
 
   const handleMouseUp = () => setIsPanning(false);
 
-  const handleDrag = (dx: number, dy: number) => {
+  const handleDrag = (_e: RndDragEvent, d: DraggableData) => {
     setIsDragging(true);
-
-    setEditorWidgets((prev) =>
-      prev.map((w) => {
-        if (selectedWidgetIDs.includes(w.id)) {
-          return {
-            ...w,
-            editableProperties: {
-              ...w.editableProperties,
-              x: {
-                ...w.editableProperties.x,
-                value: w.editableProperties.x!.value + dx,
+    // this is necessary only for multiple widget dragging.
+    // note: this is a temporary workaround
+    if (selectedWidgetIDs.length > 1) {
+      const dx = d.deltaX;
+      const dy = d.deltaY;
+      setEditorWidgets((prev) =>
+        prev.map((w) => {
+          if (selectedWidgetIDs.includes(w.id)) {
+            return {
+              ...w,
+              editableProperties: {
+                ...w.editableProperties,
+                x: {
+                  ...w.editableProperties.x,
+                  value: w.editableProperties.x!.value + dx,
+                },
+                y: {
+                  ...w.editableProperties.y,
+                  value: w.editableProperties.y!.value + dy,
+                },
               },
-              y: {
-                ...w.editableProperties.y,
-                value: w.editableProperties.y!.value + dy,
-              },
-            },
-          } as Widget;
-        }
-        return w;
-      })
-    );
+            } as Widget;
+          }
+          return w;
+        })
+      );
+    }
   };
+
+  const handleDragStop = (_e: RndDragEvent, d: DraggableData, w: Widget) => {
+    setIsDragging(false);
+    updateWidgetProperties(w.id, {
+      x: ensureGridPosition(d.x),
+      y: ensureGridPosition(d.y),
+    });
+    // this is necessary only for multiple widget dragging.
+    // note: this is a temporary workaround
+    if (selectedWidgetIDs.length > 1) {
+      setEditorWidgets((prev) =>
+        prev.map((w) => {
+          if (selectedWidgetIDs.includes(w.id)) {
+            return {
+              ...w,
+              editableProperties: {
+                ...w.editableProperties,
+                x: {
+                  ...w.editableProperties.x,
+                  value: ensureGridPosition(w.editableProperties.x!.value),
+                },
+                y: {
+                  ...w.editableProperties.y,
+                  value: ensureGridPosition(w.editableProperties.y!.value),
+                },
+              },
+            } as Widget;
+          }
+          return w;
+        })
+      );
+    }
+  };
+
+  const handleResizeStop = (ref: HTMLElement, position: Position, w: Widget) => {
+    setIsDragging(false);
+    const newWidth = ensureGridPosition(parseInt(ref.style.width));
+    const newHeight = ensureGridPosition(parseInt(ref.style.height));
+    const newX = ensureGridPosition(position.x);
+    const newY = ensureGridPosition(position.y);
+    updateWidgetProperties(w.id, { width: newWidth, height: newHeight, x: newX, y: newY });
+  };
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isPanning) {
@@ -252,60 +304,10 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
             className={`selectable ${selectedWidgetIDs.includes(item.id) ? "selected" : ""}`}
             disableDragging={mode != EDIT_MODE}
             enableResizing={mode == EDIT_MODE}
-            onDrag={(e, d) => handleDrag(d.deltaX, d.deltaY)}
-            onDragStop={(_e, d) => {
-              setIsDragging(false);
-              const gridSize = snapToGrid ? props.gridSize?.value ?? 1 : 1;
-              const snappedX = snapToGrid ? Math.round(d.x / gridSize) * gridSize : d.x;
-              const snappedY = snapToGrid ? Math.round(d.y / gridSize) * gridSize : d.y;
-
-              updateWidget({
-                ...item,
-                editableProperties: {
-                  ...item.editableProperties,
-                  x: item.editableProperties.x
-                    ? { ...item.editableProperties.x, value: snappedX }
-                    : item.editableProperties.x,
-                  y: item.editableProperties.y
-                    ? { ...item.editableProperties.y, value: snappedY }
-                    : item.editableProperties.y,
-                },
-              });
-            }}
+            onDrag={handleDrag}
+            onDragStop={(_e, d) => handleDragStop(_e, d, item)}
             onResizeStart={() => setIsDragging(true)}
-            onResizeStop={(_e, _direction, ref, _delta, position) => {
-              setIsDragging(false);
-
-              const gridSize = snapToGrid ? props.gridSize?.value ?? 1 : 1;
-
-              const snappedWidth = snapToGrid
-                ? Math.round(parseInt(ref.style.width, 10) / gridSize) * gridSize
-                : parseInt(ref.style.width, 10);
-              const snappedHeight = snapToGrid
-                ? Math.round(parseInt(ref.style.height, 10) / gridSize) * gridSize
-                : parseInt(ref.style.height, 10);
-              const snappedX = snapToGrid ? Math.round(position.x / gridSize) * gridSize : position.x;
-              const snappedY = snapToGrid ? Math.round(position.y / gridSize) * gridSize : position.y;
-
-              updateWidget({
-                ...item,
-                editableProperties: {
-                  ...item.editableProperties,
-                  width: item.editableProperties.width
-                    ? { ...item.editableProperties.width, value: snappedWidth }
-                    : item.editableProperties.width,
-                  height: item.editableProperties.height
-                    ? { ...item.editableProperties.height, value: snappedHeight }
-                    : item.editableProperties.height,
-                  x: item.editableProperties.x
-                    ? { ...item.editableProperties.x, value: snappedX }
-                    : item.editableProperties.x,
-                  y: item.editableProperties.y
-                    ? { ...item.editableProperties.y, value: snappedY }
-                    : item.editableProperties.y,
-                },
-              });
-            }}
+            onResizeStop={(_e, _direction, ref, _delta, position) => handleResizeStop(ref, position, item)}
           >
             {renderWidget(item)}
           </Rnd>
@@ -321,7 +323,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           selectByClick
           selectFromInside
           preventDragFromInside
-          preventClickEventOnDragStart
+          // preventClickEventOnDragStart
           toggleContinueSelect={["ctrl"]}
           onSelectEnd={(e) => {
             if (e.added.length === 0 && e.removed.length === 0) {

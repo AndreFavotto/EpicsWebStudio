@@ -11,8 +11,8 @@ export const PROPERTY_SCHEMAS = {
   // General
   label:           defineProp({ selType: "text", label: "Label", value: "" as string, category: "General" }),
   tooltip:         defineProp({ selType: "text", label: "Tooltip", value: "" as string, category: "General" }),
-  visible:         defineProp({ selType: "boolean", label: "Visible", value: true, category: "General" }),
-  disabled:        defineProp({ selType: "boolean", label: "Disabled", value: false, category: "General" }),
+  visible:         defineProp({ selType: "boolean", label: "Visible", value: true as boolean, category: "General" }),
+  disabled:        defineProp({ selType: "boolean", label: "Disabled", value: false as boolean, category: "General" }),
   // Layout
   x:               defineProp({ selType: "number", label: "X", value: 100 as number, category: "Layout" }),
   y:               defineProp({ selType: "number", label: "Y", value: 100 as number, category: "Layout" }),
@@ -29,22 +29,24 @@ export const PROPERTY_SCHEMAS = {
   textColor:       defineProp({ selType: "colorSelector", label: "Text Color", value: COLORS.textColor, category: "Font" }),
   fontSize:        defineProp({ selType: "number", label: "Font Size", value: 14 as number, category: "Font" }),
   fontFamily:      defineProp({ selType: "select", label: "Font Family", value: "sans-serif" as string, options: ["serif", "sans-serif", "monospace", "fantasy", "cursive"], category: "Font" }),
-  fontBold:        defineProp({ selType: "boolean", label: "Bold text", value: false, category: "Font" }),
-  fontItalic:      defineProp({ selType: "boolean", label: "Italic text", value: false, category: "Font" }),
+  fontBold:        defineProp({ selType: "boolean", label: "Bold text", value: false as boolean, category: "Font" }),
+  fontItalic:      defineProp({ selType: "boolean", label: "Italic text", value: false as boolean, category: "Font" }),
   textHAlign:      defineProp({ selType: "select", label: "Text Horiz. Align", value: "left" as string, options: ["left", "center", "right"], category: "Font" }),
   textVAlign:      defineProp({ selType: "select", label: "Text Vert. Align", value: "middle" as string, options: ["top", "middle", "bottom"], category: "Font" }),
   // Grid options
   gridLineColor:   defineProp({ selType: "colorSelector", label: "Grid Line Color", value: COLORS.gridLineColor, category: "Grid" }),
-  gridLineVisible: defineProp({ selType: "boolean", label: "Grid Visible", value: true, category: "Grid" }),
+  gridLineVisible: defineProp({ selType: "boolean", label: "Grid Visible", value: true as boolean, category: "Grid" }),
   gridSize:        defineProp({ selType: "number", label: "Grid Size", value: 20 as number, category: "Grid" }),
-  snapToGrid:      defineProp({ selType: "boolean", label: "Snap items", value: true, category: "Grid" }),
+  snapToGrid:      defineProp({ selType: "boolean", label: "Snap items", value: true as boolean, category: "Grid" }),
   // Window options
-  windowWidth:     defineProp({ selType: "number", label: "Window Width", value: 800, category: "Window" }),
-  windowHeight:    defineProp({ selType: "number", label: "Window Height", value: 600, category: "Window" }),
+  windowWidth:     defineProp({ selType: "number", label: "Window Width", value: 800 as number, category: "Window" }),
+  windowHeight:    defineProp({ selType: "number", label: "Window Height", value: 600 as number, category: "Window" }),
   // EPICS
   pvName:          defineProp({ selType: "text", label: "PV Name", value: "" as string, category: "EPICS" }),
-  precisionFromPV: defineProp({ selType: "boolean", label: "Disabled", value: true, category: "EPICS" }),
+  precisionFromPV: defineProp({ selType: "boolean", label: "Disabled", value: true as boolean, category: "EPICS" }),
   actionValue:     defineProp({ selType: "text", label: "Action Value", value: 1 as number | string, category: "EPICS" }),
+  // placeholder for number array - needed for now to match all types in PropertyValue
+  placeholder:     defineProp({ selType: "select", label: "placeholder prop", value: [] as number[], category: "placeholder" }),
 };
 
 /* property groups */

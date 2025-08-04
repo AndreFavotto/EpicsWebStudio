@@ -16,6 +16,8 @@ export type PropertyKey = keyof typeof PROPERTY_SCHEMAS;
 
 export type WidgetProperties = Partial<typeof PROPERTY_SCHEMAS>;
 
+export type PropertyUpdates = Partial<Record<PropertyKey, PropertyValue>>;
+
 export interface WidgetUpdate {
   data: Widget;
 }

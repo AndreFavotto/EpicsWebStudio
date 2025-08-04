@@ -91,7 +91,8 @@ const getGroupedProperties = (properties: WidgetProperties) => {
 };
 
 const PropertyEditor: React.FC = () => {
-  const { mode, selectedWidgetIDs, editorWidgets, updateWidgetProperty, setPropertyEditorFocused } = useEditorContext();
+  const { mode, selectedWidgetIDs, editorWidgets, updateWidgetProperties, setPropertyEditorFocused } =
+    useEditorContext();
   const GridWidget = useMemo(() => editorWidgets.find((w) => w.id === GRID_ID), [editorWidgets]);
   const isOnlyGridSelected = selectedWidgetIDs.length === 0;
   const [open, setOpen] = useState(false);
@@ -131,7 +132,7 @@ const PropertyEditor: React.FC = () => {
   const groupedProperties = getGroupedProperties(properties);
 
   const handlePropChange = (propName: PropertyKey, newValue: PropertyValue) => {
-    updateWidgetProperty(editingWidget.id, propName, newValue);
+    updateWidgetProperties(editingWidget.id, { [propName]: newValue });
   };
 
   const renderGroupedPropertyFields = () =>

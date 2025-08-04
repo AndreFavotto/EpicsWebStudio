@@ -26,7 +26,7 @@ export interface ContextMenuProps {
 }
 
 const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, x, y, visible, onClose }) => {
-  const { mode, editorWidgets, updateWidgetProperty } = useEditorContext();
+  const { mode, editorWidgets, updateWidgetProperties } = useEditorContext();
   if (!visible) return null;
   if (mode !== EDIT_MODE) return null; // TODO: create context menu for RUNTIME
   const isGrid = widgetID == GRID_ID;
@@ -34,22 +34,22 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, x, y, visible, onCl
     const w = editorWidgets.find((w) => w.id === id);
     if (!w?.editableProperties.zIndex) return;
     const currentZIndex = w.editableProperties.zIndex.value;
-    if (currentZIndex < MAX_WIDGET_ZINDEX) updateWidgetProperty(id, "zIndex", currentZIndex + 1);
+    if (currentZIndex < MAX_WIDGET_ZINDEX) updateWidgetProperties(id, { zIndex: currentZIndex + 1 });
   };
 
   const decreaseZIndex = (id: string) => {
     const w = editorWidgets.find((w) => w.id === id);
     if (!w?.editableProperties.zIndex) return;
     const currentZIndex = w.editableProperties.zIndex.value;
-    if (currentZIndex > MIN_WIDGET_ZINDEX) updateWidgetProperty(id, "zIndex", currentZIndex - 1);
+    if (currentZIndex > MIN_WIDGET_ZINDEX) updateWidgetProperties(id, { zIndex: currentZIndex - 1 });
   };
 
   const setMaxZIndex = (id: string) => {
-    updateWidgetProperty(id, "zIndex", MAX_WIDGET_ZINDEX);
+    updateWidgetProperties(id, { zIndex: MAX_WIDGET_ZINDEX });
   };
 
   const setMinZIndex = (id: string) => {
-    updateWidgetProperty(id, "zIndex", MIN_WIDGET_ZINDEX);
+    updateWidgetProperties(id, { zIndex: MIN_WIDGET_ZINDEX });
   };
 
   const options = [

@@ -1,6 +1,5 @@
 import { useState, useMemo, useRef } from "react";
-import type { Widget, PropertyKey, PropertyValue } from "../../types/widgets";
-import { PROPERTY_SCHEMAS } from "../../types/widgetProperties";
+import type { Widget, PropertyKey, WidgetProperties, PropertyUpdates } from "../../types/widgets";
 import type { Mode } from "../../shared/constants";
 import { EDIT_MODE, GRID_ID } from "../../shared/constants";
 import { GridZone } from "../../components/GridZone";
@@ -11,14 +10,15 @@ import { EditorContext } from "./useEditorContext";
 export interface EditorContextType {
   mode: Mode;
   setMode: (mode: Mode) => void;
-  selectedWidgetIDs: string[];
-  setSelectedWidgetIDs: (ids: string[]) => void;
-  updateWidget: (w: Widget) => void;
-  updateWidgetProperty: (id: string, propName: PropertyKey, newValue: PropertyValue) => void;
-  writePVValue: (pv: string, newValue: number | string) => void;
-  PVList: string[];
   editorWidgets: Widget[];
   setEditorWidgets: React.Dispatch<React.SetStateAction<Widget[]>>;
+  getWidget: (id: string) => Widget | undefined;
+  updateWidget: (w: Widget) => void;
+  updateWidgetProperties: (id: string, changes: PropertyUpdates) => void;
+  selectedWidgetIDs: string[];
+  setSelectedWidgetIDs: (ids: string[]) => void;
+  writePVValue: (pv: string, newValue: number | string) => void;
+  PVList: string[];
   propertyEditorFocused: boolean;
   setPropertyEditorFocused: React.Dispatch<React.SetStateAction<boolean>>;
   wdgSelectorOpen: boolean;
@@ -28,7 +28,7 @@ export interface EditorContextType {
 export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [editorWidgets, setEditorWidgets] = useState<Widget[]>([GridZone]); // Grid is always present in the editor
   const [mode, updateMode] = useState<Mode>(EDIT_MODE);
-  const [selectedWidgetIDs, setSelectedWidgets] = useState<string[]>([]);
+  const [selectedWidgetIDs, setSelectedWidgetIDs] = useState<string[]>([]);
   const [propertyEditorFocused, setPropertyEditorFocused] = useState(false);
   const [wdgSelectorOpen, setWdgSelectorOpen] = useState(false);
   const PVWS = useRef<PVWSManager | null>(null);
@@ -44,34 +44,36 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       PVWS.current = new PVWSManager(updatePVValue);
       PVWS.current?.start(PVList);
     }
-    updateWidgetProperty(GRID_ID, "gridLineVisible", isEdit);
+    updateWidgetProperties(GRID_ID, { gridLineVisible: isEdit });
     updateMode(newMode);
   };
 
-  const setSelectedWidgetIDs = (ids: string[]) => {
-    setSelectedWidgets(ids);
+  const getWidget = (id: string) => {
+    return editorWidgets.find((w) => w.id === id);
   };
 
   const updateWidget = (updated: Widget) => {
     setEditorWidgets((prev) => prev.map((w) => (w.id === updated.id ? updated : w)));
   };
 
-  const updateWidgetProperty = (id: string, propName: PropertyKey, newValue: PropertyValue) => {
+  const updateWidgetProperties = (id: string, changes: PropertyUpdates) => {
     setEditorWidgets((prev) =>
       prev.map((w) => {
         if (w.id !== id) return w;
 
-        const current = w.editableProperties[propName] ?? PROPERTY_SCHEMAS[propName];
+        const updatedProps: WidgetProperties = w.editableProperties;
+        for (const [k, v] of Object.entries(changes as object)) {
+          const propName = k as PropertyKey;
+          if (!updatedProps[propName]) {
+            console.warn(`tried updating inexistent property ${propName} on ${w.id}`);
+            continue;
+          }
+          updatedProps[propName].value = v;
+        }
 
         return {
           ...w,
-          editableProperties: {
-            ...w.editableProperties,
-            [propName]: {
-              ...current,
-              value: newValue,
-            },
-          },
+          editableProperties: updatedProps,
         };
       })
     );
@@ -121,7 +123,8 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         editorWidgets,
         setEditorWidgets,
         updateWidget,
-        updateWidgetProperty,
+        getWidget,
+        updateWidgetProperties,
         writePVValue,
         PVList,
         selectedWidgetIDs,

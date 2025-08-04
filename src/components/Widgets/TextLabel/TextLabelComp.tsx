@@ -5,7 +5,7 @@ import { mapVAlign, mapHAlign } from "../../../shared/helpers";
 import { EDIT_MODE } from "../../../shared/constants";
 
 const TextLabelComp: React.FC<WidgetUpdate> = ({ data }) => {
-  const { mode, updateWidgetProperty } = useEditorContext();
+  const { mode, updateWidgetProperties } = useEditorContext();
   const p = data.editableProperties;
 
   const [editing, setEditing] = useState(false);
@@ -34,7 +34,7 @@ const TextLabelComp: React.FC<WidgetUpdate> = ({ data }) => {
         if (isEditMode) setEditing(true);
       }}
       onBlur={() => setEditing(false)}
-      onChange={(e) => updateWidgetProperty(data.id, "label", e.target.value)}
+      onChange={(e) => updateWidgetProperties(data.id, { label: e.target.value })}
       style={{
         width: "100%",
         height: "100%",
