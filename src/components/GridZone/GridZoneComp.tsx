@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../Utils/WidgetRegistry";
 import { useEditorContext } from "../Utils/useEditorContext";
@@ -15,6 +15,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const userWindowRef = useRef<HTMLDivElement>(null);
   const lastPosRef = useRef({ x: 0, y: 0 });
   const selectoRef = useRef<Selecto>(null);
+  const isMiddleButtonDownRef = useRef(false);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
@@ -22,6 +23,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const [contextMenuWdgID, setContextMenuWdgID] = useState("");
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [shouldCenterPan, setShouldCenterPan] = useState(true); //start centralizing screen
 
   const gridSize = props.gridSize!.value;
   const snapToGrid = props.snapToGrid?.value;
@@ -31,21 +33,28 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
     return snapToGrid ? Math.round(pos / gridSize) * gridSize : pos;
   };
 
-  // start with userWindow centralized in relation to gridContainer
-  useLayoutEffect(() => {
-    const container = document.getElementById("gridContainer");
-    const el = userWindowRef.current;
+  const centerScreen = () => {
+    setZoom(1);
+    setShouldCenterPan(true);
+  };
 
-    if (container && el) {
-      const containerBounds = container.getBoundingClientRect();
-      const userWindowBounds = el.getBoundingClientRect();
+  useEffect(() => {
+    if (shouldCenterPan && zoom === 1) {
+      const container = document.getElementById("gridContainer");
+      const el = userWindowRef.current;
 
-      const centerX = containerBounds.width / 2 - userWindowBounds.width / 2;
-      const centerY = containerBounds.height / 2 - userWindowBounds.height / 2;
+      if (container && el) {
+        const containerBounds = container.getBoundingClientRect();
+        const userWindowBounds = el.getBoundingClientRect();
 
-      setPan({ x: centerX, y: centerY });
+        const centerX = containerBounds.width / 2 - userWindowBounds.width / 2;
+        const centerY = containerBounds.height / 2 - userWindowBounds.height / 2;
+
+        setPan({ x: centerX, y: centerY });
+        setShouldCenterPan(false);
+      }
     }
-  }, []);
+  }, [shouldCenterPan, zoom]);
 
   useEffect(() => {
     const handleClick = () => setContextMenuVisible(false);
@@ -121,13 +130,16 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button === 1 || e.altKey) {
-      setIsPanning(true);
+      isMiddleButtonDownRef.current = true;
       lastPosRef.current = { x: e.clientX, y: e.clientY };
       e.preventDefault();
     }
   };
 
-  const handleMouseUp = () => setIsPanning(false);
+  const handleAuxClick = (_e: React.MouseEvent) => {
+    if (!isPanning) centerScreen();
+    setIsPanning(false);
+  };
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -140,20 +152,29 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (isPanning) {
+      if (isMiddleButtonDownRef.current) {
         const dx = e.clientX - lastPosRef.current.x;
         const dy = e.clientY - lastPosRef.current.y;
+        // Only consider a pan if there is actual movement
+        if (!isPanning && (Math.abs(dx) > 2 || Math.abs(dy) > 2)) {
+          setIsPanning(true);
+        }
         lastPosRef.current = { x: e.clientX, y: e.clientY };
         setPan((prev) => ({ x: prev.x + dx / zoom, y: prev.y + dy / zoom }));
       }
     };
+
+    const handleMouseUp = () => {
+      isMiddleButtonDownRef.current = false;
+    };
+
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("mouseup", handleMouseUp);
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isPanning, zoom]);
+  }, [isMiddleButtonDownRef, isPanning, setIsPanning, zoom]);
 
   return (
     <div
@@ -166,7 +187,9 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
       onClick={() => setContextMenuVisible(false)}
+      onAuxClick={handleAuxClick}
       style={{
+        cursor: isPanning ? "grabbing" : "default",
         zIndex: MIN_WIDGET_ZINDEX - 1,
         backgroundColor: props.backgroundColor!.value,
         backgroundImage: gridLineVisible
