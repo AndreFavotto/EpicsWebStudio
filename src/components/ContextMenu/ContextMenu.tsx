@@ -29,7 +29,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, x, y, visible, onCl
   const { mode, editorWidgets, updateWidgetProperties } = useEditorContext();
   if (!visible) return null;
   if (mode !== EDIT_MODE) return null; // TODO: create context menu for RUNTIME
-  const isGrid = widgetID == GRID_ID;
+  const isGrid = widgetID == GRID_ID || widgetID == "gridZone";
   const increaseZIndex = (id: string) => {
     const w = editorWidgets.find((w) => w.id === id);
     if (!w?.editableProperties.zIndex) return;

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import type { Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../Utils/WidgetRegistry";
 import { useEditorContext } from "../Utils/useEditorContext";
-import { EDIT_MODE, GRID_ID } from "../../shared/constants";
+import { EDIT_MODE, GRID_ID, MIN_WIDGET_ZINDEX } from "../../shared/constants";
 import Selecto from "react-selecto";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import "./GridZone.css";
@@ -165,7 +165,9 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       onContextMenu={handleContextMenu}
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
+      onClick={() => setContextMenuVisible(false)}
       style={{
+        zIndex: MIN_WIDGET_ZINDEX - 1,
         backgroundColor: props.backgroundColor!.value,
         backgroundImage: gridLineVisible
           ? `linear-gradient(${props.gridLineColor!.value} 1px, transparent 1px),
@@ -180,6 +182,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
         ref={userWindowRef}
         className="userWindow"
         style={{
+          zIndex: MIN_WIDGET_ZINDEX - 1,
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
           width: `${props.windowWidth!.value}px`,
           height: `${props.windowHeight!.value}px`,
@@ -187,7 +190,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       >
         <WidgetRenderer scale={zoom} gridPositioner={ensureGridPosition} setIsDragging={setIsDragging} />
       </div>
-      {!isDragging && mode == EDIT_MODE && (
+      {!contextMenuVisible && !isDragging && mode == EDIT_MODE && (
         <Selecto
           ref={selectoRef}
           container={document.getElementById("gridContainer")}

@@ -10,5 +10,4 @@
   outline: 1px dashed var(--light-gray);
   box-sizing: border-box;
   transform-origin: 0% 0%;
-  position: absolute;
 }
