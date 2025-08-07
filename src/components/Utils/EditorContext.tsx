@@ -1,17 +1,28 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import type { Widget, PropertyKey, WidgetProperties, PropertyUpdates } from "../../types/widgets";
 import type { Mode } from "../../shared/constants";
-import { EDIT_MODE, GRID_ID } from "../../shared/constants";
+import { EDIT_MODE, GRID_ID, MAX_HISTORY } from "../../shared/constants";
 import { GridZone } from "../../components/GridZone";
 import { PVWSManager } from "../PVWS/PVWSManager";
 import type { PVWSMessage } from "../../types/pvws";
 import { EditorContext } from "./useEditorContext";
 
+function deepCloneWidgets(widgets: Widget[]): Widget[] {
+  return widgets.map((widget) => ({
+    ...widget,
+    editableProperties: Object.fromEntries(Object.entries(widget.editableProperties).map(([k, v]) => [k, { ...v }])),
+  }));
+}
+
 export interface EditorContextType {
   mode: Mode;
   setMode: (mode: Mode) => void;
   editorWidgets: Widget[];
-  setEditorWidgets: React.Dispatch<React.SetStateAction<Widget[]>>;
+  updateEditorWidgets: (newWidgets: Widget[] | ((prev: Widget[]) => Widget[])) => void;
+  handleUndo: () => void;
+  undoStack: Widget[][];
+  handleRedo: () => void;
+  redoStack: Widget[][];
   getWidget: (id: string) => Widget | undefined;
   updateWidget: (w: Widget) => void;
   updateWidgetProperties: (id: string, changes: PropertyUpdates) => void;
@@ -32,8 +43,62 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const [selectedWidgetIDs, setSelectedWidgetIDs] = useState<string[]>([]);
   const [propertyEditorFocused, setPropertyEditorFocused] = useState(false);
   const [wdgSelectorOpen, setWdgSelectorOpen] = useState(false);
+  const [undoStack, setUndoStack] = useState<Widget[][]>([]);
+  const [redoStack, setRedoStack] = useState<Widget[][]>([]);
   const PVWS = useRef<PVWSManager | null>(null);
   const selectedWidgets = editorWidgets.filter((w) => selectedWidgetIDs.includes(w.id));
+
+  const updateEditorWidgets = (newWidgets: Widget[] | ((prev: Widget[]) => Widget[])) => {
+    setUndoStack((prev) => {
+      const updated = [...prev, deepCloneWidgets(editorWidgets)];
+      return updated.length > MAX_HISTORY ? updated.slice(1) : updated;
+    });
+
+    setRedoStack([]); // Clear redo on new action
+    setEditorWidgets((prev) => (typeof newWidgets === "function" ? newWidgets(deepCloneWidgets(prev)) : newWidgets));
+  };
+
+  const handleUndo = useCallback(() => {
+    setUndoStack((prevUndo) => {
+      if (prevUndo.length === 0) return prevUndo;
+
+      const prevState = prevUndo[prevUndo.length - 1];
+      setRedoStack((prevRedo) => {
+        const updated = [...prevRedo, deepCloneWidgets(editorWidgets)];
+        return updated.length > MAX_HISTORY ? updated.slice(1) : updated;
+      });
+      setEditorWidgets(prevState);
+      return prevUndo.slice(0, -1);
+    });
+  }, [editorWidgets]);
+
+  const handleRedo = useCallback(() => {
+    setRedoStack((prevRedo) => {
+      if (prevRedo.length === 0) return prevRedo;
+      const nextState = prevRedo[prevRedo.length - 1];
+      setUndoStack((prevUndo) => {
+        const updated = [...prevUndo, deepCloneWidgets(editorWidgets)];
+        return updated.length > MAX_HISTORY ? updated.slice(1) : updated;
+      });
+      setEditorWidgets(nextState);
+      return prevRedo.slice(0, -1);
+    });
+  }, [editorWidgets]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === "z") {
+        e.preventDefault();
+        handleUndo();
+      }
+      if ((e.ctrlKey && e.key === "y") || (e.ctrlKey && e.shiftKey && e.key === "Z")) {
+        e.preventDefault();
+        handleRedo();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [editorWidgets, handleRedo, handleUndo]);
 
   const setMode = (newMode: Mode) => {
     const isEdit = newMode == EDIT_MODE;
@@ -55,11 +120,11 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   };
 
   const updateWidget = (updated: Widget) => {
-    setEditorWidgets((prev) => prev.map((w) => (w.id === updated.id ? updated : w)));
+    updateEditorWidgets((prev) => prev.map((w) => (w.id === updated.id ? updated : w)));
   };
 
   const updateWidgetProperties = (id: string, changes: PropertyUpdates) => {
-    setEditorWidgets((prev) =>
+    updateEditorWidgets((prev) =>
       prev.map((w) => {
         if (w.id !== id) return w;
 
@@ -84,7 +149,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const updatePVValue = (msg: PVWSMessage) => {
     const pv = msg.pv;
     const newValue = msg.value;
-    setEditorWidgets((prev) =>
+    updateEditorWidgets((prev) =>
       prev.map((w) => {
         if (w.editableProperties.pvName?.value !== pv) return w;
         return {
@@ -123,7 +188,11 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     <EditorContext.Provider
       value={{
         editorWidgets,
-        setEditorWidgets,
+        updateEditorWidgets,
+        handleRedo,
+        handleUndo,
+        undoStack,
+        redoStack,
         updateWidget,
         getWidget,
         updateWidgetProperties,

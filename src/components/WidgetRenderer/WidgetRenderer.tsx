@@ -15,7 +15,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
   const {
     mode,
     editorWidgets,
-    setEditorWidgets,
+    updateEditorWidgets,
     updateWidgetProperties,
     setSelectedWidgetIDs,
     selectedWidgetIDs,
@@ -28,14 +28,14 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
     const handleKeyDown = (e: KeyboardEvent) => {
       if (mode !== EDIT_MODE || propertyEditorFocused) return;
       if (e.key === "Delete" && selectedWidgetIDs.length > 0) {
-        setEditorWidgets((prev) => prev.filter((w) => !selectedWidgetIDs.includes(w.id)));
+        updateEditorWidgets((prev) => prev.filter((w) => !selectedWidgetIDs.includes(w.id)));
         setSelectedWidgetIDs([]);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [mode, propertyEditorFocused, selectedWidgetIDs, setEditorWidgets, setSelectedWidgetIDs]);
+  }, [mode, propertyEditorFocused, selectedWidgetIDs, updateEditorWidgets, setSelectedWidgetIDs]);
 
   function renderWidget(widget: Widget): ReactNode {
     const Comp = WidgetRegistry[widget.widgetName]?.component;
@@ -61,7 +61,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
 
   const handleGroupMove = (dx: number, dy: number) => {
     setIsDragging(false);
-    setEditorWidgets((prev) =>
+    updateEditorWidgets((prev) =>
       prev.map((widget) => {
         if (!selectedWidgetIDs.includes(widget.id)) return widget;
         const xProp = widget.editableProperties.x;

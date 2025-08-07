@@ -10,7 +10,7 @@ import WidgetRenderer from "../WidgetRenderer/WidgetRenderer.tsx";
 
 const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const props = data.editableProperties;
-  const { mode, setEditorWidgets, setSelectedWidgetIDs } = useEditorContext();
+  const { mode, updateEditorWidgets, setSelectedWidgetIDs } = useEditorContext();
   const gridRef = useRef<HTMLDivElement>(null);
   const userWindowRef = useRef<HTMLDivElement>(null);
   const lastPosRef = useRef({ x: 0, y: 0 });
@@ -103,7 +103,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       category: droppedComp.category,
       editableProperties,
     };
-    setEditorWidgets((prev) => [...prev, newWidget]);
+    updateEditorWidgets((prev) => [...prev, newWidget]);
   };
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {

@@ -20,3 +20,4 @@ export const PROPERTY_EDITOR_WIDTH = 320; //px
 export const MIN_WIDGET_ZINDEX = 1;
 export const MAX_WIDGET_ZINDEX = 10;
 export const GRID_ID = "__grid__";
+export const MAX_HISTORY = 100; // history of actions for undo/redo
