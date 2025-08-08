@@ -108,6 +108,7 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       clearPVValues();
     } else {
       setSelectedWidgetIDs([]);
+      setWdgSelectorOpen(false);
       PVWS.current = new PVWSManager(updatePVValue);
       PVWS.current?.start(PVList);
     }

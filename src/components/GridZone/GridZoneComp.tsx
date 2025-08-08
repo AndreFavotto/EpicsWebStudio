@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import type { Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../Utils/WidgetRegistry";
 import { useEditorContext } from "../Utils/useEditorContext";
-import { EDIT_MODE, GRID_ID, MIN_WIDGET_ZINDEX } from "../../shared/constants";
+import { EDIT_MODE, GRID_ID, MIN_WIDGET_ZINDEX, RUNTIME_MODE } from "../../shared/constants";
 import Selecto from "react-selecto";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import "./GridZone.css";
@@ -54,7 +54,10 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
         setShouldCenterPan(false);
       }
     }
-  }, [shouldCenterPan, zoom]);
+    if (mode == RUNTIME_MODE && zoom != 1) {
+      centerScreen();
+    }
+  }, [shouldCenterPan, zoom, mode]);
 
   useEffect(() => {
     const handleClick = () => setContextMenuVisible(false);
@@ -107,6 +110,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   };
 
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (mode != EDIT_MODE) return;
     const scaleFactor = 1.1;
     const direction = e.deltaY < 0 ? 1 : -1;
     const newZoom = zoom * (direction > 0 ? scaleFactor : 1 / scaleFactor);
@@ -129,6 +133,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    if (mode != EDIT_MODE) return;
     if (e.button === 1 || e.altKey) {
       isMiddleButtonDownRef.current = true;
       lastPosRef.current = { x: e.clientX, y: e.clientY };
@@ -137,6 +142,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   };
 
   const handleAuxClick = (_e: React.MouseEvent) => {
+    if (mode != EDIT_MODE) return;
     if (!isPanning) centerScreen();
     setIsPanning(false);
   };
@@ -151,6 +157,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   };
 
   useEffect(() => {
+    if (mode != EDIT_MODE) return;
     const handleMouseMove = (e: MouseEvent) => {
       if (isMiddleButtonDownRef.current) {
         const dx = e.clientX - lastPosRef.current.x;
@@ -174,7 +181,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isMiddleButtonDownRef, isPanning, setIsPanning, zoom]);
+  }, [isMiddleButtonDownRef, isPanning, setIsPanning, zoom, mode]);
 
   return (
     <div
@@ -191,7 +198,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       style={{
         cursor: isPanning ? "grabbing" : "default",
         zIndex: MIN_WIDGET_ZINDEX - 1,
-        backgroundColor: props.backgroundColor!.value,
+        backgroundColor: mode == EDIT_MODE ? props.backgroundColor!.value : "white",
         backgroundImage: gridLineVisible
           ? `linear-gradient(${props.gridLineColor!.value} 1px, transparent 1px),
         linear-gradient(90deg, ${props.gridLineColor!.value} 1px, transparent 1px)`
@@ -205,10 +212,12 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
         ref={userWindowRef}
         className="userWindow"
         style={{
+          backgroundColor: mode == EDIT_MODE ? "transparent" : props.backgroundColor!.value,
           zIndex: MIN_WIDGET_ZINDEX - 1,
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
           width: `${props.windowWidth!.value}px`,
           height: `${props.windowHeight!.value}px`,
+          overflow: mode !== EDIT_MODE ? "hidden" : "visible",
         }}
       >
         <WidgetRenderer scale={zoom} gridPositioner={ensureGridPosition} setIsDragging={setIsDragging} />
