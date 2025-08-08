@@ -1,0 +1,7 @@
+.floating-toolbar-drag-handle {
+  -webkit-user-drag: none;
+}
+
+.react-rnd-resizable {
+  outline: none;
+}
