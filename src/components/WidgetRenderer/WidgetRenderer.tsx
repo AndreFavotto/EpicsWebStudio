@@ -1,6 +1,6 @@
 import React, { useMemo, useEffect, type ReactNode } from "react";
-import WidgetRegistry from "../Utils/WidgetRegistry";
-import { useEditorContext } from "../Utils/useEditorContext";
+import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
+import { useEditorContext } from "../../context/useEditorContext";
 import type { Widget } from "../../types/widgets";
 import { Rnd, type Position, type RndDragEvent, type DraggableData } from "react-rnd";
 import { EDIT_MODE, MAX_WIDGET_ZINDEX } from "../../shared/constants";

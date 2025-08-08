@@ -4,7 +4,7 @@ import { GridZone } from "./components/GridZone/";
 import WidgetSelector from "./components/WidgetSelector/WidgetSelector";
 import PropertyEditor from "./components/PropertyEditor/PropertyEditor";
 import NavBar from "./components/NavBar/NavBar";
-import { useEditorContext } from "./components/Utils/useEditorContext";
+import { useEditorContext } from "./context/useEditorContext";
 import { GRID_ID } from "./shared/constants";
 
 const App: React.FC = () => {

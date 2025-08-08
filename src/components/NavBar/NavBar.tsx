@@ -9,9 +9,10 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { COLORS, RUNTIME_MODE, EDIT_MODE } from "../../shared/constants";
-import { useEditorContext } from "../Utils/useEditorContext";
+import { useEditorContext } from "../../context/useEditorContext.tsx";
 import { WIDGET_SELECTOR_WIDTH } from "../../shared/constants";
 import { Link } from "@mui/material";
+import ToolbarButtons from "../Toolbar/Toolbar.tsx";
 
 interface StyledAppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -77,6 +78,7 @@ export default function NavBar() {
           >
             {mode === EDIT_MODE ? "Preview" : "Edit"}
           </Button>
+          <ToolbarButtons></ToolbarButtons>
 
           <Box sx={{ flexGrow: 1 }} />
 

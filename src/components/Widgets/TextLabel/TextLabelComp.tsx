@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
-import { useEditorContext } from "../../Utils/useEditorContext";
+import { useEditorContext } from "../../../context/useEditorContext";
 import { mapVAlign, mapHAlign } from "../../../shared/helpers";
 import { EDIT_MODE } from "../../../shared/constants";
 

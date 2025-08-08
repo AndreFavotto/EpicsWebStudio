@@ -1,8 +1,8 @@
 import * as React from "react";
 import { WIDGET_SELECTOR_WIDTH, EDIT_MODE } from "../../shared/constants";
 import type { Widget } from "../../types/widgets";
-import WidgetRegistry from "../Utils/WidgetRegistry";
-import { useEditorContext } from "../Utils/useEditorContext";
+import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
+import { useEditorContext } from "../../context/useEditorContext";
 import { styled } from "@mui/material/styles";
 import type { Theme, CSSObject } from "@mui/material/styles";
 import Box from "@mui/material/Box";

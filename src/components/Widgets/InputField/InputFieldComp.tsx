@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
-import { useEditorContext } from "../../Utils/useEditorContext";
+import { useEditorContext } from "../../../context/useEditorContext";
 import { EDIT_MODE, RUNTIME_MODE } from "../../../shared/constants";
 
 const InputFieldComp: React.FC<WidgetUpdate> = ({ data }) => {

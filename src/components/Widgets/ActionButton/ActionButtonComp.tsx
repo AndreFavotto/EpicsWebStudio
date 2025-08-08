@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { useEditorContext } from "../../Utils/useEditorContext";
+import { useEditorContext } from "../../../context/useEditorContext";
 import type { WidgetUpdate } from "../../../types/widgets";
 import { RUNTIME_MODE } from "../../../shared/constants";
 import { mapVAlign, mapHAlign } from "../../../shared/helpers";
