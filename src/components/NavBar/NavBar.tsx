@@ -11,6 +11,7 @@ import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { COLORS, RUNTIME_MODE, EDIT_MODE } from "../../shared/constants";
 import { useEditorContext } from "../Utils/useEditorContext";
 import { WIDGET_SELECTOR_WIDTH } from "../../shared/constants";
+import { Link } from "@mui/material";
 
 interface StyledAppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -80,7 +81,16 @@ export default function NavBar() {
           <Box sx={{ flexGrow: 1 }} />
 
           <Box sx={{ mr: 3 }}>
-            <Button sx={{ color: "white", mr: 5 }}>Contributions</Button>
+            <Button sx={{ color: "white", mr: 5 }}>
+              <Link
+                href="https://github.com/AndreFavotto/epicsWebSuite"
+                target="_blank"
+                underline="none"
+                color="inherit"
+              >
+                Contributions
+              </Link>
+            </Button>
             <Button sx={{ color: "white" }}>Login</Button>
           </Box>
         </Toolbar>
