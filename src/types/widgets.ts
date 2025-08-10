@@ -1,8 +1,7 @@
 import type { SvgIconProps } from "@mui/material/SvgIcon";
 import { PROPERTY_SCHEMAS } from "./widgetProperties";
-import type { PVWSMessageValue } from "./pvws";
 
-export type PropertySelectorType = "text" | "number" | "boolean" | "colorSelector" | "select";
+export type PropertySelectorType = "text" | "number" | "boolean" | "colorSelector" | "select" | "none";
 export type PropertyValue = string | number | number[] | boolean;
 export interface WidgetProperty<T extends PropertyValue = PropertyValue> {
   selType: PropertySelectorType;
@@ -18,6 +17,8 @@ export type WidgetProperties = Partial<typeof PROPERTY_SCHEMAS>;
 
 export type PropertyUpdates = Partial<Record<PropertyKey, PropertyValue>>;
 
+export type MultiWidgetPropertyUpdates = Record<string, PropertyUpdates>;
+
 export interface WidgetUpdate {
   data: Widget;
 }
@@ -29,6 +30,5 @@ export interface Widget {
   widgetName: string;
   component: React.FC<WidgetUpdate>;
   category: string;
-  pvValue?: PVWSMessageValue;
   editableProperties: WidgetProperties;
 }

@@ -1,5 +1,6 @@
 import type { WidgetProperty, PropertyValue } from "./widgets";
 import { COLORS } from "../shared/constants";
+import type { PVWSMessageValue } from "./pvws";
 
 /* helper to make sure each property value is correctly typed */
 function defineProp<T extends PropertyValue>(prop: WidgetProperty<T>): WidgetProperty<T> {
@@ -45,6 +46,7 @@ export const PROPERTY_SCHEMAS = {
   pvName:          defineProp({ selType: "text", label: "PV Name", value: "" as string, category: "EPICS" }),
   precisionFromPV: defineProp({ selType: "boolean", label: "Disabled", value: true as boolean, category: "EPICS" }),
   actionValue:     defineProp({ selType: "text", label: "Action Value", value: 1 as number | string, category: "EPICS" }),
+  pvValue:         defineProp({ selType: "none", label: "PV Value", value: "" as PVWSMessageValue, category: "EPICS" }),
   // placeholder for number array - needed for now to match all types in PropertyValue
   placeholder:     defineProp({ selType: "select", label: "placeholder prop", value: [] as number[], category: "placeholder" }),
 };
