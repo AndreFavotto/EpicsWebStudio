@@ -1,24 +1,27 @@
 import { useRef, useMemo } from "react";
 import { PVWSManager } from "../components/PVWS/PVWSManager";
 import type { PVWSMessage } from "../types/pvws";
+import type { MultiWidgetPropertyUpdates } from "../types/widgets";
 import { useWidgetManager } from "./useWidgetManager";
 
 export default function usePVWS() {
   const PVWS = useRef<PVWSManager | null>(null);
-  const { editorWidgets, updateEditorWidgets, setEditorWidgets } = useWidgetManager();
+  const { editorWidgets, batchWidgetUpdate } = useWidgetManager();
 
   const updatePVValue = (msg: PVWSMessage) => {
     const pv = msg.pv;
     const newValue = msg.value;
-    updateEditorWidgets((prev) =>
-      prev.map((w) => {
-        if (w.editableProperties.pvName?.value !== pv) return w;
-        return {
-          ...w,
-          pvValue: newValue,
-        };
-      })
-    );
+
+    const updates: MultiWidgetPropertyUpdates = {};
+    editorWidgets.forEach((w) => {
+      if (w.editableProperties.pvName?.value === pv) {
+        updates[w.id] = { pvValue: newValue };
+      }
+    });
+
+    if (Object.keys(updates).length > 0) {
+      batchWidgetUpdate(updates);
+    }
   };
 
   const startNewSession = () => {
@@ -34,15 +37,13 @@ export default function usePVWS() {
   };
 
   const clearPVValues = () => {
-    setEditorWidgets((prev) =>
-      prev.map((w) => {
-        if (!w.pvValue) return w;
-        return {
-          ...w,
-          pvValue: undefined,
-        };
-      })
-    );
+    const updates: MultiWidgetPropertyUpdates = {};
+    editorWidgets.forEach((w) => {
+      if (w.editableProperties.pvValue !== undefined) {
+        updates[w.id] = { pvValue: undefined };
+      }
+    });
+    batchWidgetUpdate(updates);
   };
 
   const PVList = useMemo(() => {
