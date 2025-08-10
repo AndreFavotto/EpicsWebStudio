@@ -18,5 +18,6 @@ export const TextUpdate: Widget = {
     backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.readColor },
     pvName: PROPERTY_SCHEMAS.pvName,
     disabled: PROPERTY_SCHEMAS.disabled,
+    pvValue: PROPERTY_SCHEMAS.pvValue,
   },
 } as const;

@@ -30,7 +30,7 @@ const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
         borderColor: p.borderColor?.value,
       }}
     >
-      {data.pvValue ?? p.pvName?.value ?? p.label?.value}
+      {p.pvValue?.value ?? p.pvName?.value ?? p.label?.value}
     </div>
   );
 };

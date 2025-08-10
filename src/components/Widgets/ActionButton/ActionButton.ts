@@ -19,5 +19,6 @@ export const ActionButton: Widget = {
     pvName: PROPERTY_SCHEMAS.pvName,
     disabled: PROPERTY_SCHEMAS.disabled,
     actionValue: PROPERTY_SCHEMAS.actionValue,
+    pvValue: PROPERTY_SCHEMAS.pvValue,
   },
 } as const;

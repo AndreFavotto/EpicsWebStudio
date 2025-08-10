@@ -15,6 +15,7 @@ export const InputField: Widget = {
     ...COMMON_PROPS,
     ...TEXT_PROPS,
     backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.inputColor },
-    pvName: { ...PROPERTY_SCHEMAS.pvName },
+    pvName: PROPERTY_SCHEMAS.pvName,
+    pvValue: PROPERTY_SCHEMAS.pvValue,
   },
 } as const;

@@ -1,7 +1,7 @@
 import React, { useMemo, useEffect, type ReactNode } from "react";
 import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
 import { useEditorContext } from "../../context/useEditorContext";
-import type { Widget } from "../../types/widgets";
+import type { MultiWidgetPropertyUpdates, Widget } from "../../types/widgets";
 import { Rnd, type Position, type RndDragEvent, type DraggableData } from "react-rnd";
 import { EDIT_MODE, MAX_WIDGET_ZINDEX } from "../../shared/constants";
 import "./WidgetRenderer.css";
@@ -15,9 +15,10 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
   const {
     mode,
     editorWidgets,
-    updateEditorWidgets,
+    updateEditorWidgetList,
     updateWidgetProperties,
     setSelectedWidgetIDs,
+    batchWidgetUpdate,
     selectedWidgetIDs,
     selectedWidgets,
     propertyEditorFocused,
@@ -28,14 +29,14 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
     const handleKeyDown = (e: KeyboardEvent) => {
       if (mode !== EDIT_MODE || propertyEditorFocused) return;
       if (e.key === "Delete" && selectedWidgetIDs.length > 0) {
-        updateEditorWidgets((prev) => prev.filter((w) => !selectedWidgetIDs.includes(w.id)));
+        updateEditorWidgetList((prev) => prev.filter((w) => !selectedWidgetIDs.includes(w.id)));
         setSelectedWidgetIDs([]);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [mode, propertyEditorFocused, selectedWidgetIDs, updateEditorWidgets, setSelectedWidgetIDs]);
+  }, [mode, propertyEditorFocused, selectedWidgetIDs, updateEditorWidgetList, setSelectedWidgetIDs]);
 
   function renderWidget(widget: Widget): ReactNode {
     const Comp = WidgetRegistry[widget.widgetName]?.component;
@@ -61,25 +62,22 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
 
   const handleGroupMove = (dx: number, dy: number) => {
     setIsDragging(false);
-    updateEditorWidgets((prev) =>
-      prev.map((widget) => {
-        if (!selectedWidgetIDs.includes(widget.id)) return widget;
-        const xProp = widget.editableProperties.x;
-        const yProp = widget.editableProperties.y;
-        if (!xProp || !yProp) return widget;
-        const newX = gridPositioner(xProp.value + dx);
-        const newY = gridPositioner(yProp.value + dy);
-        return {
-          ...widget,
-          editableProperties: {
-            ...widget.editableProperties,
-            x: { ...xProp, value: newX },
-            y: { ...yProp, value: newY },
-          },
-        };
-      })
-    );
+
+    const updates: MultiWidgetPropertyUpdates = {};
+    selectedWidgets.forEach((widget) => {
+      const xProp = widget.editableProperties.x;
+      const yProp = widget.editableProperties.y;
+      if (!xProp || !yProp) return;
+
+      const newX = gridPositioner(xProp.value + dx);
+      const newY = gridPositioner(yProp.value + dy);
+
+      updates[widget.id] = { x: newX, y: newY };
+    });
+
+    batchWidgetUpdate(updates);
   };
+
   const groupBox = useMemo(() => {
     if (selectedWidgets.length === 0) return null;
 
