@@ -78,6 +78,40 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
     batchWidgetUpdate(updates);
   };
 
+  const handleGroupResizeStop = (ref: HTMLElement) => {
+    setIsDragging(false);
+    if (!groupBox) return;
+    const newGroupWidth = ref.offsetWidth;
+    const newGroupHeight = ref.offsetHeight;
+
+    const scaleX = newGroupWidth / groupBox.width;
+    const scaleY = newGroupHeight / groupBox.height;
+
+    const updates: MultiWidgetPropertyUpdates = {};
+
+    selectedWidgets.forEach((w) => {
+      const widthProp = w.editableProperties.width;
+      const heightProp = w.editableProperties.height;
+      const xProp = w.editableProperties.x;
+      const yProp = w.editableProperties.y;
+
+      if (!widthProp || !heightProp || !xProp || !yProp) return;
+
+      const newWidth = gridPositioner(widthProp.value * scaleX);
+      const newHeight = gridPositioner(heightProp.value * scaleY);
+
+      const relativeX = xProp.value - groupBox.x;
+      const relativeY = yProp.value - groupBox.y;
+
+      const newX = gridPositioner(groupBox.x + relativeX * scaleX);
+      const newY = gridPositioner(groupBox.y + relativeY * scaleY);
+
+      updates[w.id] = { width: newWidth, height: newHeight, x: newX, y: newY };
+    });
+
+    batchWidgetUpdate(updates);
+  };
+
   const groupBox = useMemo(() => {
     if (selectedWidgets.length === 0) return null;
 
@@ -114,8 +148,9 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
             const dy = d.y - groupBox.y;
             handleGroupMove(dx, dy);
           }}
-          enableResizing={false}
-          style={{ outline: `${selectedWidgetIDs.length > 1 ? "1px dashed" : "none"}` }}
+          onResize={() => setIsDragging(true)}
+          onResizeStop={(_e, _direction, ref) => handleGroupResizeStop(ref)}
+          style={{ outline: `${selectedWidgetIDs.length > 1 ? "1px dashed" : "none"}`, zIndex: MAX_WIDGET_ZINDEX + 1 }}
         >
           {selectedWidgets.map((w) => {
             return (
