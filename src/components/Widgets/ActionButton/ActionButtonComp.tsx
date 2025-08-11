@@ -2,8 +2,7 @@ import React from "react";
 import { Button } from "@mui/material";
 import { useEditorContext } from "../../../context/useEditorContext";
 import type { WidgetUpdate } from "../../../types/widgets";
-import { RUNTIME_MODE } from "../../../shared/constants";
-import { mapVAlign, mapHAlign } from "../../../shared/helpers";
+import { FLEX_ALIGN_MAP, RUNTIME_MODE } from "../../../shared/constants";
 
 const ActionButtonComp: React.FC<WidgetUpdate> = ({ data }) => {
   const { mode, writePVValue } = useEditorContext();
@@ -27,8 +26,8 @@ const ActionButtonComp: React.FC<WidgetUpdate> = ({ data }) => {
         height: "100%",
         display: "flex",
         zIndex: p.zIndex?.value,
-        justifyContent: mapHAlign(p.textHAlign?.value),
-        alignItems: mapVAlign(p.textVAlign?.value),
+        justifyContent: FLEX_ALIGN_MAP[p.textHAlign?.value ?? "left"],
+        alignItems: FLEX_ALIGN_MAP[p.textVAlign?.value ?? "middle"],
         backgroundColor: p.backgroundColor?.value,
         fontSize: p.fontSize?.value,
         fontFamily: p.fontFamily?.value,

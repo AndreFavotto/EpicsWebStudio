@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 export const COLORS = {
   titleBarColor: getComputedStyle(document.documentElement, null).getPropertyValue("--title-bar-color").trim(),
   backgroundColor: getComputedStyle(document.documentElement, null).getPropertyValue("--background-color").trim(),
@@ -22,3 +24,16 @@ export const MIN_WIDGET_ZINDEX = 1;
 export const MAX_WIDGET_ZINDEX = 10;
 export const GRID_ID = "__grid__";
 export const MAX_HISTORY = 100; // history of actions for undo/redo
+export const FLEX_ALIGN_MAP: Record<string, CSSProperties["justifyContent"]> = {
+  left: "flex-start",
+  center: "center",
+  right: "flex-end",
+  top: "flex-start",
+  middle: "center",
+  bottom: "flex-end",
+};
+export const INPUT_TEXT_ALIGN_MAP: Record<string, CSSProperties["textAlign"]> = {
+  left: "left",
+  center: "center",
+  right: "right",
+};

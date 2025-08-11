@@ -1,6 +1,6 @@
 import React from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
-import { mapVAlign, mapHAlign } from "../../../shared/helpers";
+import { FLEX_ALIGN_MAP } from "../../../shared/constants";
 
 const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
   const p = data.editableProperties;
@@ -16,8 +16,8 @@ const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
         height: "100%",
         display: "flex",
         zIndex: p.zIndex?.value,
-        justifyContent: mapHAlign(p.textHAlign?.value),
-        alignItems: mapVAlign(p.textVAlign?.value),
+        justifyContent: FLEX_ALIGN_MAP[p.textHAlign?.value ?? "left"],
+        alignItems: FLEX_ALIGN_MAP[p.textVAlign?.value ?? "middle"],
         backgroundColor: p.backgroundColor?.value,
         fontSize: p.fontSize?.value,
         fontFamily: p.fontFamily?.value,
