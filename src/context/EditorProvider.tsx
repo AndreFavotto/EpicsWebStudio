@@ -9,8 +9,14 @@ export type EditorContextType = ReturnType<typeof useWidgetManager> &
 
 export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const widgetManager = useWidgetManager();
-  const pvws = usePVWS();
-  const ui = useUIManager();
+  const pvws = usePVWS(widgetManager.editorWidgets, widgetManager.batchWidgetUpdate);
+  const ui = useUIManager(
+    pvws.PVWS,
+    pvws.clearPVValues,
+    pvws.startNewSession,
+    widgetManager.setSelectedWidgetIDs,
+    widgetManager.updateWidgetProperties
+  );
 
   const value: EditorContextType = {
     ...widgetManager,

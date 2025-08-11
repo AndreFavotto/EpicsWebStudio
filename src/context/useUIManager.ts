@@ -3,14 +3,18 @@ import usePVWS from "./usePVWS";
 import { EDIT_MODE, GRID_ID, type Mode } from "../shared/constants";
 import { useWidgetManager } from "./useWidgetManager";
 
-export default function useUIManager() {
+export default function useUIManager(
+  PVWS: ReturnType<typeof usePVWS>["PVWS"],
+  clearPVValues: () => void,
+  startNewSession: () => void,
+  setSelectedWidgetIDs: ReturnType<typeof useWidgetManager>["setSelectedWidgetIDs"],
+  updateWidgetProperties: ReturnType<typeof useWidgetManager>["updateWidgetProperties"]
+) {
   const [propertyEditorFocused, setPropertyEditorFocused] = useState(false);
   const [wdgSelectorOpen, setWdgSelectorOpen] = useState(false);
-  const [mode, updateMode] = useState<Mode>(EDIT_MODE);
-  const { PVWS, clearPVValues, startNewSession } = usePVWS();
-  const { setSelectedWidgetIDs, updateWidgetProperties } = useWidgetManager();
+  const [mode, setMode] = useState<Mode>(EDIT_MODE);
 
-  const setMode = (newMode: Mode) => {
+  const updateMode = (newMode: Mode) => {
     const isEdit = newMode == EDIT_MODE;
     if (isEdit) {
       PVWS.current?.stop();
@@ -22,14 +26,14 @@ export default function useUIManager() {
       startNewSession();
     }
     updateWidgetProperties(GRID_ID, { gridLineVisible: isEdit });
-    updateMode(newMode);
+    setMode(newMode);
   };
 
   return {
     propertyEditorFocused,
     setPropertyEditorFocused,
     mode,
-    setMode,
+    updateMode,
     wdgSelectorOpen,
     setWdgSelectorOpen,
   };

@@ -1,12 +1,13 @@
 import { useRef, useMemo } from "react";
 import { PVWSManager } from "../components/PVWS/PVWSManager";
 import type { PVWSMessage } from "../types/pvws";
-import type { MultiWidgetPropertyUpdates } from "../types/widgets";
-import { useWidgetManager } from "./useWidgetManager";
+import type { MultiWidgetPropertyUpdates, Widget } from "../types/widgets";
 
-export default function usePVWS() {
+export default function usePVWS(
+  editorWidgets: Widget[],
+  batchWidgetUpdate: (updates: MultiWidgetPropertyUpdates) => void
+) {
   const PVWS = useRef<PVWSManager | null>(null);
-  const { editorWidgets, batchWidgetUpdate } = useWidgetManager();
 
   const updatePVValue = (msg: PVWSMessage) => {
     const pv = msg.pv;

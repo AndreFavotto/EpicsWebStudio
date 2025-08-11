@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { COLORS, RUNTIME_MODE, EDIT_MODE } from "../../shared/constants";
+import { COLORS, RUNTIME_MODE, EDIT_MODE, APP_SRC_URL } from "../../shared/constants";
 import { useEditorContext } from "../../context/useEditorContext.tsx";
 import { WIDGET_SELECTOR_WIDTH } from "../../shared/constants";
 import { Link } from "@mui/material";
@@ -39,12 +39,12 @@ const StyledAppBar = styled(MuiAppBar, {
 }));
 
 export default function NavBar() {
-  const { mode, setMode, wdgSelectorOpen, setWdgSelectorOpen } = useEditorContext();
+  const { mode, updateMode, wdgSelectorOpen, setWdgSelectorOpen } = useEditorContext();
   const drawerWidth = WIDGET_SELECTOR_WIDTH; // not editable for now
 
   const handleRuntimeClick = () => {
-    if (mode === RUNTIME_MODE) setMode(EDIT_MODE);
-    else setMode(RUNTIME_MODE);
+    if (mode === RUNTIME_MODE) updateMode(EDIT_MODE);
+    else updateMode(RUNTIME_MODE);
   };
 
   return (
@@ -84,12 +84,7 @@ export default function NavBar() {
 
           <Box sx={{ mr: 3 }}>
             <Button sx={{ color: "white", mr: 5 }}>
-              <Link
-                href="https://github.com/AndreFavotto/epicsWebSuite"
-                target="_blank"
-                underline="none"
-                color="inherit"
-              >
+              <Link href={APP_SRC_URL} target="_blank" underline="none" color="inherit">
                 Contributions
               </Link>
             </Button>
