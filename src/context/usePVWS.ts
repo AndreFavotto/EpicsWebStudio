@@ -1,11 +1,12 @@
 import { useRef, useMemo } from "react";
 import { PVWSManager } from "../components/PVWS/PVWSManager";
 import type { PVWSMessage } from "../types/pvws";
-import type { MultiWidgetPropertyUpdates, Widget } from "../types/widgets";
+import type { MultiWidgetPropertyUpdates } from "../types/widgets";
+import type { useWidgetManager } from "./useWidgetManager";
 
 export default function usePVWS(
-  editorWidgets: Widget[],
-  batchWidgetUpdate: (updates: MultiWidgetPropertyUpdates) => void
+  editorWidgets: ReturnType<typeof useWidgetManager>["editorWidgets"],
+  batchWidgetUpdate: ReturnType<typeof useWidgetManager>["batchWidgetUpdate"]
 ) {
   const PVWS = useRef<PVWSManager | null>(null);
 
@@ -21,7 +22,7 @@ export default function usePVWS(
     });
 
     if (Object.keys(updates).length > 0) {
-      batchWidgetUpdate(updates);
+      batchWidgetUpdate(updates, false);
     }
   };
 
@@ -44,7 +45,7 @@ export default function usePVWS(
         updates[w.id] = { pvValue: undefined };
       }
     });
-    batchWidgetUpdate(updates);
+    batchWidgetUpdate(updates, false);
   };
 
   const PVList = useMemo(() => {

@@ -29,12 +29,14 @@ export function useWidgetManager() {
   const clipboard = useRef<Widget[]>([]);
 
   const updateEditorWidgetList = useCallback(
-    (newWidgets: Widget[] | ((prev: Widget[]) => Widget[])) => {
-      setUndoStack((prev) => {
-        const updated = [...prev, deepCloneWidgetList(editorWidgets)];
-        return updated.length > MAX_HISTORY ? updated.slice(1) : updated;
-      });
-      setRedoStack([]);
+    (newWidgets: Widget[] | ((prev: Widget[]) => Widget[]), keepHistory = true) => {
+      if (keepHistory) {
+        setUndoStack((prev) => {
+          const updated = [...prev, deepCloneWidgetList(editorWidgets)];
+          return updated.length > MAX_HISTORY ? updated.slice(1) : updated;
+        });
+        setRedoStack([]);
+      }
       setEditorWidgets((prev) =>
         typeof newWidgets === "function" ? newWidgets(deepCloneWidgetList(prev)) : newWidgets
       );
@@ -42,26 +44,28 @@ export function useWidgetManager() {
     [editorWidgets]
   );
 
-  const batchWidgetUpdate = (updates: MultiWidgetPropertyUpdates) => {
+  const batchWidgetUpdate = (updates: MultiWidgetPropertyUpdates, keepHistory = true) => {
     const idsToUpdate = new Set(Object.keys(updates));
-    updateEditorWidgetList((prev) =>
-      prev.map((w) => {
-        if (!idsToUpdate.has(w.id)) return w;
-        const changes = updates[w.id];
-        const updatedProps: WidgetProperties = { ...w.editableProperties };
-        for (const [k, v] of Object.entries(changes)) {
-          const propName = k as PropertyKey;
-          if (!updatedProps[propName]) {
-            console.warn(`tried updating inexistent property ${propName} on ${w.id}`);
-            continue;
+    updateEditorWidgetList(
+      (prev) =>
+        prev.map((w) => {
+          if (!idsToUpdate.has(w.id)) return w;
+          const changes = updates[w.id];
+          const updatedProps: WidgetProperties = { ...w.editableProperties };
+          for (const [k, v] of Object.entries(changes)) {
+            const propName = k as PropertyKey;
+            if (!updatedProps[propName]) {
+              console.warn(`tried updating inexistent property ${propName} on ${w.id}`);
+              continue;
+            }
+            updatedProps[propName].value = v;
           }
-          updatedProps[propName].value = v;
-        }
-        return {
-          ...w,
-          editableProperties: updatedProps,
-        };
-      })
+          return {
+            ...w,
+            editableProperties: updatedProps,
+          };
+        }),
+      keepHistory
     );
   };
 
@@ -71,9 +75,9 @@ export function useWidgetManager() {
     updateEditorWidgetList((prev) => [...prev, newWidget]);
   };
 
-  const updateWidgetProperties = (id: string, changes: PropertyUpdates) => {
+  const updateWidgetProperties = (id: string, changes: PropertyUpdates, keepHistory = true) => {
     const updates: MultiWidgetPropertyUpdates = { [id]: changes };
-    batchWidgetUpdate(updates);
+    batchWidgetUpdate(updates, keepHistory);
   };
 
   const increaseZIndex = () => {

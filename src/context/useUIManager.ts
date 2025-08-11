@@ -25,7 +25,7 @@ export default function useUIManager(
       setWdgSelectorOpen(false);
       startNewSession();
     }
-    updateWidgetProperties(GRID_ID, { gridLineVisible: isEdit });
+    updateWidgetProperties(GRID_ID, { gridLineVisible: isEdit }, false);
     setMode(newMode);
   };
 
