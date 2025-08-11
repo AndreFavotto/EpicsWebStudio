@@ -37,54 +37,74 @@ const ToolbarButtons: React.FC = () => {
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
       <Tooltip title="Undo">
-        <IconButton size="small" onClick={handleUndo} disabled={nothingToUndo}>
-          <UndoIcon fontSize="small" />
-        </IconButton>
+        <span>
+          <IconButton size="small" onClick={handleUndo} disabled={nothingToUndo}>
+            <UndoIcon fontSize="small" />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title="Redo">
-        <IconButton size="small" onClick={handleRedo} disabled={nothingToRedo}>
-          <RedoIcon fontSize="small" />
-        </IconButton>
+        <span>
+          <IconButton size="small" onClick={handleRedo} disabled={nothingToRedo}>
+            <RedoIcon fontSize="small" />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title="Bring to Front">
-        <IconButton size="small" onClick={() => setMaxZIndex()} disabled={noneSelected}>
-          <FlipToFrontIcon fontSize="small" />
-        </IconButton>
+        <span>
+          <IconButton size="small" onClick={() => setMaxZIndex()} disabled={noneSelected}>
+            <FlipToFrontIcon fontSize="small" />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title="Bring to Back">
-        <IconButton size="small" onClick={() => setMinZIndex()} disabled={noneSelected}>
-          <FlipToBackIcon fontSize="small" />
-        </IconButton>
+        <span>
+          <IconButton size="small" onClick={() => setMinZIndex()} disabled={noneSelected}>
+            <FlipToBackIcon fontSize="small" />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title="Align Left">
-        <IconButton size="small" onClick={() => alignLeft()} disabled={lessThanTwoSelected}>
-          <AlignHorizontalLeftIcon fontSize="small" />
-        </IconButton>
+        <span>
+          <IconButton size="small" onClick={() => alignLeft()} disabled={lessThanTwoSelected}>
+            <AlignHorizontalLeftIcon fontSize="small" />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title="Align Right">
-        <IconButton size="small" onClick={() => alignRight()} disabled={lessThanTwoSelected}>
-          <AlignHorizontalRightIcon fontSize="small" />
-        </IconButton>
+        <span>
+          <IconButton size="small" onClick={() => alignRight()} disabled={lessThanTwoSelected}>
+            <AlignHorizontalRightIcon fontSize="small" />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title="Align Top">
-        <IconButton size="small" onClick={() => alignTop()} disabled={lessThanTwoSelected}>
-          <AlignVerticalTopIcon fontSize="small" />
-        </IconButton>
+        <span>
+          <IconButton size="small" onClick={() => alignTop()} disabled={lessThanTwoSelected}>
+            <AlignVerticalTopIcon fontSize="small" />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title="Align Bottom">
-        <IconButton size="small" onClick={() => alignBottom()} disabled={lessThanTwoSelected}>
-          <AlignVerticalBottomIcon fontSize="small" />
-        </IconButton>
+        <span>
+          <IconButton size="small" onClick={() => alignBottom()} disabled={lessThanTwoSelected}>
+            <AlignVerticalBottomIcon fontSize="small" />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title="Align Vertical Center">
-        <IconButton size="small" onClick={() => alignVerticalCenter()} disabled={lessThanTwoSelected}>
-          <AlignVerticalCenterIcon fontSize="small" />
-        </IconButton>
+        <span>
+          <IconButton size="small" onClick={() => alignVerticalCenter()} disabled={lessThanTwoSelected}>
+            <AlignVerticalCenterIcon fontSize="small" />
+          </IconButton>
+        </span>
       </Tooltip>
       <Tooltip title="Align Horizontal Center">
-        <IconButton size="small" onClick={() => alignHorizontalCenter()} disabled={lessThanTwoSelected}>
-          <AlignHorizontalCenterIcon fontSize="small" />
-        </IconButton>
+        <span>
+          <IconButton size="small" onClick={() => alignHorizontalCenter()} disabled={lessThanTwoSelected}>
+            <AlignHorizontalCenterIcon fontSize="small" />
+          </IconButton>
+        </span>
       </Tooltip>
     </Box>
   );
