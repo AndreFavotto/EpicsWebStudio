@@ -11,9 +11,11 @@ import FlipToFrontIcon from "@mui/icons-material/FlipToFront";
 import FlipToBackIcon from "@mui/icons-material/FlipToBack";
 import AlignVerticalCenterIcon from "@mui/icons-material/AlignVerticalCenter";
 import AlignHorizontalCenterIcon from "@mui/icons-material/AlignHorizontalCenter";
+import { EDIT_MODE } from "../../shared/constants";
 
 const ToolbarButtons: React.FC = () => {
   const {
+    mode,
     selectedWidgetIDs,
     handleUndo,
     undoStack,
@@ -29,6 +31,7 @@ const ToolbarButtons: React.FC = () => {
     alignVerticalCenter,
     //align widget methods
   } = useEditorContext();
+  if (mode !== EDIT_MODE) return null;
   const noneSelected = selectedWidgetIDs.length == 0;
   const lessThanTwoSelected = selectedWidgetIDs.length < 2;
   // const lessThanThreeSelected = selectedWidgetIDs.length < 3;

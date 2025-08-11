@@ -40,7 +40,7 @@ const StyledAppBar = styled(MuiAppBar, {
 
 export default function NavBar() {
   const { mode, updateMode, wdgSelectorOpen, setWdgSelectorOpen } = useEditorContext();
-  const drawerWidth = WIDGET_SELECTOR_WIDTH; // not editable for now
+  const drawerWidth = WIDGET_SELECTOR_WIDTH;
 
   const handleRuntimeClick = () => {
     if (mode === RUNTIME_MODE) updateMode(EDIT_MODE);
@@ -50,18 +50,19 @@ export default function NavBar() {
   return (
     <Box sx={{ display: "flex" }}>
       <StyledAppBar component="nav" position="fixed" open={wdgSelectorOpen} drawerWidth={drawerWidth}>
-        <Toolbar>
+        <Toolbar sx={{ minHeight: 56, px: 2 }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             edge="start"
             onClick={() => setWdgSelectorOpen((o) => !o)}
             sx={{ mr: 2 }}
+            size="small"
           >
             <MenuIcon />
           </IconButton>
 
-          <Typography variant="h6" component="div">
+          <Typography variant="h6" component="div" sx={{ flexShrink: 0 }}>
             EPICS Web Suite
           </Typography>
 
@@ -74,16 +75,17 @@ export default function NavBar() {
               borderColor: "white",
               ml: 2,
               "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
+              flexShrink: 0,
+              width: 110,
             }}
+            size="small"
           >
             {mode === EDIT_MODE ? "Preview" : "Edit"}
           </Button>
-          <ToolbarButtons></ToolbarButtons>
-
           <Box sx={{ flexGrow: 1 }} />
-
-          <Box sx={{ mr: 3 }}>
-            <Button sx={{ color: "white", mr: 5 }}>
+          <ToolbarButtons />
+          <Box sx={{ display: "flex", alignItems: "center", ml: 3, gap: 2, flexShrink: 0 }}>
+            <Button sx={{ color: "white" }}>
               <Link href={APP_SRC_URL} target="_blank" underline="none" color="inherit">
                 Contributions
               </Link>
