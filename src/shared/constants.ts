@@ -11,6 +11,7 @@ export const COLORS = {
   transparent: getComputedStyle(document.documentElement, null).getPropertyValue("--transparent").trim(),
 };
 
+export const APP_SRC_URL = "https://github.com/AndreFavotto/epicsWebSuite";
 export const EDIT_MODE = "edit";
 export const RUNTIME_MODE = "runtime";
 export const PVWS_URL = "ws://localhost:8080/pvws/pv";
