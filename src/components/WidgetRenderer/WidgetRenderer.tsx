@@ -8,10 +8,10 @@ import "./WidgetRenderer.css";
 
 interface RendererProps {
   scale: number;
-  gridPositioner: (pos: number) => number;
+  ensureGridCoordinate: (coord: number) => number;
   setIsDragging: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsDragging }) => {
+const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, setIsDragging }) => {
   const {
     mode,
     editorWidgets,
@@ -46,17 +46,17 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
   const handleDragStop = (_e: RndDragEvent, d: DraggableData, w: Widget) => {
     setIsDragging(false);
     updateWidgetProperties(w.id, {
-      x: gridPositioner(d.x),
-      y: gridPositioner(d.y),
+      x: ensureGridCoordinate(d.x),
+      y: ensureGridCoordinate(d.y),
     });
   };
 
   const handleResizeStop = (ref: HTMLElement, position: Position, w: Widget) => {
     setIsDragging(false);
-    const newWidth = gridPositioner(parseInt(ref.style.width));
-    const newHeight = gridPositioner(parseInt(ref.style.height));
-    const newX = gridPositioner(position.x);
-    const newY = gridPositioner(position.y);
+    const newWidth = ensureGridCoordinate(parseInt(ref.style.width));
+    const newHeight = ensureGridCoordinate(parseInt(ref.style.height));
+    const newX = ensureGridCoordinate(position.x);
+    const newY = ensureGridCoordinate(position.y);
     updateWidgetProperties(w.id, { width: newWidth, height: newHeight, x: newX, y: newY });
   };
 
@@ -69,8 +69,8 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
       const yProp = widget.editableProperties.y;
       if (!xProp || !yProp) return;
 
-      const newX = gridPositioner(xProp.value + dx);
-      const newY = gridPositioner(yProp.value + dy);
+      const newX = ensureGridCoordinate(xProp.value + dx);
+      const newY = ensureGridCoordinate(yProp.value + dy);
 
       updates[widget.id] = { x: newX, y: newY };
     });
@@ -97,14 +97,14 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
 
       if (!widthProp || !heightProp || !xProp || !yProp) return;
 
-      const newWidth = gridPositioner(widthProp.value * scaleX);
-      const newHeight = gridPositioner(heightProp.value * scaleY);
+      const newWidth = ensureGridCoordinate(widthProp.value * scaleX);
+      const newHeight = ensureGridCoordinate(heightProp.value * scaleY);
 
       const relativeX = xProp.value - groupBox.x;
       const relativeY = yProp.value - groupBox.y;
 
-      const newX = gridPositioner(groupBox.x + relativeX * scaleX);
-      const newY = gridPositioner(groupBox.y + relativeY * scaleY);
+      const newX = ensureGridCoordinate(groupBox.x + relativeX * scaleX);
+      const newY = ensureGridCoordinate(groupBox.y + relativeY * scaleY);
 
       updates[w.id] = { width: newWidth, height: newHeight, x: newX, y: newY };
     });
