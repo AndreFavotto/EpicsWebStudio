@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 import type {
   Widget,
   WidgetProperties,
@@ -28,6 +28,26 @@ export function useWidgetManager() {
   const [selectedWidgetIDs, setSelectedWidgetIDs] = useState<string[]>([]);
   const selectedWidgets = editorWidgets.filter((w) => selectedWidgetIDs.includes(w.id));
   const clipboard = useRef<Widget[]>([]);
+  const copiedGroupBounds = useRef({ x: 0, y: 0, width: 0, height: 0 });
+
+  const groupBounds = useMemo(() => {
+    if (selectedWidgets.length === 0) return null;
+
+    const left = Math.min(...selectedWidgets.map((w) => w.editableProperties.x!.value));
+    const top = Math.min(...selectedWidgets.map((w) => w.editableProperties.y!.value));
+    const right = Math.max(
+      ...selectedWidgets.map((w) => w.editableProperties.x!.value + w.editableProperties.width!.value)
+    );
+    const bottom = Math.max(
+      ...selectedWidgets.map((w) => w.editableProperties.y!.value + w.editableProperties.height!.value)
+    );
+    return {
+      x: left,
+      y: top,
+      width: right - left,
+      height: bottom - top,
+    };
+  }, [selectedWidgets]);
 
   const updateEditorWidgetList = useCallback(
     (newWidgets: Widget[] | ((prev: Widget[]) => Widget[]), keepHistory = true) => {
@@ -290,38 +310,58 @@ export function useWidgetManager() {
     (id = "") => {
       const toUpdate = id !== "" ? [getWidget(id)] : selectedWidgets;
       if (toUpdate.length === 0) return;
+      if (toUpdate.length > 1 && groupBounds) {
+        copiedGroupBounds.current = groupBounds;
+      }
       clipboard.current = toUpdate
         .filter((w) => w !== undefined)
         .map((w) => {
           return deepCloneWidget(w);
         });
     },
-    [selectedWidgets, getWidget]
+    [selectedWidgets, getWidget, groupBounds]
   );
 
   const pasteWidget = useCallback(
     (pos: GridPosition) => {
       if (clipboard.current.length === 0) return;
-      const newWidgets = clipboard.current.map((w) => ({
-        ...deepCloneWidget(w),
-        id: `${w.widgetName}-${Date.now()}`,
-        editableProperties: {
-          ...w.editableProperties,
-          x: w.editableProperties.x ? { ...w.editableProperties.x, value: pos.x } : undefined,
-          y: w.editableProperties.y ? { ...w.editableProperties.y, value: pos.y } : undefined,
-        },
-      }));
+
+      const pastingGroup = clipboard.current.length > 1;
+      const baseX = pastingGroup ? copiedGroupBounds.current.x : clipboard.current[0].editableProperties.x!.value;
+      const baseY = pastingGroup ? copiedGroupBounds.current.y : clipboard.current[0].editableProperties.y!.value;
+
+      const dx = pos.x - baseX;
+      const dy = pos.y - baseY;
+
+      const newWidgets = clipboard.current.map((w) => {
+        const clone = deepCloneWidget(w);
+        const id = `${w.widgetName}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        return {
+          ...clone,
+          id,
+          editableProperties: {
+            ...w.editableProperties,
+            x: w.editableProperties.x
+              ? { ...w.editableProperties.x, value: w.editableProperties.x.value + dx }
+              : undefined,
+            y: w.editableProperties.y
+              ? { ...w.editableProperties.y, value: w.editableProperties.y.value + dy }
+              : undefined,
+          },
+        };
+      });
 
       updateEditorWidgetList((prev) => [...prev, ...newWidgets]);
       setSelectedWidgetIDs(newWidgets.map((w) => w.id));
     },
-    [updateEditorWidgetList]
+    [updateEditorWidgetList, copiedGroupBounds]
   );
 
   return {
     editorWidgets,
     setEditorWidgets,
     selectedWidgetIDs,
+    groupBounds,
     undoStack,
     redoStack,
     setSelectedWidgetIDs,

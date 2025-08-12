@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, type ReactNode } from "react";
+import React, { useEffect, type ReactNode } from "react";
 import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
 import { useEditorContext } from "../../context/useEditorContext";
 import type { MultiWidgetPropertyUpdates, Widget } from "../../types/widgets";
@@ -22,6 +22,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
     selectedWidgetIDs,
     selectedWidgets,
     propertyEditorFocused,
+    groupBounds,
   } = useEditorContext();
   const isMultipleSelect = selectedWidgetIDs.length > 1;
 
@@ -80,12 +81,12 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
 
   const handleGroupResizeStop = (ref: HTMLElement) => {
     setIsDragging(false);
-    if (!groupBox) return;
+    if (!groupBounds) return;
     const newGroupWidth = ref.offsetWidth;
     const newGroupHeight = ref.offsetHeight;
 
-    const scaleX = newGroupWidth / groupBox.width;
-    const scaleY = newGroupHeight / groupBox.height;
+    const scaleX = newGroupWidth / groupBounds.width;
+    const scaleY = newGroupHeight / groupBounds.height;
 
     const updates: MultiWidgetPropertyUpdates = {};
 
@@ -100,11 +101,11 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
       const newWidth = ensureGridCoordinate(widthProp.value * scaleX);
       const newHeight = ensureGridCoordinate(heightProp.value * scaleY);
 
-      const relativeX = xProp.value - groupBox.x;
-      const relativeY = yProp.value - groupBox.y;
+      const relativeX = xProp.value - groupBounds.x;
+      const relativeY = yProp.value - groupBounds.y;
 
-      const newX = ensureGridCoordinate(groupBox.x + relativeX * scaleX);
-      const newY = ensureGridCoordinate(groupBox.y + relativeY * scaleY);
+      const newX = ensureGridCoordinate(groupBounds.x + relativeX * scaleX);
+      const newY = ensureGridCoordinate(groupBounds.y + relativeY * scaleY);
 
       updates[w.id] = { width: newWidth, height: newHeight, x: newX, y: newY };
     });
@@ -112,40 +113,20 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
     batchWidgetUpdate(updates);
   };
 
-  const groupBox = useMemo(() => {
-    if (selectedWidgets.length === 0) return null;
-
-    const left = Math.min(...selectedWidgets.map((w) => w.editableProperties.x!.value));
-    const top = Math.min(...selectedWidgets.map((w) => w.editableProperties.y!.value));
-    const right = Math.max(
-      ...selectedWidgets.map((w) => w.editableProperties.x!.value + w.editableProperties.width!.value)
-    );
-    const bottom = Math.max(
-      ...selectedWidgets.map((w) => w.editableProperties.y!.value + w.editableProperties.height!.value)
-    );
-
-    return {
-      x: left,
-      y: top,
-      width: right - left,
-      height: bottom - top,
-    };
-  }, [selectedWidgets]);
-
   return (
     <>
-      {isMultipleSelect && groupBox && (
+      {isMultipleSelect && groupBounds && (
         <Rnd
           id="groupBox"
           bounds="window"
           scale={scale}
           disableDragging={mode != EDIT_MODE}
-          size={{ width: groupBox.width, height: groupBox.height }}
-          position={{ x: groupBox.x, y: groupBox.y }}
+          size={{ width: groupBounds.width, height: groupBounds.height }}
+          position={{ x: groupBounds.x, y: groupBounds.y }}
           onDrag={() => setIsDragging(true)}
           onDragStop={(_e, d) => {
-            const dx = d.x - groupBox.x;
-            const dy = d.y - groupBox.y;
+            const dx = d.x - groupBounds.x;
+            const dy = d.y - groupBounds.y;
             handleGroupDragStop(dx, dy);
           }}
           onClick={(e: React.MouseEvent) => e.stopPropagation()}
@@ -157,12 +138,12 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
             return (
               <div
                 key={w.id}
-                className="selected"
+                className="selectable selected"
                 style={{
                   width: w.editableProperties.width!.value,
                   height: w.editableProperties.height!.value,
-                  left: w.editableProperties.x!.value - groupBox.x,
-                  top: w.editableProperties.y!.value - groupBox.y,
+                  left: w.editableProperties.x!.value - groupBounds.x,
+                  top: w.editableProperties.y!.value - groupBounds.y,
                 }}
               >
                 {renderWidget(w)}
