@@ -5,7 +5,7 @@ import WidgetSelector from "./components/WidgetSelector/WidgetSelector";
 import PropertyEditor from "./components/PropertyEditor/PropertyEditor";
 import NavBar from "./components/NavBar/NavBar";
 import { useEditorContext } from "./context/useEditorContext";
-import { GRID_ID } from "./shared/constants";
+import { GRID_ID } from "./constants/constants";
 
 const App: React.FC = () => {
   const { editorWidgets } = useEditorContext();

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import usePVWS from "./usePVWS";
-import { EDIT_MODE, GRID_ID, type Mode } from "../shared/constants";
+import { EDIT_MODE, GRID_ID, type Mode } from "../constants/constants";
 import { useWidgetManager } from "./useWidgetManager";
 
 export default function useUIManager(

@@ -8,9 +8,9 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import { COLORS, RUNTIME_MODE, EDIT_MODE, APP_SRC_URL } from "../../shared/constants";
+import { COLORS, RUNTIME_MODE, EDIT_MODE, APP_SRC_URL } from "../../constants/constants.ts";
 import { useEditorContext } from "../../context/useEditorContext.tsx";
-import { WIDGET_SELECTOR_WIDTH } from "../../shared/constants";
+import { WIDGET_SELECTOR_WIDTH } from "../../constants/constants.ts";
 import { Link } from "@mui/material";
 import ToolbarButtons from "../Toolbar/Toolbar.tsx";
 

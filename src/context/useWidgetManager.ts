@@ -7,7 +7,7 @@ import type {
   MultiWidgetPropertyUpdates,
 } from "../types/widgets";
 import { GridZone } from "../components/GridZone";
-import { MAX_HISTORY, MAX_WIDGET_ZINDEX, MIN_WIDGET_ZINDEX } from "../shared/constants";
+import { MAX_HISTORY, MAX_WIDGET_ZINDEX, MIN_WIDGET_ZINDEX } from "../constants/constants";
 
 function deepCloneWidgetList(widgets: Widget[]): Widget[] {
   return widgets.map(deepCloneWidget);

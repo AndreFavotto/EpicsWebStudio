@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import type { Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
 import { useEditorContext } from "../../context/useEditorContext.tsx";
-import { EDIT_MODE, GRID_ID, MIN_WIDGET_ZINDEX, RUNTIME_MODE } from "../../shared/constants";
+import { EDIT_MODE, GRID_ID, MIN_WIDGET_ZINDEX, RUNTIME_MODE } from "../../constants/constants.ts";
 import Selecto from "react-selecto";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import "./GridZone.css";

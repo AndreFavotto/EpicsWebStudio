@@ -11,7 +11,7 @@ import FlipToFrontIcon from "@mui/icons-material/FlipToFront";
 import FlipToBackIcon from "@mui/icons-material/FlipToBack";
 import AlignVerticalCenterIcon from "@mui/icons-material/AlignVerticalCenter";
 import AlignHorizontalCenterIcon from "@mui/icons-material/AlignHorizontalCenter";
-import { EDIT_MODE } from "../../shared/constants";
+import { EDIT_MODE } from "../../constants/constants";
 
 const ToolbarButtons: React.FC = () => {
   const {

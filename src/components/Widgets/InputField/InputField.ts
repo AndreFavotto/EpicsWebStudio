@@ -1,5 +1,5 @@
 import { InputFieldComp } from "./InputFieldComp";
-import { COLORS } from "../../../shared/constants";
+import { COLORS } from "../../../constants/constants";
 import type { Widget } from "../../../types/widgets";
 import InputIcon from "@mui/icons-material/Input";
 import { PROPERTY_SCHEMAS, COMMON_PROPS, TEXT_PROPS } from "../../../types/widgetProperties";

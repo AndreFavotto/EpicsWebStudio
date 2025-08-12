@@ -1,6 +1,6 @@
 import React from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
-import { FLEX_ALIGN_MAP } from "../../../shared/constants";
+import { FLEX_ALIGN_MAP } from "../../../constants/constants";
 
 const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
   const p = data.editableProperties;

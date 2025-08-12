@@ -1,4 +1,4 @@
-import { COLORS } from "../../../shared/constants";
+import { COLORS } from "../../../constants/constants";
 import { PROPERTY_SCHEMAS, COMMON_PROPS, TEXT_PROPS } from "../../../types/widgetProperties";
 import type { Widget } from "../../../types/widgets";
 import { TextLabelComp } from "./TextLabelComp";

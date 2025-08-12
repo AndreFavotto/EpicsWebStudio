@@ -15,7 +15,7 @@ import {
   KeyboardArrowDown,
   KeyboardDoubleArrowDown,
 } from "@mui/icons-material";
-import { EDIT_MODE, GRID_ID, MAX_WIDGET_ZINDEX } from "../../shared/constants";
+import { EDIT_MODE, GRID_ID, MAX_WIDGET_ZINDEX } from "../../constants/constants";
 
 export interface ContextMenuProps {
   widgetID: string;

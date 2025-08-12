@@ -1,4 +1,4 @@
-import { COLORS } from "../../../shared/constants";
+import { COLORS } from "../../../constants/constants";
 import type { Widget } from "../../../types/widgets";
 import { COMMON_PROPS, PROPERTY_SCHEMAS } from "../../../types/widgetProperties";
 import { EllipseComp } from "./EllipseComp";

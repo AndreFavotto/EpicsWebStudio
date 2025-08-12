@@ -3,7 +3,7 @@ import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
 import { useEditorContext } from "../../context/useEditorContext";
 import type { MultiWidgetPropertyUpdates, Widget } from "../../types/widgets";
 import { Rnd, type Position, type RndDragEvent, type DraggableData } from "react-rnd";
-import { EDIT_MODE, MAX_WIDGET_ZINDEX } from "../../shared/constants";
+import { EDIT_MODE, MAX_WIDGET_ZINDEX } from "../../constants/constants";
 import "./WidgetRenderer.css";
 
 interface RendererProps {

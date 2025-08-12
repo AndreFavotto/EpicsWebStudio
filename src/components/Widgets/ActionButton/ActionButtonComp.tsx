@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@mui/material";
 import { useEditorContext } from "../../../context/useEditorContext";
 import type { WidgetUpdate } from "../../../types/widgets";
-import { FLEX_ALIGN_MAP, RUNTIME_MODE } from "../../../shared/constants";
+import { FLEX_ALIGN_MAP, RUNTIME_MODE } from "../../../constants/constants";
 
 const ActionButtonComp: React.FC<WidgetUpdate> = ({ data }) => {
   const { mode, writePVValue } = useEditorContext();

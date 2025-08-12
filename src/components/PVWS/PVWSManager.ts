@@ -1,5 +1,5 @@
 import { PVWSClient } from "./PVWSClient";
-import * as CONSTS from "../../shared/constants";
+import * as CONSTS from "../../constants/constants";
 import type { PVWSMessage } from "../../types/pvws";
 
 export class PVWSManager {

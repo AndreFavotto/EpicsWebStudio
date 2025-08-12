@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
 import { useEditorContext } from "../../../context/useEditorContext";
-import { EDIT_MODE, FLEX_ALIGN_MAP, INPUT_TEXT_ALIGN_MAP } from "../../../shared/constants";
+import { EDIT_MODE, FLEX_ALIGN_MAP, INPUT_TEXT_ALIGN_MAP } from "../../../constants/constants";
 
 const TextLabelComp: React.FC<WidgetUpdate> = ({ data }) => {
   const { mode, updateWidgetProperties } = useEditorContext();

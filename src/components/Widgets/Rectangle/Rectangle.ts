@@ -1,4 +1,4 @@
-import { COLORS } from "../../../shared/constants";
+import { COLORS } from "../../../constants/constants";
 import type { Widget } from "../../../types/widgets";
 import { PROPERTY_SCHEMAS, COMMON_PROPS } from "../../../types/widgetProperties";
 import { RectangleComp } from "./RectangleComp";

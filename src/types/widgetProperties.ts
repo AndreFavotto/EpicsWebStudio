@@ -1,5 +1,5 @@
 import type { WidgetProperty, PropertyValue } from "./widgets";
-import { COLORS } from "../shared/constants";
+import { COLORS } from "../constants/constants";
 import type { PVWSMessageValue } from "./pvws";
 
 /* helper to make sure each property value is correctly typed */

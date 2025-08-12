@@ -1,5 +1,5 @@
 import * as React from "react";
-import { WIDGET_SELECTOR_WIDTH, EDIT_MODE } from "../../shared/constants";
+import { WIDGET_SELECTOR_WIDTH, EDIT_MODE } from "../../constants/constants";
 import type { Widget } from "../../types/widgets";
 import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
 import { useEditorContext } from "../../context/useEditorContext";

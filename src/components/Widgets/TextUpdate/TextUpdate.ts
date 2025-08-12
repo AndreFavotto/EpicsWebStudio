@@ -1,6 +1,6 @@
 import { TextUpdateComp } from "./TextUpdateComp";
 import { PROPERTY_SCHEMAS, COMMON_PROPS, TEXT_PROPS } from "../../../types/widgetProperties";
-import { COLORS } from "../../../shared/constants";
+import { COLORS } from "../../../constants/constants";
 import type { Widget } from "../../../types/widgets";
 import TextsmsIcon from "@mui/icons-material/Textsms";
 
