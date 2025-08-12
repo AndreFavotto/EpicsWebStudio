@@ -32,3 +32,8 @@ export interface Widget {
   category: string;
   editableProperties: WidgetProperties;
 }
+
+export interface GridPosition {
+  x: number;
+  y: number;
+}

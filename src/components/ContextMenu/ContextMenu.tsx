@@ -11,22 +11,24 @@ import {
   ContentCut,
   ContentPaste,
   KeyboardArrowUp,
-  KeyboardDoubleArrowUp,
   KeyboardArrowDown,
-  KeyboardDoubleArrowDown,
+  FlipToFront,
+  FlipToBack,
 } from "@mui/icons-material";
 import { EDIT_MODE, GRID_ID, MAX_WIDGET_ZINDEX } from "../../constants/constants";
+import type { GridPosition } from "../../types/widgets";
 
 export interface ContextMenuProps {
   widgetID: string;
-  x: number;
-  y: number;
+  pos: GridPosition;
+  mousePos: GridPosition;
   visible: boolean;
   onClose: () => void;
 }
 
-const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, x, y, visible, onClose }) => {
-  const { mode, setMaxZIndex, setMinZIndex, increaseZIndex, decreaseZIndex } = useEditorContext();
+const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, pos, mousePos, visible, onClose }) => {
+  const { mode, setMaxZIndex, setMinZIndex, increaseZIndex, decreaseZIndex, copyWidget, pasteWidget } =
+    useEditorContext();
   if (!visible) return null;
   if (mode !== EDIT_MODE) return null; // TODO: create context menu for RUNTIME
   const isGrid = widgetID == GRID_ID || widgetID == "gridZone";
@@ -42,14 +44,14 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, x, y, visible, onCl
       label: "Copy",
       icon: <ContentCopy fontSize="small" />,
       shortcut: "Ctrl+C",
-      action: () => console.log("Copy"),
+      action: () => copyWidget(widgetID),
       disabled: isGrid,
     },
     {
       label: "Paste",
       icon: <ContentPaste fontSize="small" />,
       shortcut: "Ctrl+V",
-      action: () => console.log("Paste"),
+      action: () => pasteWidget(mousePos),
       disabled: false,
     },
     {
@@ -60,8 +62,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, x, y, visible, onCl
       disabled: isGrid,
     },
     {
-      label: "Send to front",
-      icon: <KeyboardDoubleArrowUp fontSize="small" />,
+      label: "Bring to front",
+      icon: <FlipToFront fontSize="small" />,
       shortcut: "",
       action: () => setMaxZIndex(widgetID),
       disabled: isGrid,
@@ -75,7 +77,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, x, y, visible, onCl
     },
     {
       label: "Send to back",
-      icon: <KeyboardDoubleArrowDown fontSize="small" />,
+      icon: <FlipToBack fontSize="small" />,
       shortcut: "",
       action: () => setMinZIndex(widgetID),
       disabled: isGrid,
@@ -85,8 +87,8 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, x, y, visible, onCl
     <Paper
       sx={{
         position: "fixed",
-        top: y,
-        left: x,
+        left: pos.x,
+        top: pos.y,
         zIndex: MAX_WIDGET_ZINDEX + 1,
         width: 220,
         maxWidth: "100%",

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
-import type { Widget, WidgetUpdate } from "../../types/widgets";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import type { GridPosition, Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
 import { useEditorContext } from "../../context/useEditorContext.tsx";
 import { EDIT_MODE, GRID_ID, MIN_WIDGET_ZINDEX, RUNTIME_MODE } from "../../constants/constants.ts";
@@ -10,16 +10,20 @@ import WidgetRenderer from "../WidgetRenderer/WidgetRenderer.tsx";
 
 const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const props = data.editableProperties;
-  const { mode, addWidget, selectedWidgetIDs, setSelectedWidgetIDs } = useEditorContext();
+  const { mode, addWidget, selectedWidgetIDs, setSelectedWidgetIDs, handleRedo, handleUndo, copyWidget, pasteWidget } =
+    useEditorContext();
+
   const gridRef = useRef<HTMLDivElement>(null);
   const userWindowRef = useRef<HTMLDivElement>(null);
-  const lastPosRef = useRef({ x: 0, y: 0 });
+  const lastPosRef = useRef<GridPosition>({ x: 0, y: 0 });
+  const mousePosRef = useRef<GridPosition>({ x: 0, y: 0 });
   const selectoRef = useRef<Selecto>(null);
   const isMiddleButtonDownRef = useRef(false);
+
   const [zoom, setZoom] = useState(1);
-  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [pan, setPan] = useState<GridPosition>({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
-  const [contextMenuPos, setContextMenuPos] = useState({ x: 0, y: 0 });
+  const [contextMenuPos, setContextMenuPos] = useState<GridPosition>({ x: 0, y: 0 });
   const [contextMenuWdgID, setContextMenuWdgID] = useState("");
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -29,9 +33,12 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const snapToGrid = props.snapToGrid?.value;
   const gridLineVisible = props.gridLineVisible?.value;
 
-  const ensureGridPosition = (pos: number) => {
-    return snapToGrid ? Math.round(pos / gridSize) * gridSize : pos;
-  };
+  const ensureGridCoordinate = useCallback(
+    (coord: number) => {
+      return snapToGrid ? Math.round(coord / gridSize) * gridSize : coord;
+    },
+    [snapToGrid, gridSize]
+  );
 
   const centerScreen = () => {
     setZoom(1);
@@ -95,8 +102,8 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
     const userX = (rawX - pan.x) / zoom;
     const userY = (rawY - pan.y) / zoom;
 
-    if (editableProperties.x) editableProperties.x.value = ensureGridPosition(userX);
-    if (editableProperties.y) editableProperties.y.value = ensureGridPosition(userY);
+    if (editableProperties.x) editableProperties.x.value = ensureGridCoordinate(userX);
+    if (editableProperties.y) editableProperties.y.value = ensureGridCoordinate(userY);
 
     const newWidget: Widget = {
       id: `${entry.widgetName}-${Date.now()}`,
@@ -165,6 +172,19 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   useEffect(() => {
     if (mode != EDIT_MODE) return;
     const handleMouseMove = (e: MouseEvent) => {
+      // update mouse position
+      const rect = gridRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const rawX = e.clientX - rect.left;
+      const rawY = e.clientY - rect.top;
+      const userX = (rawX - pan.x) / zoom;
+      const userY = (rawY - pan.y) / zoom;
+
+      mousePosRef.current = {
+        x: ensureGridCoordinate(userX),
+        y: ensureGridCoordinate(userY),
+      };
+      // move screen if middle button pressed
       if (isMiddleButtonDownRef.current) {
         const dx = e.clientX - lastPosRef.current.x;
         const dy = e.clientY - lastPosRef.current.y;
@@ -187,7 +207,35 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isMiddleButtonDownRef, isPanning, setIsPanning, zoom, mode]);
+  }, [isMiddleButtonDownRef, isPanning, setIsPanning, ensureGridCoordinate, pan, zoom, mode]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key.toLowerCase() === "z" && !e.shiftKey) {
+        e.preventDefault();
+        handleUndo();
+        return;
+      }
+      if ((e.ctrlKey && e.key.toLowerCase() === "y") || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "z")) {
+        e.preventDefault();
+        handleRedo();
+        return;
+      }
+      if (e.ctrlKey && e.key.toLowerCase() === "c") {
+        e.preventDefault();
+        copyWidget();
+        return;
+      }
+      if (e.ctrlKey && e.key.toLowerCase() === "v") {
+        e.preventDefault();
+        pasteWidget(mousePosRef.current);
+        return;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleUndo, handleRedo, copyWidget, pasteWidget, mousePosRef]);
 
   return (
     <div
@@ -226,9 +274,9 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           overflow: mode !== EDIT_MODE ? "hidden" : "visible",
         }}
       >
-        <WidgetRenderer scale={zoom} gridPositioner={ensureGridPosition} setIsDragging={setIsDragging} />
+        <WidgetRenderer scale={zoom} ensureGridCoordinate={ensureGridCoordinate} setIsDragging={setIsDragging} />
       </div>
-      {!isDragging && mode == EDIT_MODE && (
+      {!contextMenuVisible && !isDragging && mode == EDIT_MODE && (
         <Selecto
           ref={selectoRef}
           container={document.getElementById("gridContainer")}
@@ -248,7 +296,6 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
             if (e.added.length === 0 && e.removed.length === 0) {
               selectoRef.current?.setSelectedTargets([]);
               setSelectedWidgetIDs([]);
-              setContextMenuVisible(false);
             } else {
               const selectedIDs = e.selected.map((el) => el.id);
               setSelectedWidgetIDs(selectedIDs);
@@ -257,8 +304,8 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
         />
       )}
       <ContextMenu
-        x={contextMenuPos.x}
-        y={contextMenuPos.y}
+        pos={contextMenuPos}
+        mousePos={mousePosRef.current}
         visible={contextMenuVisible}
         widgetID={contextMenuWdgID}
         onClose={() => setContextMenuVisible(false)}

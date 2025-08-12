@@ -1,10 +1,11 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import type {
   Widget,
   WidgetProperties,
   PropertyKey,
   PropertyUpdates,
   MultiWidgetPropertyUpdates,
+  GridPosition,
 } from "../types/widgets";
 import { GridZone } from "../components/GridZone";
 import { MAX_HISTORY, MAX_WIDGET_ZINDEX, MIN_WIDGET_ZINDEX } from "../constants/constants";
@@ -69,7 +70,7 @@ export function useWidgetManager() {
     );
   };
 
-  const getWidget = (id: string) => editorWidgets.find((w) => w.id === id);
+  const getWidget = useCallback((id: string) => editorWidgets.find((w) => w.id === id), [editorWidgets]);
 
   const addWidget = (newWidget: Widget) => {
     updateEditorWidgetList((prev) => [...prev, newWidget]);
@@ -80,10 +81,11 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates, keepHistory);
   };
 
-  const increaseZIndex = () => {
+  const increaseZIndex = (id = "") => {
     const updates: MultiWidgetPropertyUpdates = {};
-    selectedWidgets.forEach((w) => {
-      if (!w.editableProperties.zIndex) return;
+    const toUpdate = id !== "" ? [getWidget(id)] : selectedWidgets;
+    toUpdate.forEach((w) => {
+      if (!w?.editableProperties.zIndex) return;
       const currentZIndex = w.editableProperties.zIndex.value;
       if (currentZIndex >= MAX_WIDGET_ZINDEX) return;
       updates[w.id] = { zIndex: currentZIndex + 1 };
@@ -91,10 +93,11 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
-  const decreaseZIndex = () => {
+  const decreaseZIndex = (id = "") => {
     const updates: MultiWidgetPropertyUpdates = {};
-    selectedWidgets.forEach((w) => {
-      if (!w.editableProperties.zIndex) return;
+    const toUpdate = id !== "" ? [getWidget(id)] : selectedWidgets;
+    toUpdate.forEach((w) => {
+      if (!w?.editableProperties.zIndex) return;
       const currentZIndex = w.editableProperties.zIndex.value;
       if (currentZIndex <= MIN_WIDGET_ZINDEX) return;
       updates[w.id] = { zIndex: currentZIndex - 1 };
@@ -102,17 +105,21 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
-  const setMaxZIndex = () => {
+  const setMaxZIndex = (id = "") => {
     const updates: MultiWidgetPropertyUpdates = {};
-    selectedWidgets.forEach((w) => {
+    const toUpdate = id !== "" ? [getWidget(id)] : selectedWidgets;
+    toUpdate.forEach((w) => {
+      if (!w?.editableProperties.zIndex) return;
       updates[w.id] = { zIndex: MAX_WIDGET_ZINDEX };
     });
     batchWidgetUpdate(updates);
   };
 
-  const setMinZIndex = () => {
+  const setMinZIndex = (id = "") => {
     const updates: MultiWidgetPropertyUpdates = {};
-    selectedWidgets.forEach((w) => {
+    const toUpdate = id !== "" ? [getWidget(id)] : selectedWidgets;
+    toUpdate.forEach((w) => {
+      if (!w?.editableProperties.zIndex) return;
       updates[w.id] = { zIndex: MIN_WIDGET_ZINDEX };
     });
     batchWidgetUpdate(updates);
@@ -279,54 +286,37 @@ export function useWidgetManager() {
     });
   }, [editorWidgets]);
 
-  const copyWidget = useCallback(() => {
-    if (selectedWidgetIDs.length === 0) return;
-    clipboard.current = selectedWidgets.map((w) => deepCloneWidget(w));
-  }, [selectedWidgets, selectedWidgetIDs]);
+  const copyWidget = useCallback(
+    (id = "") => {
+      const toUpdate = id !== "" ? [getWidget(id)] : selectedWidgets;
+      if (toUpdate.length === 0) return;
+      clipboard.current = toUpdate
+        .filter((w) => w !== undefined)
+        .map((w) => {
+          return deepCloneWidget(w);
+        });
+    },
+    [selectedWidgets, getWidget]
+  );
 
-  const pasteWidget = useCallback(() => {
-    if (clipboard.current.length === 0) return;
-    const newWidgets = clipboard.current.map((w) => ({
-      ...deepCloneWidget(w),
-      id: `${w.widgetName}-${Date.now()}`,
-      editableProperties: {
-        ...w.editableProperties,
-        x: w.editableProperties.x ? { ...w.editableProperties.x, value: w.editableProperties.x.value + 10 } : undefined,
-        y: w.editableProperties.y ? { ...w.editableProperties.y, value: w.editableProperties.y.value + 10 } : undefined,
-      },
-    }));
+  const pasteWidget = useCallback(
+    (pos: GridPosition) => {
+      if (clipboard.current.length === 0) return;
+      const newWidgets = clipboard.current.map((w) => ({
+        ...deepCloneWidget(w),
+        id: `${w.widgetName}-${Date.now()}`,
+        editableProperties: {
+          ...w.editableProperties,
+          x: w.editableProperties.x ? { ...w.editableProperties.x, value: pos.x } : undefined,
+          y: w.editableProperties.y ? { ...w.editableProperties.y, value: pos.y } : undefined,
+        },
+      }));
 
-    updateEditorWidgetList((prev) => [...prev, ...newWidgets]);
-    setSelectedWidgetIDs(newWidgets.map((w) => w.id));
-  }, [updateEditorWidgetList]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.ctrlKey && e.key.toLowerCase() === "z" && !e.shiftKey) {
-        e.preventDefault();
-        handleUndo();
-        return;
-      }
-      if ((e.ctrlKey && e.key.toLowerCase() === "y") || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "z")) {
-        e.preventDefault();
-        handleRedo();
-        return;
-      }
-      if (e.ctrlKey && e.key.toLowerCase() === "c") {
-        e.preventDefault();
-        copyWidget();
-        return;
-      }
-      if (e.ctrlKey && e.key.toLowerCase() === "v") {
-        e.preventDefault();
-        pasteWidget();
-        return;
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleUndo, handleRedo, copyWidget, pasteWidget]);
+      updateEditorWidgetList((prev) => [...prev, ...newWidgets]);
+      setSelectedWidgetIDs(newWidgets.map((w) => w.id));
+    },
+    [updateEditorWidgetList]
+  );
 
   return {
     editorWidgets,
