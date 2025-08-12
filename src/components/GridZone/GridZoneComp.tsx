@@ -10,7 +10,7 @@ import WidgetRenderer from "../WidgetRenderer/WidgetRenderer.tsx";
 
 const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const props = data.editableProperties;
-  const { mode, addWidget, setSelectedWidgetIDs } = useEditorContext();
+  const { mode, addWidget, selectedWidgetIDs, setSelectedWidgetIDs } = useEditorContext();
   const gridRef = useRef<HTMLDivElement>(null);
   const userWindowRef = useRef<HTMLDivElement>(null);
   const lastPosRef = useRef({ x: 0, y: 0 });
@@ -134,15 +134,21 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
 
   const handleMouseDown = (e: React.MouseEvent) => {
     if (mode != EDIT_MODE) return;
-    if (e.button === 1 || e.altKey) {
+    if (e.button === 1) {
       isMiddleButtonDownRef.current = true;
       lastPosRef.current = { x: e.clientX, y: e.clientY };
       e.preventDefault();
     }
   };
 
-  const handleAuxClick = (_e: React.MouseEvent) => {
+  const handleClick = (_e: React.MouseEvent) => {
+    setContextMenuVisible(false);
+    setSelectedWidgetIDs([]);
+  };
+
+  const handleAuxClick = (e: React.MouseEvent) => {
     if (mode != EDIT_MODE) return;
+    if (e.button !== 1) return;
     if (!isPanning) centerScreen();
     setIsPanning(false);
   };
@@ -193,7 +199,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       onContextMenu={handleContextMenu}
       onWheel={handleWheel}
       onMouseDown={handleMouseDown}
-      onClick={() => setContextMenuVisible(false)}
+      onClick={handleClick}
       onAuxClick={handleAuxClick}
       style={{
         cursor: isPanning ? "grabbing" : "default",
@@ -222,7 +228,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       >
         <WidgetRenderer scale={zoom} gridPositioner={ensureGridPosition} setIsDragging={setIsDragging} />
       </div>
-      {!contextMenuVisible && !isDragging && mode == EDIT_MODE && (
+      {!isDragging && mode == EDIT_MODE && (
         <Selecto
           ref={selectoRef}
           container={document.getElementById("gridContainer")}
@@ -231,13 +237,18 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           hitRate={100}
           selectByClick
           preventDragFromInside
+          preventRightClick={false}
           preventClickEventOnDragStart
           preventClickEventOnDrag
           toggleContinueSelect={["ctrl"]}
           onSelectEnd={(e) => {
+            if (selectedWidgetIDs.length > 1 && e.inputEvent.button == 2) {
+              return;
+            }
             if (e.added.length === 0 && e.removed.length === 0) {
               selectoRef.current?.setSelectedTargets([]);
               setSelectedWidgetIDs([]);
+              setContextMenuVisible(false);
             } else {
               const selectedIDs = e.selected.map((el) => el.id);
               setSelectedWidgetIDs(selectedIDs);

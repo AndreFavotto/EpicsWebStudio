@@ -60,7 +60,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
     updateWidgetProperties(w.id, { width: newWidth, height: newHeight, x: newX, y: newY });
   };
 
-  const handleGroupMove = (dx: number, dy: number) => {
+  const handleGroupDragStop = (dx: number, dy: number) => {
     setIsDragging(false);
 
     const updates: MultiWidgetPropertyUpdates = {};
@@ -146,8 +146,9 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
           onDragStop={(_e, d) => {
             const dx = d.x - groupBox.x;
             const dy = d.y - groupBox.y;
-            handleGroupMove(dx, dy);
+            handleGroupDragStop(dx, dy);
           }}
+          onClick={(e: React.MouseEvent) => e.stopPropagation()}
           onResize={() => setIsDragging(true)}
           onResizeStop={(_e, _direction, ref) => handleGroupResizeStop(ref)}
           style={{ outline: `${selectedWidgetIDs.length > 1 ? "1px dashed" : "none"}`, zIndex: MAX_WIDGET_ZINDEX + 1 }}
@@ -156,7 +157,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
             return (
               <div
                 key={w.id}
-                className="selectable selected"
+                className="selected"
                 style={{
                   width: w.editableProperties.width!.value,
                   height: w.editableProperties.height!.value,
@@ -196,6 +197,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, gridPositioner, setIsD
             onDrag={() => setIsDragging(true)}
             onDragStop={(_e, d) => handleDragStop(_e, d, w)}
             onResizeStart={() => setIsDragging(true)}
+            onClick={(e: React.MouseEvent) => e.stopPropagation()}
             onResizeStop={(_e, _direction, ref, _delta, position) => handleResizeStop(ref, position, w)}
           >
             {isInGroupBox ? null : renderWidget(w)}
