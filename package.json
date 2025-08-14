@@ -14,8 +14,10 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
+    "plotly.js": "^3.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-plotly.js": "^2.6.0",
     "react-rnd": "^10.5.2",
     "react-router-dom": "^7.7.0",
     "react-selecto": "^1.26.3"
@@ -24,6 +26,7 @@
     "@eslint/js": "^9.30.1",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
+    "@types/react-plotly.js": "^2.6.3",
     "@vitejs/plugin-react-swc": "^3.10.2",
     "eslint": "^9.30.1",
     "eslint-plugin-react-hooks": "^5.2.0",

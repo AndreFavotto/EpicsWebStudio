@@ -13,6 +13,8 @@ export const COLORS = {
   transparent: getComputedStyle(document.documentElement, null).getPropertyValue("--transparent").trim(),
   onColor: getComputedStyle(document.documentElement, null).getPropertyValue("--on-color").trim(),
   offColor: getComputedStyle(document.documentElement, null).getPropertyValue("--off-color").trim(),
+  white: getComputedStyle(document.documentElement, null).getPropertyValue("--white").trim(),
+  graphLineColor: getComputedStyle(document.documentElement, null).getPropertyValue("--graph-line-color").trim(),
 };
 
 export const APP_SRC_URL = "https://github.com/AndreFavotto/epicsWebSuite";

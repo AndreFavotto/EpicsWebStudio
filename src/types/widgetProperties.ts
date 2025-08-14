@@ -1,4 +1,4 @@
-import type { WidgetProperty, PropertyValue } from "./widgets";
+import type { WidgetProperty, PropertyValue, WidgetProperties } from "./widgets";
 import { COLORS } from "../constants/constants";
 import type { PVWSMessageValue } from "./pvws";
 
@@ -10,9 +10,6 @@ function defineProp<T extends PropertyValue>(prop: WidgetProperty<T>): WidgetPro
 /* prettier-ignore */
 export const PROPERTY_SCHEMAS = {
   // Shared Properties
-  // General
-  label:           defineProp({ selType: "text", label: "Label", value: "" as string, category: "Other" }),
-  tooltip:         defineProp({ selType: "text", label: "Tooltip", value: "" as string, category: "Other" }),
   disabled:        defineProp({ selType: "boolean", label: "Disabled", value: false as boolean, category: "Other" }),
   // Layout
   x:               defineProp({ selType: "number", label: "X", value: 100 as number, category: "Layout" }),
@@ -20,6 +17,8 @@ export const PROPERTY_SCHEMAS = {
   width:           defineProp({ selType: "number", label: "Width", value: 100 as number, category: "Layout" }),
   height:          defineProp({ selType: "number", label: "Height", value: 40 as number, category: "Layout" }),
   zIndex:          defineProp({ selType: "none", label: "Layer", value: 1 as number, category: "Layout" }),
+  label:           defineProp({ selType: "text", label: "Label", value: "" as string, category: "Layout" }),
+  tooltip:         defineProp({ selType: "text", label: "Tooltip", value: "" as string, category: "Layout" }),
   visible:         defineProp({ selType: "boolean", label: "Visible", value: true as boolean, category: "Layout" }),
   // Style
   backgroundColor: defineProp({ selType: "colorSelector", label: "Background Color", value: COLORS.backgroundColor, category: "Style" }),
@@ -59,12 +58,22 @@ export const PROPERTY_SCHEMAS = {
   offColor:        defineProp({ selType: "colorSelector", label: "Off Color", value: COLORS.offColor, category: "Style" }),
   spacing:         defineProp({ selType: "number", label: "Spacing", value: 1 as number, category: "Style" }),
   square:          defineProp({ selType: "boolean", label: "Square", value: false as boolean, category: "Style" }),
+  //Graph
+  lineColor:       defineProp({ selType: "colorSelector", label: "Line Color", value: COLORS.graphLineColor, category: "Style" }),
+  plotTitle:       defineProp({ selType: "text", label: "Title", value: "Title" as string, category: "Layout" }),
+  xAxisTitle:      defineProp({ selType: "text", label: "X axis title", value: "Time" as string, category: "Layout" }),
+  yAxisTitle:      defineProp({ selType: "text", label: "Y axis title", value: "Y axis" as string, category: "Layout" }),
+  logscaleY:       defineProp({ selType: "boolean", label: "Apply log to Y", value: false as boolean, category: "Layout" }),
+  plotLineStyle:   defineProp({ selType: "select", label: "Line style", value: "lines+markers" as "lines+markers"|"lines"|"markers", options: ["lines+markers", "lines", "markers"], category: "Style" }),
+  xAxisPVName:     defineProp({ selType: "text", label: "X axis PV", value: "" as string, category: "EPICS" }),
+  xAxisPVValue:    defineProp({ selType: "none", label: "X axis PV value", value: "" as PVWSMessageValue, category: "EPICS" }),
+  plotBufferSize:  defineProp({ selType: "number", label: "Buffer size (if scalar PVs)", value: 50 as number, category: "Layout" }),
 };
 
 export const CATEGORY_DISPLAY_ORDER = ["Grid", "Layout", "Style", "Font", "General", "EPICS", "Window", "Other"];
 
 /* property groups */
-export const COMMON_PROPS = {
+export const COMMON_PROPS: WidgetProperties = {
   //layout
   x: PROPERTY_SCHEMAS.x,
   y: PROPERTY_SCHEMAS.y,
@@ -82,7 +91,7 @@ export const COMMON_PROPS = {
   tooltip: PROPERTY_SCHEMAS.tooltip,
 };
 
-export const TEXT_PROPS = {
+export const TEXT_PROPS: WidgetProperties = {
   fontSize: PROPERTY_SCHEMAS.fontSize,
   fontFamily: PROPERTY_SCHEMAS.fontFamily,
   fontBold: PROPERTY_SCHEMAS.fontBold,
@@ -90,4 +99,17 @@ export const TEXT_PROPS = {
   textColor: PROPERTY_SCHEMAS.textColor,
   textVAlign: PROPERTY_SCHEMAS.textVAlign,
   textHAlign: PROPERTY_SCHEMAS.textHAlign,
+};
+
+export const PLOT_PROPS: WidgetProperties = {
+  backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.white },
+  lineColor: PROPERTY_SCHEMAS.lineColor,
+  plotTitle: PROPERTY_SCHEMAS.plotTitle,
+  xAxisTitle: PROPERTY_SCHEMAS.xAxisTitle,
+  yAxisTitle: PROPERTY_SCHEMAS.yAxisTitle,
+  plotLineStyle: PROPERTY_SCHEMAS.plotLineStyle,
+  logscaleY: PROPERTY_SCHEMAS.logscaleY,
+  xAxisPVName: PROPERTY_SCHEMAS.xAxisPVName,
+  xAxisPVValue: PROPERTY_SCHEMAS.xAxisPVValue,
+  plotBufferSize: PROPERTY_SCHEMAS.plotBufferSize,
 };
