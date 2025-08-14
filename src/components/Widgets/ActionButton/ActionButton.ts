@@ -17,8 +17,8 @@ export const ActionButton: Widget = {
     label: { ...PROPERTY_SCHEMAS.label, value: "Action Button" },
     backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.buttonColor },
     pvName: PROPERTY_SCHEMAS.pvName,
-    disabled: PROPERTY_SCHEMAS.disabled,
-    actionValue: PROPERTY_SCHEMAS.actionValue,
     pvValue: PROPERTY_SCHEMAS.pvValue,
+    actionValue: PROPERTY_SCHEMAS.actionValue,
+    disabled: PROPERTY_SCHEMAS.disabled,
   },
 } as const;

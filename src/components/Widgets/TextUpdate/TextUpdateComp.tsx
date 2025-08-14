@@ -1,9 +1,11 @@
 import React from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
-import { FLEX_ALIGN_MAP } from "../../../constants/constants";
+import { FLEX_ALIGN_MAP, RUNTIME_MODE } from "../../../constants/constants";
+import { useEditorContext } from "../../../context/useEditorContext";
 
 const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
   const p = data.editableProperties;
+  const { mode } = useEditorContext();
 
   if (!p.visible?.value) return null;
 
@@ -30,7 +32,7 @@ const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
         borderColor: p.borderColor?.value,
       }}
     >
-      {p.pvValue?.value ?? p.pvName?.value ?? p.label?.value}
+      {mode == RUNTIME_MODE ? p.pvValue?.value : p.pvName?.value ?? p.label?.value}
     </div>
   );
 };
