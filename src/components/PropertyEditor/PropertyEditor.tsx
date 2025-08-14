@@ -21,7 +21,7 @@ import type {
   WidgetProperty,
   MultiWidgetPropertyUpdates,
 } from "../../types/widgets";
-import { PROPERTY_EDITOR_WIDTH, EDIT_MODE, MAX_WIDGET_ZINDEX } from "../../constants/constants";
+import { PROPERTY_EDITOR_WIDTH, EDIT_MODE } from "../../constants/constants";
 import TextFieldProperty from "./TextFieldProperty";
 import BooleanProperty from "./BooleanProperty";
 import ColorProperty from "./ColorProperty";
@@ -108,7 +108,8 @@ const getGroupedProperties = (properties: WidgetProperties) => {
 };
 
 const PropertyEditor: React.FC = () => {
-  const { mode, selectedWidgetIDs, editingWidgets, batchWidgetUpdate, setPropertyEditorFocused } = useEditorContext();
+  const { mode, selectedWidgetIDs, editingWidgets, batchWidgetUpdate, setPropertyEditorFocused, maxWdgZIndex } =
+    useEditorContext();
   const isOnlyGridSelected = selectedWidgetIDs.length === 0;
   const singleWidget = editingWidgets.length === 1;
   const [open, setOpen] = useState(false);
@@ -236,7 +237,7 @@ const PropertyEditor: React.FC = () => {
         onFocus={() => setPropertyEditorFocused(true)}
         onBlur={() => setPropertyEditorFocused(false)}
         slotProps={{ paper: { elevation: 8 } }}
-        sx={{ zIndex: MAX_WIDGET_ZINDEX + 1 }}
+        sx={{ zIndex: maxWdgZIndex + 1 }}
       >
         <Toolbar />
         <List sx={{ width: "100%" }}>

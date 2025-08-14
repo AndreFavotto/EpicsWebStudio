@@ -8,7 +8,7 @@ import type {
   GridPosition,
 } from "../types/widgets";
 import { GridZone } from "../components/GridZone";
-import { MAX_HISTORY, MAX_WIDGET_ZINDEX, MIN_WIDGET_ZINDEX } from "../constants/constants";
+import { MAX_HISTORY } from "../constants/constants";
 
 function deepCloneWidgetList(widgets: Widget[]): Widget[] {
   return widgets.map(deepCloneWidget);
@@ -51,6 +51,27 @@ export function useWidgetManager() {
       height: bottom - top,
     };
   }, [selectedWidgets]);
+
+  const getZIndexBounds = (widgets: Widget[]) => {
+    if (widgets.length === 0) return { min: 0, max: 0 };
+
+    let min = Infinity;
+    let max = -Infinity;
+
+    for (const w of widgets) {
+      if (!w.editableProperties.zIndex) continue;
+      const zIdx = w.editableProperties.zIndex.value;
+      if (zIdx < min) min = zIdx;
+      if (zIdx > max) max = zIdx;
+    }
+
+    return { min, max };
+  };
+
+  const { minWdgZIndex, maxWdgZIndex } = useMemo(() => {
+    const { min, max } = getZIndexBounds(editorWidgets);
+    return { minWdgZIndex: min, maxWdgZIndex: max };
+  }, [editorWidgets]);
 
   const updateEditorWidgetList = useCallback(
     (newWidgets: Widget[] | ((prev: Widget[]) => Widget[]), keepHistory = true) => {
@@ -104,46 +125,44 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates, keepHistory);
   };
 
-  const increaseZIndex = (id: string | undefined = undefined) => {
+  const stepForward = (id: string | undefined = undefined) => {
     const updates: MultiWidgetPropertyUpdates = {};
     const toUpdate = id ? [getWidget(id)] : selectedWidgets;
     toUpdate.forEach((w) => {
       if (!w?.editableProperties.zIndex) return;
       const currentZIndex = w.editableProperties.zIndex.value;
-      if (currentZIndex >= MAX_WIDGET_ZINDEX) return;
       updates[w.id] = { zIndex: currentZIndex + 1 };
     });
     batchWidgetUpdate(updates);
   };
 
-  const decreaseZIndex = (id: string | undefined = undefined) => {
+  const stepBackwards = (id: string | undefined = undefined) => {
     const updates: MultiWidgetPropertyUpdates = {};
     const toUpdate = id ? [getWidget(id)] : selectedWidgets;
     toUpdate.forEach((w) => {
       if (!w?.editableProperties.zIndex) return;
       const currentZIndex = w.editableProperties.zIndex.value;
-      if (currentZIndex <= MIN_WIDGET_ZINDEX) return;
       updates[w.id] = { zIndex: currentZIndex - 1 };
     });
     batchWidgetUpdate(updates);
   };
 
-  const setMaxZIndex = (id: string | undefined = undefined) => {
+  const bringToFront = (id: string | undefined = undefined) => {
     const updates: MultiWidgetPropertyUpdates = {};
     const toUpdate = id ? [getWidget(id)] : selectedWidgets;
     toUpdate.forEach((w) => {
       if (!w?.editableProperties.zIndex) return;
-      updates[w.id] = { zIndex: MAX_WIDGET_ZINDEX };
+      updates[w.id] = { zIndex: maxWdgZIndex + 1 };
     });
     batchWidgetUpdate(updates);
   };
 
-  const setMinZIndex = (id: string | undefined = undefined) => {
+  const sendToBack = (id: string | undefined = undefined) => {
     const updates: MultiWidgetPropertyUpdates = {};
     const toUpdate = id ? [getWidget(id)] : selectedWidgets;
     toUpdate.forEach((w) => {
       if (!w?.editableProperties.zIndex) return;
-      updates[w.id] = { zIndex: MIN_WIDGET_ZINDEX };
+      updates[w.id] = { zIndex: minWdgZIndex - 1 };
     });
     batchWidgetUpdate(updates);
   };
@@ -377,10 +396,10 @@ export function useWidgetManager() {
     copyWidget,
     pasteWidget,
     updateWidgetProperties,
-    increaseZIndex,
-    decreaseZIndex,
-    setMaxZIndex,
-    setMinZIndex,
+    stepForward,
+    stepBackwards,
+    bringToFront,
+    sendToBack,
     handleRedo,
     handleUndo,
     alignLeft,
@@ -391,5 +410,7 @@ export function useWidgetManager() {
     alignVerticalCenter,
     distributeHorizontal,
     distributeVertical,
+    minWdgZIndex,
+    maxWdgZIndex,
   };
 }

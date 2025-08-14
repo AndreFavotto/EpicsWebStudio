@@ -19,7 +19,7 @@ export const PROPERTY_SCHEMAS = {
   y:               defineProp({ selType: "number", label: "Y", value: 100 as number, category: "Layout" }),
   width:           defineProp({ selType: "number", label: "Width", value: 100 as number, category: "Layout" }),
   height:          defineProp({ selType: "number", label: "Height", value: 40 as number, category: "Layout" }),
-  zIndex:          defineProp({ selType: "none", label: "Layer", value: 5 as number, category: "Layout" }),
+  zIndex:          defineProp({ selType: "none", label: "Layer", value: 1 as number, category: "Layout" }),
   visible:         defineProp({ selType: "boolean", label: "Visible", value: true as boolean, category: "Layout" }),
   // Style
   backgroundColor: defineProp({ selType: "colorSelector", label: "Background Color", value: COLORS.backgroundColor, category: "Style" }),

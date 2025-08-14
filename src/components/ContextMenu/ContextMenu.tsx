@@ -15,7 +15,7 @@ import {
   FlipToFront,
   FlipToBack,
 } from "@mui/icons-material";
-import { EDIT_MODE, GRID_ID, MAX_WIDGET_ZINDEX } from "../../constants/constants";
+import { EDIT_MODE, GRID_ID } from "../../constants/constants";
 import type { GridPosition } from "../../types/widgets";
 
 export interface ContextMenuProps {
@@ -27,7 +27,7 @@ export interface ContextMenuProps {
 }
 
 const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, pos, mousePos, visible, onClose }) => {
-  const { mode, setMaxZIndex, setMinZIndex, increaseZIndex, decreaseZIndex, copyWidget, pasteWidget } =
+  const { mode, bringToFront, sendToBack, stepForward, stepBackwards, copyWidget, pasteWidget, maxWdgZIndex } =
     useEditorContext();
   if (!visible) return null;
   if (mode !== EDIT_MODE) return null; // TODO: create context menu for RUNTIME
@@ -58,28 +58,28 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, pos, mousePos, visi
       label: "Step forward",
       icon: <KeyboardArrowUp fontSize="small" />,
       shortcut: "",
-      action: () => increaseZIndex(widgetID),
+      action: () => stepForward(widgetID),
       disabled: isGrid,
     },
     {
       label: "Bring to front",
       icon: <FlipToFront fontSize="small" />,
       shortcut: "",
-      action: () => setMaxZIndex(widgetID),
+      action: () => bringToFront(widgetID),
       disabled: isGrid,
     },
     {
       label: "Step back",
       icon: <KeyboardArrowDown fontSize="small" />,
       shortcut: "",
-      action: () => decreaseZIndex(widgetID),
+      action: () => stepBackwards(widgetID),
       disabled: isGrid,
     },
     {
       label: "Send to back",
       icon: <FlipToBack fontSize="small" />,
       shortcut: "",
-      action: () => setMinZIndex(widgetID),
+      action: () => sendToBack(widgetID),
       disabled: isGrid,
     },
   ];
@@ -89,7 +89,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, pos, mousePos, visi
         position: "fixed",
         left: pos.x,
         top: pos.y,
-        zIndex: MAX_WIDGET_ZINDEX + 1,
+        zIndex: maxWdgZIndex + 1,
         width: 220,
         maxWidth: "100%",
         boxShadow: 3,

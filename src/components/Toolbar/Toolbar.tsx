@@ -24,8 +24,8 @@ const ToolbarButtons: React.FC = () => {
     undoStack,
     handleRedo,
     redoStack,
-    setMaxZIndex,
-    setMinZIndex,
+    bringToFront,
+    sendToBack,
     alignTop,
     alignBottom,
     alignHorizontalCenter,
@@ -58,14 +58,14 @@ const ToolbarButtons: React.FC = () => {
       </Tooltip>
       <Tooltip title="Bring to front">
         <span>
-          <IconButton size="small" onClick={() => setMaxZIndex()} disabled={noneSelected}>
+          <IconButton size="small" onClick={() => bringToFront()} disabled={noneSelected}>
             <FlipToFront fontSize="small" />
           </IconButton>
         </span>
       </Tooltip>
       <Tooltip title="Send to back">
         <span>
-          <IconButton size="small" onClick={() => setMinZIndex()} disabled={noneSelected}>
+          <IconButton size="small" onClick={() => sendToBack()} disabled={noneSelected}>
             <FlipToBack fontSize="small" />
           </IconButton>
         </span>
