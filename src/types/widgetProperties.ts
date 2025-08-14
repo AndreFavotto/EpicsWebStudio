@@ -9,6 +9,7 @@ function defineProp<T extends PropertyValue>(prop: WidgetProperty<T>): WidgetPro
 
 /* prettier-ignore */
 export const PROPERTY_SCHEMAS = {
+  // Shared Properties
   // General
   label:           defineProp({ selType: "text", label: "Label", value: "" as string, category: "General" }),
   tooltip:         defineProp({ selType: "text", label: "Tooltip", value: "" as string, category: "General" }),
@@ -49,6 +50,15 @@ export const PROPERTY_SCHEMAS = {
   pvValue:         defineProp({ selType: "none", label: "PV Value", value: "" as PVWSMessageValue, category: "EPICS" }),
   // placeholder for number array - needed for now to match all types in PropertyValue
   placeholder:     defineProp({ selType: "select", label: "placeholder prop", value: [] as number[], category: "placeholder" }),
+  // Specific Properties
+  // BitIndicator
+  onColor:         defineProp({ selType: "colorSelector", label: "On Color", value: COLORS.onColor, category: "Specifics" }),
+  offColor:        defineProp({ selType: "colorSelector", label: "Off Color", value: COLORS.offColor, category: "Specifics" }),
+  nBits:           defineProp({ selType: "number", label: "Number of bits", value: 1 as number, category: "Specifics" }),
+  invertBitOrder:  defineProp({ selType: "boolean", label: "Invert bit order", value: false as boolean, category: "Specifics" }),
+  orientation:     defineProp({ selType: "select", label: "Orientation", value: "Vertical" as string, options: ["Vertical", "Horizontal"], category: "Specifics" }),
+  spacing:         defineProp({ selType: "number", label: "Spacing", value: 1 as number, category: "Specifics" }),
+  square:          defineProp({ selType: "boolean", label: "Square", value: false as boolean, category: "Specifics" }),
 };
 
 /* property groups */

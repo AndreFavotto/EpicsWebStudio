@@ -1,4 +1,5 @@
 export { ActionButton } from "./ActionButton";
+export { BitIndicator } from "./BitIndicator";
 export { InputField } from "./InputField";
 export { TextUpdate } from "./TextUpdate";
 export { Ellipse } from "./Ellipse";

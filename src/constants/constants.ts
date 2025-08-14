@@ -11,6 +11,8 @@ export const COLORS = {
   lightGray: getComputedStyle(document.documentElement, null).getPropertyValue("--light-gray").trim(),
   gridLineColor: getComputedStyle(document.documentElement, null).getPropertyValue("--grid-line-color").trim(),
   transparent: getComputedStyle(document.documentElement, null).getPropertyValue("--transparent").trim(),
+  onColor: getComputedStyle(document.documentElement, null).getPropertyValue("--on-color").trim(),
+  offColor: getComputedStyle(document.documentElement, null).getPropertyValue("--off-color").trim(),
 };
 
 export const APP_SRC_URL = "https://github.com/AndreFavotto/epicsWebSuite";

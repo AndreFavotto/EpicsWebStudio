@@ -19,6 +19,8 @@
   --grid-line-color: #e0e0e0;
   --transparent: #ffffff00;
   --highlighted: #2c9be6;
+  --on-color: #00ac25;
+  --off-color: #ac0000;
 }
 
 body {
