@@ -26,9 +26,12 @@ export function useWidgetManager() {
   const [redoStack, setRedoStack] = useState<Widget[][]>([]);
   const [editorWidgets, setEditorWidgets] = useState<Widget[]>([GridZone]);
   const [selectedWidgetIDs, setSelectedWidgetIDs] = useState<string[]>([]);
-  const selectedWidgets = editorWidgets.filter((w) => selectedWidgetIDs.includes(w.id));
   const clipboard = useRef<Widget[]>([]);
   const copiedGroupBounds = useRef({ x: 0, y: 0, width: 0, height: 0 });
+  const selectedWidgets = editorWidgets.filter((w) => selectedWidgetIDs.includes(w.id));
+  const editingWidgets = useMemo(() => {
+    return selectedWidgets.length > 0 ? selectedWidgets : [GridZone];
+  }, [selectedWidgets]);
 
   const groupBounds = useMemo(() => {
     if (selectedWidgets.length === 0) return null;
@@ -101,9 +104,9 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates, keepHistory);
   };
 
-  const increaseZIndex = (id = "") => {
+  const increaseZIndex = (id: string | undefined = undefined) => {
     const updates: MultiWidgetPropertyUpdates = {};
-    const toUpdate = id !== "" ? [getWidget(id)] : selectedWidgets;
+    const toUpdate = id ? [getWidget(id)] : selectedWidgets;
     toUpdate.forEach((w) => {
       if (!w?.editableProperties.zIndex) return;
       const currentZIndex = w.editableProperties.zIndex.value;
@@ -113,9 +116,9 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
-  const decreaseZIndex = (id = "") => {
+  const decreaseZIndex = (id: string | undefined = undefined) => {
     const updates: MultiWidgetPropertyUpdates = {};
-    const toUpdate = id !== "" ? [getWidget(id)] : selectedWidgets;
+    const toUpdate = id ? [getWidget(id)] : selectedWidgets;
     toUpdate.forEach((w) => {
       if (!w?.editableProperties.zIndex) return;
       const currentZIndex = w.editableProperties.zIndex.value;
@@ -125,9 +128,9 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
-  const setMaxZIndex = (id = "") => {
+  const setMaxZIndex = (id: string | undefined = undefined) => {
     const updates: MultiWidgetPropertyUpdates = {};
-    const toUpdate = id !== "" ? [getWidget(id)] : selectedWidgets;
+    const toUpdate = id ? [getWidget(id)] : selectedWidgets;
     toUpdate.forEach((w) => {
       if (!w?.editableProperties.zIndex) return;
       updates[w.id] = { zIndex: MAX_WIDGET_ZINDEX };
@@ -135,9 +138,9 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
-  const setMinZIndex = (id = "") => {
+  const setMinZIndex = (id: string | undefined = undefined) => {
     const updates: MultiWidgetPropertyUpdates = {};
-    const toUpdate = id !== "" ? [getWidget(id)] : selectedWidgets;
+    const toUpdate = id ? [getWidget(id)] : selectedWidgets;
     toUpdate.forEach((w) => {
       if (!w?.editableProperties.zIndex) return;
       updates[w.id] = { zIndex: MIN_WIDGET_ZINDEX };
@@ -307,8 +310,8 @@ export function useWidgetManager() {
   }, [editorWidgets]);
 
   const copyWidget = useCallback(
-    (id = "") => {
-      const toUpdate = id !== "" ? [getWidget(id)] : selectedWidgets;
+    (id: string | undefined = undefined) => {
+      const toUpdate = id ? [getWidget(id)] : selectedWidgets;
       if (toUpdate.length === 0) return;
       if (toUpdate.length > 1 && groupBounds) {
         copiedGroupBounds.current = groupBounds;
@@ -361,6 +364,7 @@ export function useWidgetManager() {
     editorWidgets,
     setEditorWidgets,
     selectedWidgetIDs,
+    editingWidgets,
     groupBounds,
     undoStack,
     redoStack,
