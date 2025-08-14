@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { styled } from "@mui/material/styles";
-import type { Theme, CSSObject } from "@mui/material/styles";
+import { styled, type Theme, type CSSObject } from "@mui/material/styles";
 import {
   Drawer as MuiDrawer,
   Toolbar,
@@ -15,12 +14,19 @@ import {
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useEditorContext } from "../../context/useEditorContext";
-import type { WidgetProperties, PropertyValue, PropertyKey, WidgetProperty } from "../../types/widgets";
-import { PROPERTY_EDITOR_WIDTH, EDIT_MODE, GRID_ID, MAX_WIDGET_ZINDEX } from "../../constants/constants";
+import type {
+  WidgetProperties,
+  PropertyValue,
+  PropertyKey,
+  WidgetProperty,
+  MultiWidgetPropertyUpdates,
+} from "../../types/widgets";
+import { PROPERTY_EDITOR_WIDTH, EDIT_MODE, MAX_WIDGET_ZINDEX } from "../../constants/constants";
 import TextFieldProperty from "./TextFieldProperty";
 import BooleanProperty from "./BooleanProperty";
 import ColorProperty from "./ColorProperty";
 import SelectProperty from "./SelectProperty";
+import { CATEGORY_DISPLAY_ORDER } from "../../types/widgetProperties";
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: PROPERTY_EDITOR_WIDTH,
@@ -80,23 +86,51 @@ const ToggleButton = styled(IconButton)<{ open: boolean }>(({ theme, open }) => 
 
 const getGroupedProperties = (properties: WidgetProperties) => {
   const groups: Record<string, Record<string, WidgetProperty>> = {};
-  if (properties) {
-    for (const [propName, prop] of Object.entries(properties)) {
-      const category = prop.category ?? "Other";
-      if (!groups[category]) groups[category] = {};
-      groups[category][propName] = prop;
-    }
+  if (!properties) return groups;
+
+  const presentCategories = new Set(Object.values(properties).map((prop) => prop.category));
+  CATEGORY_DISPLAY_ORDER.filter((cat) => presentCategories.has(cat)).forEach((cat) => {
+    groups[cat] = {};
+  });
+  // Add any other categories not in CATEGORY_DISPLAY_ORDER
+  Array.from(presentCategories)
+    .filter((cat) => !CATEGORY_DISPLAY_ORDER.includes(cat))
+    .forEach((cat) => {
+      groups[cat] = {};
+    });
+
+  for (const [propName, prop] of Object.entries(properties)) {
+    const category = prop.category ?? "Other";
+    groups[category][propName] = prop;
   }
+
   return groups;
 };
 
 const PropertyEditor: React.FC = () => {
-  const { mode, selectedWidgetIDs, editorWidgets, updateWidgetProperties, setPropertyEditorFocused } =
-    useEditorContext();
-  const GridWidget = useMemo(() => editorWidgets.find((w) => w.id === GRID_ID), [editorWidgets]);
+  const { mode, selectedWidgetIDs, editingWidgets, batchWidgetUpdate, setPropertyEditorFocused } = useEditorContext();
   const isOnlyGridSelected = selectedWidgetIDs.length === 0;
+  const singleWidget = editingWidgets.length === 1;
   const [open, setOpen] = useState(false);
   const [manuallyOpened, setManuallyOpened] = useState(false);
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
+  const properties: WidgetProperties = useMemo(() => {
+    if (editingWidgets.length === 0) return {};
+    if (singleWidget) {
+      return editingWidgets[0].editableProperties;
+    }
+    // Get only common properties
+    const common: WidgetProperties = { ...editingWidgets[0].editableProperties };
+    for (let i = 1; i < editingWidgets.length; i++) {
+      const currentProps = editingWidgets[i].editableProperties;
+      for (const key of Object.keys(common)) {
+        const propName = key as PropertyKey;
+        if (!(currentProps[propName] as WidgetProperty)) delete common[propName];
+      }
+    }
+
+    return common;
+  }, [editingWidgets, singleWidget]);
 
   useEffect(() => {
     if (!isOnlyGridSelected) {
@@ -114,57 +148,78 @@ const PropertyEditor: React.FC = () => {
     });
   };
 
-  const editingWidget = useMemo(() => {
-    if (!isOnlyGridSelected) {
-      return editorWidgets.find((w) => w.id === selectedWidgetIDs[0]) ?? GridWidget;
-    }
-    return GridWidget;
-  }, [editorWidgets, selectedWidgetIDs, isOnlyGridSelected, GridWidget]);
+  const toggleGroup = (category: string) => {
+    setCollapsedGroups((prev) => {
+      const current = prev[category] ?? true;
+      return { ...prev, [category]: !current };
+    });
+  };
 
-  if (!editingWidget) {
-    console.warn("Invalid Grid or Widget ID: editingWidget not found");
-    return null;
-  }
-  if (mode !== EDIT_MODE) return null;
-
-  const header = `Edit ${editingWidget.widgetLabel}`;
-  const properties = editingWidget.editableProperties;
+  const header = singleWidget ? `${editingWidgets[0].widgetLabel} properties` : "Common properties in selection";
   const groupedProperties = getGroupedProperties(properties);
 
   const handlePropChange = (propName: PropertyKey, newValue: PropertyValue) => {
-    updateWidgetProperties(editingWidget.id, { [propName]: newValue });
+    const updates: MultiWidgetPropertyUpdates = {};
+    editingWidgets.forEach((w) => {
+      updates[w.id] = { [propName]: newValue };
+    });
+    batchWidgetUpdate(updates);
   };
 
   const renderGroupedPropertyFields = () =>
-    Object.entries(groupedProperties).map(([category, props]) => (
-      <React.Fragment key={category}>
-        <Divider />
-        <ListSubheader>{category}</ListSubheader>
-        {Object.entries(props).map(([propName, prop]) => {
-          const { selType, label, value, options } = prop;
-          const commonProps = {
-            propName: propName as PropertyKey,
-            label,
-            value,
-            onChange: handlePropChange,
-          };
-          switch (selType) {
-            case "text":
-            case "number":
-              return <TextFieldProperty key={propName} {...commonProps} selType={selType} />;
-            case "boolean":
-              return <BooleanProperty key={propName} {...commonProps} />;
-            case "colorSelector":
-              return <ColorProperty key={propName} {...commonProps} />;
-            case "select":
-              return <SelectProperty key={propName} {...commonProps} options={options ?? []} />;
-            default:
-              return null;
-          }
-        })}
-      </React.Fragment>
-    ));
-
+    Object.entries(groupedProperties).map(([category, props]) => {
+      const collapsed = collapsedGroups[category] ?? true;
+      return (
+        <React.Fragment key={category}>
+          <Divider />
+          <ListSubheader
+            onClick={() => toggleGroup(category)}
+            sx={{
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              userSelect: "none",
+            }}
+          >
+            <IconButton
+              size="small"
+              sx={{
+                transform: collapsed ? "rotate(0deg)" : "rotate(90deg)",
+                transition: "transform 0.2s",
+                mr: 1,
+              }}
+            >
+              <ChevronRightIcon fontSize="inherit" />
+            </IconButton>
+            {category}
+          </ListSubheader>
+          {!collapsed &&
+            Object.entries(props).map(([propName, prop]) => {
+              const { selType, label, value, options } = prop;
+              const commonProps = {
+                propName: propName as PropertyKey,
+                label,
+                value,
+                onChange: handlePropChange,
+              };
+              switch (selType) {
+                case "text":
+                case "number":
+                  return <TextFieldProperty key={propName} {...commonProps} selType={selType} />;
+                case "boolean":
+                  return <BooleanProperty key={propName} {...commonProps} />;
+                case "colorSelector":
+                  return <ColorProperty key={propName} {...commonProps} />;
+                case "select":
+                  return <SelectProperty key={propName} {...commonProps} options={options ?? []} />;
+                default:
+                  return null;
+              }
+            })}
+        </React.Fragment>
+      );
+    });
+  if (mode !== EDIT_MODE) return null;
   return (
     <>
       {!open && (

@@ -11,16 +11,16 @@ function defineProp<T extends PropertyValue>(prop: WidgetProperty<T>): WidgetPro
 export const PROPERTY_SCHEMAS = {
   // Shared Properties
   // General
-  label:           defineProp({ selType: "text", label: "Label", value: "" as string, category: "General" }),
-  tooltip:         defineProp({ selType: "text", label: "Tooltip", value: "" as string, category: "General" }),
-  visible:         defineProp({ selType: "boolean", label: "Visible", value: true as boolean, category: "General" }),
-  disabled:        defineProp({ selType: "boolean", label: "Disabled", value: false as boolean, category: "General" }),
+  label:           defineProp({ selType: "text", label: "Label", value: "" as string, category: "Other" }),
+  tooltip:         defineProp({ selType: "text", label: "Tooltip", value: "" as string, category: "Other" }),
+  disabled:        defineProp({ selType: "boolean", label: "Disabled", value: false as boolean, category: "Other" }),
   // Layout
   x:               defineProp({ selType: "number", label: "X", value: 100 as number, category: "Layout" }),
   y:               defineProp({ selType: "number", label: "Y", value: 100 as number, category: "Layout" }),
   width:           defineProp({ selType: "number", label: "Width", value: 100 as number, category: "Layout" }),
   height:          defineProp({ selType: "number", label: "Height", value: 40 as number, category: "Layout" }),
   zIndex:          defineProp({ selType: "none", label: "Layer", value: 5 as number, category: "Layout" }),
+  visible:         defineProp({ selType: "boolean", label: "Visible", value: true as boolean, category: "Layout" }),
   // Style
   backgroundColor: defineProp({ selType: "colorSelector", label: "Background Color", value: COLORS.backgroundColor, category: "Style" }),
   borderColor:     defineProp({ selType: "colorSelector", label: "Border Color", value: COLORS.textColor, category: "Style" }),
@@ -52,14 +52,16 @@ export const PROPERTY_SCHEMAS = {
   placeholder:     defineProp({ selType: "select", label: "placeholder prop", value: [] as number[], category: "placeholder" }),
   // Specific Properties
   // BitIndicator
-  onColor:         defineProp({ selType: "colorSelector", label: "On Color", value: COLORS.onColor, category: "Specifics" }),
-  offColor:        defineProp({ selType: "colorSelector", label: "Off Color", value: COLORS.offColor, category: "Specifics" }),
-  nBits:           defineProp({ selType: "number", label: "Number of bits", value: 1 as number, category: "Specifics" }),
-  invertBitOrder:  defineProp({ selType: "boolean", label: "Invert bit order", value: false as boolean, category: "Specifics" }),
-  orientation:     defineProp({ selType: "select", label: "Orientation", value: "Vertical" as string, options: ["Vertical", "Horizontal"], category: "Specifics" }),
-  spacing:         defineProp({ selType: "number", label: "Spacing", value: 1 as number, category: "Specifics" }),
-  square:          defineProp({ selType: "boolean", label: "Square", value: false as boolean, category: "Specifics" }),
+  orientation:     defineProp({ selType: "select", label: "Orientation", value: "Vertical" as string, options: ["Vertical", "Horizontal"], category: "Layout" }),
+  nBits:           defineProp({ selType: "number", label: "Number of bits", value: 1 as number, category: "Layout" }),
+  invertBitOrder:  defineProp({ selType: "boolean", label: "Invert bit order", value: false as boolean, category: "Layout" }),
+  onColor:         defineProp({ selType: "colorSelector", label: "On Color", value: COLORS.onColor, category: "Style" }),
+  offColor:        defineProp({ selType: "colorSelector", label: "Off Color", value: COLORS.offColor, category: "Style" }),
+  spacing:         defineProp({ selType: "number", label: "Spacing", value: 1 as number, category: "Style" }),
+  square:          defineProp({ selType: "boolean", label: "Square", value: false as boolean, category: "Style" }),
 };
+
+export const CATEGORY_DISPLAY_ORDER = ["Grid", "Layout", "Style", "Font", "General", "EPICS", "Window", "Other"];
 
 /* property groups */
 export const COMMON_PROPS = {
