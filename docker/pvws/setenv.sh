@@ -1,7 +1,7 @@
 # Web Socket Settings
 export PV_DEFAULT_TYPE=pva
-export PV_THROTTLE_MS=500         # allow max 2 scalar updates per second
-export PV_ARRAY_THROTTLE_MS=1000  # allow max 1 array update per second
+export PV_THROTTLE_MS=100         # allow max 10 scalar updates per second
+export PV_ARRAY_THROTTLE_MS=500   # allow max 2 array updates per second
 export PV_WRITE_SUPPORT=true
 
 # Channel Access Settings
