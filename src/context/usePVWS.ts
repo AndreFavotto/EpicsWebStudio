@@ -18,6 +18,8 @@ export default function usePVWS(
     editorWidgets.forEach((w) => {
       if (w.editableProperties.pvName?.value === pv) {
         updates[w.id] = { pvValue: newValue };
+      } else if (w.editableProperties.xAxisPVName?.value === pv) {
+        updates[w.id] = { xAxisPVValue: newValue };
       }
     });
 
@@ -44,6 +46,9 @@ export default function usePVWS(
       if (w.editableProperties.pvValue !== undefined) {
         updates[w.id] = { pvValue: undefined };
       }
+      if (w.editableProperties.xAxisPVValue !== undefined) {
+        updates[w.id] = { xAxisPVValue: undefined };
+      }
     });
     batchWidgetUpdate(updates, false);
   };
@@ -52,6 +57,7 @@ export default function usePVWS(
     const set = new Set<string>();
     for (const w of editorWidgets) {
       if (w.editableProperties?.pvName) set.add(w.editableProperties.pvName.value);
+      if (w.editableProperties?.xAxisPVName) set.add(w.editableProperties.xAxisPVName.value);
     }
     return Array.from(set);
   }, [editorWidgets]);
