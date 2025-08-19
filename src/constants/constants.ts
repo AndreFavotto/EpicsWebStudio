@@ -18,6 +18,8 @@ export const COLORS = {
 };
 
 export const APP_SRC_URL = "https://github.com/AndreFavotto/epicsWebSuite";
+export const BACK_UI_ZIDX = 0;
+export const FRONT_UI_ZIDX = 1000;
 export const EDIT_MODE = "edit";
 export const RUNTIME_MODE = "runtime";
 export const PVWS_URL = "ws://localhost:8080/pvws/pv";

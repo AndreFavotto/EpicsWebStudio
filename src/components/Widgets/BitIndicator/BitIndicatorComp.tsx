@@ -54,7 +54,6 @@ const BitIndicatorComp: React.FC<WidgetUpdate> = ({ data }) => {
         justifyContent: "center",
         boxSizing: "border-box",
         alignItems: "center",
-        zIndex: p.zIndex?.value,
       }}
     >
       {bits}

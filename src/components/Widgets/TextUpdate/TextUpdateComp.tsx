@@ -17,7 +17,6 @@ const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
         width: "100%",
         height: "100%",
         display: "flex",
-        zIndex: p.zIndex?.value,
         justifyContent: FLEX_ALIGN_MAP[p.textHAlign?.value ?? "left"],
         alignItems: FLEX_ALIGN_MAP[p.textVAlign?.value ?? "middle"],
         backgroundColor: p.backgroundColor?.value,

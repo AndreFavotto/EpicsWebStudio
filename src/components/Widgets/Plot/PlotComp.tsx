@@ -61,7 +61,6 @@ const PlotComp: React.FC<WidgetUpdate> = ({ data }) => {
       style={{
         width: p.width?.value,
         height: p.height?.value,
-        zIndex: p.zIndex?.value,
         borderRadius: p.borderRadius?.value,
         borderStyle: p.borderStyle?.value,
         borderWidth: p.borderWidth?.value,

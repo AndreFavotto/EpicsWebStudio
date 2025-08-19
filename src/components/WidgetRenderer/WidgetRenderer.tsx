@@ -23,7 +23,6 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
     selectedWidgets,
     propertyEditorFocused,
     groupBounds,
-    maxWdgZIndex,
   } = useEditorContext();
   const isMultipleSelect = selectedWidgetIDs.length > 1;
 
@@ -133,7 +132,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
           onClick={(e: React.MouseEvent) => e.stopPropagation()}
           onResize={() => setIsDragging(true)}
           onResizeStop={(_e, _direction, ref) => handleGroupResizeStop(ref)}
-          style={{ outline: `${selectedWidgetIDs.length > 1 ? "1px dashed" : "none"}`, zIndex: maxWdgZIndex + 1 }}
+          style={{ outline: `${selectedWidgetIDs.length > 1 ? "1px dashed" : "none"}` }}
         >
           {selectedWidgets.map((w) => {
             return (
@@ -166,9 +165,6 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
             position={{
               x: w.editableProperties.x?.value ?? 0,
               y: w.editableProperties.y?.value ?? 0,
-            }}
-            style={{
-              zIndex: w.editableProperties.zIndex?.value ?? maxWdgZIndex,
             }}
             bounds="window"
             scale={scale}

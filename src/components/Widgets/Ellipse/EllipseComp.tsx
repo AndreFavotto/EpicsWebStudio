@@ -14,7 +14,6 @@ const EllipseComp: React.FC<WidgetUpdate> = ({ data }) => {
         display: "flex",
         borderRadius: "50%",
         boxSizing: "border-box",
-        zIndex: p.zIndex?.value,
         backgroundColor: p.backgroundColor?.value,
         borderStyle: p.borderStyle?.value,
         borderWidth: p.borderWidth?.value,

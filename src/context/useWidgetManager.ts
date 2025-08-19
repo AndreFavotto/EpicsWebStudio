@@ -52,27 +52,6 @@ export function useWidgetManager() {
     };
   }, [selectedWidgets]);
 
-  const getZIndexBounds = (widgets: Widget[]) => {
-    if (widgets.length === 0) return { min: 0, max: 0 };
-
-    let min = Infinity;
-    let max = -Infinity;
-
-    for (const w of widgets) {
-      if (!w.editableProperties.zIndex) continue;
-      const zIdx = w.editableProperties.zIndex.value;
-      if (zIdx < min) min = zIdx;
-      if (zIdx > max) max = zIdx;
-    }
-
-    return { min, max };
-  };
-
-  const { minWdgZIndex, maxWdgZIndex } = useMemo(() => {
-    const { min, max } = getZIndexBounds(editorWidgets);
-    return { minWdgZIndex: min, maxWdgZIndex: max };
-  }, [editorWidgets]);
-
   const updateEditorWidgetList = useCallback(
     (newWidgets: Widget[] | ((prev: Widget[]) => Widget[]), keepHistory = true) => {
       if (keepHistory) {
@@ -125,46 +104,66 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates, keepHistory);
   };
 
-  const stepForward = (id: string | undefined = undefined) => {
-    const updates: MultiWidgetPropertyUpdates = {};
-    const toUpdate = id ? [getWidget(id)] : selectedWidgets;
-    toUpdate.forEach((w) => {
-      if (!w?.editableProperties.zIndex) return;
-      const currentZIndex = w.editableProperties.zIndex.value;
-      updates[w.id] = { zIndex: currentZIndex + 1 };
+  type ReorderDirection = "forward" | "backward" | "front" | "back";
+  const reorderWidgets = (id: string | undefined, direction: ReorderDirection) => {
+    updateEditorWidgetList((prev) => {
+      // Always keep GridZone fixed at index 0
+      const [gridZone, ...widgets] = prev;
+      const toMoveIds = id ? new Set([id]) : new Set(selectedWidgetIDs);
+      const others = widgets.filter((w) => !toMoveIds.has(w.id));
+      const moving = widgets.filter((w) => toMoveIds.has(w.id));
+
+      if (moving.length === 0) return prev;
+
+      let newWidgets: Widget[] = [];
+
+      switch (direction) {
+        case "forward": {
+          const maxIdx = Math.max(...moving.map((w) => widgets.findIndex((p) => p.id === w.id)));
+          const insertPos = Math.min(maxIdx + 1, others.length);
+          const before = others.slice(0, insertPos);
+          const after = others.slice(insertPos);
+          newWidgets = [...before, ...moving, ...after];
+          break;
+        }
+
+        case "backward": {
+          const minIdx = Math.min(...moving.map((w) => widgets.findIndex((p) => p.id === w.id)));
+          // ensure we don't insert below index 0
+          const insertPos = Math.max(minIdx - 1, 0);
+          const before = others.slice(0, insertPos);
+          const after = others.slice(insertPos);
+          newWidgets = [...before, ...moving, ...after];
+          break;
+        }
+
+        case "front":
+          newWidgets = [...others, ...moving];
+          break;
+
+        case "back":
+          newWidgets = [...moving, ...others];
+          break;
+      }
+
+      return [gridZone, ...newWidgets];
     });
-    batchWidgetUpdate(updates);
+  };
+
+  const stepForward = (id: string | undefined = undefined) => {
+    reorderWidgets(id, "forward");
   };
 
   const stepBackwards = (id: string | undefined = undefined) => {
-    const updates: MultiWidgetPropertyUpdates = {};
-    const toUpdate = id ? [getWidget(id)] : selectedWidgets;
-    toUpdate.forEach((w) => {
-      if (!w?.editableProperties.zIndex) return;
-      const currentZIndex = w.editableProperties.zIndex.value;
-      updates[w.id] = { zIndex: currentZIndex - 1 };
-    });
-    batchWidgetUpdate(updates);
+    reorderWidgets(id, "backward");
   };
 
   const bringToFront = (id: string | undefined = undefined) => {
-    const updates: MultiWidgetPropertyUpdates = {};
-    const toUpdate = id ? [getWidget(id)] : selectedWidgets;
-    toUpdate.forEach((w) => {
-      if (!w?.editableProperties.zIndex) return;
-      updates[w.id] = { zIndex: maxWdgZIndex + 1 };
-    });
-    batchWidgetUpdate(updates);
+    reorderWidgets(id, "front");
   };
 
   const sendToBack = (id: string | undefined = undefined) => {
-    const updates: MultiWidgetPropertyUpdates = {};
-    const toUpdate = id ? [getWidget(id)] : selectedWidgets;
-    toUpdate.forEach((w) => {
-      if (!w?.editableProperties.zIndex) return;
-      updates[w.id] = { zIndex: minWdgZIndex - 1 };
-    });
-    batchWidgetUpdate(updates);
+    reorderWidgets(id, "back");
   };
 
   const alignLeft = () => {
@@ -410,7 +409,5 @@ export function useWidgetManager() {
     alignVerticalCenter,
     distributeHorizontal,
     distributeVertical,
-    minWdgZIndex,
-    maxWdgZIndex,
   };
 }

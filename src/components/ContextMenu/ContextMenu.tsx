@@ -15,7 +15,7 @@ import {
   FlipToFront,
   FlipToBack,
 } from "@mui/icons-material";
-import { EDIT_MODE, GRID_ID } from "../../constants/constants";
+import { EDIT_MODE, FRONT_UI_ZIDX, GRID_ID } from "../../constants/constants";
 import type { GridPosition } from "../../types/widgets";
 
 export interface ContextMenuProps {
@@ -27,8 +27,7 @@ export interface ContextMenuProps {
 }
 
 const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, pos, mousePos, visible, onClose }) => {
-  const { mode, bringToFront, sendToBack, stepForward, stepBackwards, copyWidget, pasteWidget, maxWdgZIndex } =
-    useEditorContext();
+  const { mode, bringToFront, sendToBack, stepForward, stepBackwards, copyWidget, pasteWidget } = useEditorContext();
   if (!visible) return null;
   if (mode !== EDIT_MODE) return null; // TODO: create context menu for RUNTIME
   const isGrid = widgetID == GRID_ID || widgetID == "gridZone";
@@ -89,7 +88,7 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, pos, mousePos, visi
         position: "fixed",
         left: pos.x,
         top: pos.y,
-        zIndex: maxWdgZIndex + 1,
+        zIndex: FRONT_UI_ZIDX,
         width: 220,
         maxWidth: "100%",
         boxShadow: 3,

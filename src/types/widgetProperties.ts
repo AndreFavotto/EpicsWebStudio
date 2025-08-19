@@ -16,7 +16,6 @@ export const PROPERTY_SCHEMAS = {
   y:               defineProp({ selType: "number", label: "Y", value: 100 as number, category: "Layout" }),
   width:           defineProp({ selType: "number", label: "Width", value: 100 as number, category: "Layout" }),
   height:          defineProp({ selType: "number", label: "Height", value: 40 as number, category: "Layout" }),
-  zIndex:          defineProp({ selType: "none", label: "Layer", value: 1 as number, category: "Layout" }),
   label:           defineProp({ selType: "text", label: "Label", value: "" as string, category: "Layout" }),
   tooltip:         defineProp({ selType: "text", label: "Tooltip", value: "" as string, category: "Layout" }),
   visible:         defineProp({ selType: "boolean", label: "Visible", value: true as boolean, category: "Layout" }),
@@ -79,7 +78,6 @@ export const COMMON_PROPS: WidgetProperties = {
   y: PROPERTY_SCHEMAS.y,
   width: PROPERTY_SCHEMAS.width,
   height: PROPERTY_SCHEMAS.height,
-  zIndex: PROPERTY_SCHEMAS.zIndex,
   //style
   backgroundColor: PROPERTY_SCHEMAS.backgroundColor,
   borderColor: PROPERTY_SCHEMAS.borderColor,

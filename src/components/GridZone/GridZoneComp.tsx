@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { GridPosition, Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
 import { useEditorContext } from "../../context/useEditorContext.tsx";
-import { EDIT_MODE, GRID_ID, RUNTIME_MODE } from "../../constants/constants.ts";
+import { BACK_UI_ZIDX, EDIT_MODE, GRID_ID, RUNTIME_MODE } from "../../constants/constants.ts";
 import Selecto from "react-selecto";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import "./GridZone.css";
@@ -10,17 +10,8 @@ import WidgetRenderer from "../WidgetRenderer/WidgetRenderer.tsx";
 
 const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const props = data.editableProperties;
-  const {
-    mode,
-    addWidget,
-    selectedWidgetIDs,
-    setSelectedWidgetIDs,
-    handleRedo,
-    handleUndo,
-    copyWidget,
-    pasteWidget,
-    minWdgZIndex,
-  } = useEditorContext();
+  const { mode, addWidget, selectedWidgetIDs, setSelectedWidgetIDs, handleRedo, handleUndo, copyWidget, pasteWidget } =
+    useEditorContext();
 
   const gridRef = useRef<HTMLDivElement>(null);
   const userWindowRef = useRef<HTMLDivElement>(null);
@@ -260,7 +251,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       onAuxClick={handleAuxClick}
       style={{
         cursor: isPanning ? "grabbing" : "default",
-        zIndex: minWdgZIndex - 1,
+        zIndex: BACK_UI_ZIDX,
         backgroundColor: mode == EDIT_MODE ? props.backgroundColor!.value : "white",
         backgroundImage: gridLineVisible
           ? `linear-gradient(${props.gridLineColor!.value} 1px, transparent 1px),
@@ -276,7 +267,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
         className="userWindow"
         style={{
           backgroundColor: mode == EDIT_MODE ? "transparent" : props.backgroundColor!.value,
-          zIndex: minWdgZIndex - 1,
+          zIndex: BACK_UI_ZIDX,
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
           width: `${props.windowWidth!.value}px`,
           height: `${props.windowHeight!.value}px`,
