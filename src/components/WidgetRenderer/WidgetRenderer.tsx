@@ -3,7 +3,7 @@ import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
 import { useEditorContext } from "../../context/useEditorContext";
 import type { MultiWidgetPropertyUpdates, Widget } from "../../types/widgets";
 import { Rnd, type Position, type RndDragEvent, type DraggableData } from "react-rnd";
-import { EDIT_MODE } from "../../constants/constants";
+import { EDIT_MODE, FRONT_UI_ZIDX } from "../../constants/constants";
 import "./WidgetRenderer.css";
 
 interface RendererProps {
@@ -132,7 +132,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
           onClick={(e: React.MouseEvent) => e.stopPropagation()}
           onResize={() => setIsDragging(true)}
           onResizeStop={(_e, _direction, ref) => handleGroupResizeStop(ref)}
-          style={{ outline: `${selectedWidgetIDs.length > 1 ? "1px dashed" : "none"}` }}
+          style={{ outline: `${selectedWidgetIDs.length > 1 ? "1px dashed" : "none"}`, zIndex: FRONT_UI_ZIDX - 1 }}
         >
           {selectedWidgets.map((w) => {
             return (

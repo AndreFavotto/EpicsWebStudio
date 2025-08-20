@@ -15,36 +15,38 @@ import {
   FlipToFront,
   FlipToBack,
 } from "@mui/icons-material";
-import { EDIT_MODE, FRONT_UI_ZIDX, GRID_ID } from "../../constants/constants";
+import { EDIT_MODE, FRONT_UI_ZIDX } from "../../constants/constants";
 import type { GridPosition } from "../../types/widgets";
 
 export interface ContextMenuProps {
-  widgetID: string;
   pos: GridPosition;
   mousePos: GridPosition;
   visible: boolean;
   onClose: () => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
 }
 
-const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, pos, mousePos, visible, onClose }) => {
-  const { mode, bringToFront, sendToBack, stepForward, stepBackwards, copyWidget, pasteWidget } = useEditorContext();
+const ContextMenu: React.FC<ContextMenuProps> = ({ pos, mousePos, visible, onClose, onMouseEnter, onMouseLeave }) => {
+  const { mode, bringToFront, sendToBack, stepForward, stepBackwards, copyWidget, pasteWidget, selectedWidgetIDs } =
+    useEditorContext();
   if (!visible) return null;
   if (mode !== EDIT_MODE) return null; // TODO: create context menu for RUNTIME
-  const isGrid = widgetID == GRID_ID || widgetID == "gridZone";
+  const noSelection = selectedWidgetIDs.length === 0;
   const options = [
     {
       label: "Cut",
       icon: <ContentCut fontSize="small" />,
       shortcut: "Ctrl+X",
       action: () => console.log("Cut"),
-      disabled: isGrid,
+      disabled: noSelection,
     },
     {
       label: "Copy",
       icon: <ContentCopy fontSize="small" />,
       shortcut: "Ctrl+C",
-      action: () => copyWidget(widgetID),
-      disabled: isGrid,
+      action: () => copyWidget(),
+      disabled: noSelection,
     },
     {
       label: "Paste",
@@ -57,33 +59,34 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, pos, mousePos, visi
       label: "Step forward",
       icon: <KeyboardArrowUp fontSize="small" />,
       shortcut: "",
-      action: () => stepForward(widgetID),
-      disabled: isGrid,
+      action: () => stepForward(),
+      disabled: noSelection,
     },
     {
       label: "Bring to front",
       icon: <FlipToFront fontSize="small" />,
       shortcut: "",
-      action: () => bringToFront(widgetID),
-      disabled: isGrid,
+      action: () => bringToFront(),
+      disabled: noSelection,
     },
     {
       label: "Step back",
       icon: <KeyboardArrowDown fontSize="small" />,
       shortcut: "",
-      action: () => stepBackwards(widgetID),
-      disabled: isGrid,
+      action: () => stepBackwards(),
+      disabled: noSelection,
     },
     {
       label: "Send to back",
       icon: <FlipToBack fontSize="small" />,
       shortcut: "",
-      action: () => sendToBack(widgetID),
-      disabled: isGrid,
+      action: () => sendToBack(),
+      disabled: noSelection,
     },
   ];
   return (
     <Paper
+      className="contextMenu"
       sx={{
         position: "fixed",
         left: pos.x,
@@ -94,11 +97,14 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ widgetID, pos, mousePos, visi
         boxShadow: 3,
       }}
     >
-      <MenuList dense>
+      <MenuList dense sx={{ zIndex: FRONT_UI_ZIDX }}>
         {options.map((opt, index) => (
           <MenuItem
+            sx={{ zIndex: FRONT_UI_ZIDX }}
             key={index}
             disabled={opt.disabled}
+            onMouseEnter={() => onMouseEnter()}
+            onMouseLeave={() => onMouseLeave()}
             onClick={(e) => {
               e.stopPropagation();
               opt.action();

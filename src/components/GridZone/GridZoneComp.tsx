@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { GridPosition, Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
 import { useEditorContext } from "../../context/useEditorContext.tsx";
-import { BACK_UI_ZIDX, EDIT_MODE, GRID_ID, RUNTIME_MODE } from "../../constants/constants.ts";
+import { BACK_UI_ZIDX, EDIT_MODE, RUNTIME_MODE } from "../../constants/constants.ts";
 import Selecto from "react-selecto";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import "./GridZone.css";
@@ -24,8 +24,8 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const [pan, setPan] = useState<GridPosition>({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [contextMenuPos, setContextMenuPos] = useState<GridPosition>({ x: 0, y: 0 });
-  const [contextMenuWdgID, setContextMenuWdgID] = useState("");
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
+  const [mouseOverContextMenu, setMouseOverContextMenu] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [shouldCenterPan, setShouldCenterPan] = useState(true); //start centralizing screen
 
@@ -162,9 +162,6 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
-    const target = e.target as HTMLElement;
-    const clickedWidgetID = target.id === "gridZone" ? GRID_ID : target.parentElement?.id;
-    setContextMenuWdgID(clickedWidgetID ?? "");
     setContextMenuPos({ x: e.clientX, y: e.clientY });
     setContextMenuVisible(true);
   };
@@ -276,7 +273,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       >
         <WidgetRenderer scale={zoom} ensureGridCoordinate={ensureGridCoordinate} setIsDragging={setIsDragging} />
       </div>
-      {!contextMenuVisible && !isDragging && mode == EDIT_MODE && (
+      {!mouseOverContextMenu && !isDragging && mode == EDIT_MODE && (
         <Selecto
           ref={selectoRef}
           container={document.getElementById("gridContainer")}
@@ -290,6 +287,9 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           preventClickEventOnDrag
           toggleContinueSelect={["ctrl"]}
           onSelectEnd={(e) => {
+            if (e.selected.length == 0) {
+              setContextMenuVisible(false);
+            }
             if (selectedWidgetIDs.length > 1 && e.inputEvent.button == 2) {
               return;
             }
@@ -307,8 +307,12 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
         pos={contextMenuPos}
         mousePos={mousePosRef.current}
         visible={contextMenuVisible}
-        widgetID={contextMenuWdgID}
-        onClose={() => setContextMenuVisible(false)}
+        onMouseEnter={() => setMouseOverContextMenu(true)}
+        onMouseLeave={() => setMouseOverContextMenu(false)}
+        onClose={() => {
+          setContextMenuVisible(false);
+          setMouseOverContextMenu(false);
+        }}
       />
     </div>
   );
