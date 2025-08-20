@@ -105,13 +105,12 @@ export function useWidgetManager() {
   };
 
   type ReorderDirection = "forward" | "backward" | "front" | "back";
-  const reorderWidgets = (id: string | undefined, direction: ReorderDirection) => {
+  const reorderWidgets = (direction: ReorderDirection) => {
     updateEditorWidgetList((prev) => {
       // Always keep GridZone fixed at index 0
       const [gridZone, ...widgets] = prev;
-      const toMoveIds = id ? new Set([id]) : new Set(selectedWidgetIDs);
-      const others = widgets.filter((w) => !toMoveIds.has(w.id));
-      const moving = widgets.filter((w) => toMoveIds.has(w.id));
+      const others = widgets.filter((w) => !selectedWidgetIDs.includes(w.id));
+      const moving = widgets.filter((w) => selectedWidgetIDs.includes(w.id));
 
       if (moving.length === 0) return prev;
 
@@ -150,20 +149,20 @@ export function useWidgetManager() {
     });
   };
 
-  const stepForward = (id: string | undefined = undefined) => {
-    reorderWidgets(id, "forward");
+  const stepForward = () => {
+    reorderWidgets("forward");
   };
 
-  const stepBackwards = (id: string | undefined = undefined) => {
-    reorderWidgets(id, "backward");
+  const stepBackwards = () => {
+    reorderWidgets("backward");
   };
 
-  const bringToFront = (id: string | undefined = undefined) => {
-    reorderWidgets(id, "front");
+  const bringToFront = () => {
+    reorderWidgets("front");
   };
 
-  const sendToBack = (id: string | undefined = undefined) => {
-    reorderWidgets(id, "back");
+  const sendToBack = () => {
+    reorderWidgets("back");
   };
 
   const alignLeft = () => {
@@ -327,21 +326,17 @@ export function useWidgetManager() {
     });
   }, [editorWidgets]);
 
-  const copyWidget = useCallback(
-    (id: string | undefined = undefined) => {
-      const toUpdate = id ? [getWidget(id)] : selectedWidgets;
-      if (toUpdate.length === 0) return;
-      if (toUpdate.length > 1 && groupBounds) {
-        copiedGroupBounds.current = groupBounds;
-      }
-      clipboard.current = toUpdate
-        .filter((w) => w !== undefined)
-        .map((w) => {
-          return deepCloneWidget(w);
-        });
-    },
-    [selectedWidgets, getWidget, groupBounds]
-  );
+  const copyWidget = useCallback(() => {
+    if (selectedWidgets.length === 0) return;
+    if (selectedWidgets.length > 1 && groupBounds) {
+      copiedGroupBounds.current = groupBounds;
+    }
+    clipboard.current = selectedWidgets
+      .filter((w) => w !== undefined)
+      .map((w) => {
+        return deepCloneWidget(w);
+      });
+  }, [selectedWidgets, groupBounds]);
 
   const pasteWidget = useCallback(
     (pos: GridPosition) => {
