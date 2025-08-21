@@ -1,7 +1,23 @@
-.floating-toolbar-drag-handle {
-  -webkit-user-drag: none;
+.toolBar {
+  z-index: calc(var(--front-ui-zidx) - 1);
 }
 
-.react-rnd-resizable {
-  outline: none;
+.toolbarBox {
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5;
+  opacity: 0.7;
+  transition: opacity 0.1s ease;
+}
+.toolbarBox:hover {
+  opacity: 1;
+}
+
+.dragHandle {
+  cursor: move;
+  display: flex;
+  align-items: center;
 }

@@ -7,6 +7,7 @@ import Selecto from "react-selecto";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import "./GridZone.css";
 import WidgetRenderer from "../WidgetRenderer/WidgetRenderer.tsx";
+import ToolbarButtons from "../Toolbar/Toolbar.tsx";
 
 const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const props = data.editableProperties;
@@ -25,7 +26,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const [isPanning, setIsPanning] = useState(false);
   const [contextMenuPos, setContextMenuPos] = useState<GridPosition>({ x: 0, y: 0 });
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
-  const [mouseOverContextMenu, setMouseOverContextMenu] = useState(false);
+  const [mouseOverMenu, setMouseOverMenu] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [shouldCenterPan, setShouldCenterPan] = useState(true); //start centralizing screen
 
@@ -269,11 +270,12 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           width: `${props.windowWidth!.value}px`,
           height: `${props.windowHeight!.value}px`,
           overflow: mode !== EDIT_MODE ? "hidden" : "visible",
+          position: "relative",
         }}
       >
         <WidgetRenderer scale={zoom} ensureGridCoordinate={ensureGridCoordinate} setIsDragging={setIsDragging} />
       </div>
-      {!mouseOverContextMenu && !isDragging && mode == EDIT_MODE && (
+      {!mouseOverMenu && !isDragging && mode == EDIT_MODE && (
         <Selecto
           ref={selectoRef}
           container={document.getElementById("gridContainer")}
@@ -303,15 +305,16 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           }}
         />
       )}
+      <ToolbarButtons onMouseEnter={() => setMouseOverMenu(true)} onMouseLeave={() => setMouseOverMenu(false)} />
       <ContextMenu
         pos={contextMenuPos}
         mousePos={mousePosRef.current}
         visible={contextMenuVisible}
-        onMouseEnter={() => setMouseOverContextMenu(true)}
-        onMouseLeave={() => setMouseOverContextMenu(false)}
+        onMouseEnter={() => setMouseOverMenu(true)}
+        onMouseLeave={() => setMouseOverMenu(false)}
         onClose={() => {
           setContextMenuVisible(false);
-          setMouseOverContextMenu(false);
+          setMouseOverMenu(false);
         }}
       />
     </div>
