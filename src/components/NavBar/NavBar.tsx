@@ -8,11 +8,14 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import FileDownloadIcon from "@mui/icons-material/FileDownload";
+import Link from "@mui/material/Link";
+import Tooltip from "@mui/material/Tooltip";
 import { COLORS, RUNTIME_MODE, EDIT_MODE, APP_SRC_URL } from "../../constants/constants.ts";
 import { useEditorContext } from "../../context/useEditorContext.tsx";
 import { WIDGET_SELECTOR_WIDTH } from "../../constants/constants.ts";
-import { Link } from "@mui/material";
-import ToolbarButtons from "../Toolbar/Toolbar.tsx";
+import "./NavBar.css";
 
 interface StyledAppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -45,6 +48,16 @@ export default function NavBar() {
   const handleRuntimeClick = () => {
     if (mode === RUNTIME_MODE) updateMode(EDIT_MODE);
     else updateMode(RUNTIME_MODE);
+  };
+
+  const handleDownload = () => {
+    // TODO: implement download logic
+    console.log("Download clicked");
+  };
+
+  const handleUpload = () => {
+    // TODO: implement upload logic
+    console.log("Upload clicked");
   };
 
   return (
@@ -82,15 +95,30 @@ export default function NavBar() {
           >
             {mode === EDIT_MODE ? "Preview" : "Edit"}
           </Button>
+          <div className="fileButtons">
+            <Tooltip title="Export file">
+              <IconButton onClick={handleDownload}>
+                <FileDownloadIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Import file">
+              <IconButton onClick={handleUpload}>
+                <FileUploadIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
           <Box sx={{ flexGrow: 1 }} />
-          <ToolbarButtons />
-          <Box sx={{ display: "flex", alignItems: "center", ml: 3, gap: 2, flexShrink: 0 }}>
-            <Button sx={{ color: "white" }}>
-              <Link href={APP_SRC_URL} target="_blank" underline="none" color="inherit">
-                Contributions
-              </Link>
-            </Button>
-            <Button sx={{ color: "white" }}>Login</Button>
+
+          {/* Right-side actions */}
+          <Box className="rightButtons">
+            <div>
+              <Button sx={{ color: "white" }}>
+                <Link href={APP_SRC_URL} target="_blank" underline="none" color="inherit">
+                  Contributions
+                </Link>
+              </Button>
+              <Button sx={{ color: "white" }}>Login</Button>
+            </div>
           </Box>
         </Toolbar>
       </StyledAppBar>
