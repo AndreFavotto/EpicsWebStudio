@@ -17,9 +17,14 @@ export const COLORS = {
   graphLineColor: getComputedStyle(document.documentElement, null).getPropertyValue("--graph-line-color").trim(),
 };
 
+export const BACK_UI_ZIDX = parseInt(
+  getComputedStyle(document.documentElement, null).getPropertyValue("--back-ui-zidx")
+);
+export const FRONT_UI_ZIDX = parseInt(
+  getComputedStyle(document.documentElement, null).getPropertyValue("--back-ui-zidx")
+);
+
 export const APP_SRC_URL = "https://github.com/AndreFavotto/epicsWebSuite";
-export const BACK_UI_ZIDX = 0;
-export const FRONT_UI_ZIDX = 1000;
 export const EDIT_MODE = "edit";
 export const RUNTIME_MODE = "runtime";
 export const PVWS_URL = "ws://localhost:8080/pvws/pv";

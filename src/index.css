@@ -7,6 +7,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --back-ui-zidx: 0;
+  --front-ui-zidx: 1000;
   /* default-colors */
   --title-bar-color: #5794bd;
   --background-color: #f2f2f2;
