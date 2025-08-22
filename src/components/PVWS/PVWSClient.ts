@@ -1,4 +1,4 @@
-import { toByteArray } from "./base64";
+import { base64ToArrayBuffer } from "./base64";
 import type { PVWSMessage } from "../../types/pvws";
 
 type ConnectHandler = (connected: boolean) => void;
@@ -57,7 +57,6 @@ export class PVWSClient {
 
   private handleMessage(message: string): void {
     this.idle = false;
-    console.log(message);
     function isPVWSMessage(obj: unknown): obj is PVWSMessage {
       return typeof obj === "object" && obj !== null && ("pv" in obj || "value" in obj);
     }
@@ -74,24 +73,19 @@ export class PVWSClient {
 
     if (jm.type === "update") {
       if (jm.b64dbl !== undefined) {
-        const bytes = toByteArray(jm.b64dbl);
-        jm.value = Array.from(new Float64Array(bytes.buffer));
+        jm.value = Array.from(new Float64Array(base64ToArrayBuffer(jm.b64dbl)));
         delete jm.b64dbl;
       } else if (jm.b64flt !== undefined) {
-        const bytes = toByteArray(jm.b64flt);
-        jm.value = Array.from(new Float32Array(bytes.buffer));
+        jm.value = Array.from(new Float32Array(base64ToArrayBuffer(jm.b64flt)));
         delete jm.b64flt;
       } else if (jm.b64srt !== undefined) {
-        const bytes = toByteArray(jm.b64srt);
-        jm.value = Array.from(new Int16Array(bytes.buffer));
+        jm.value = Array.from(new Int16Array(base64ToArrayBuffer(jm.b64srt)));
         delete jm.b64srt;
       } else if (jm.b64int !== undefined) {
-        const bytes = toByteArray(jm.b64int);
-        jm.value = Array.from(new Int32Array(bytes.buffer));
+        jm.value = Array.from(new Int32Array(base64ToArrayBuffer(jm.b64int)));
         delete jm.b64int;
       } else if (jm.b64byt !== undefined) {
-        const bytes = toByteArray(jm.b64byt);
-        jm.value = Array.from(new Uint8Array(bytes.buffer));
+        jm.value = Array.from(new Uint8Array(base64ToArrayBuffer(jm.b64byt)));
         delete jm.b64byt;
       }
 
@@ -123,8 +117,6 @@ export class PVWSClient {
     }
     message += ")";
     console.log(message);
-    // console.log(`Scheduling re-connect to ${this.url} in ${this.reconnect_ms}ms`);
-    // setTimeout(() => this.open(), this.reconnect_ms);
   }
 
   isConnected(): boolean {
