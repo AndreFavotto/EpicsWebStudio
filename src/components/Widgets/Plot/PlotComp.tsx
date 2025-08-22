@@ -26,6 +26,7 @@ const PlotComp: React.FC<WidgetUpdate> = ({ data }) => {
   useEffect(() => {
     if (prevInEditMode !== undefined && prevInEditMode !== inEditMode) {
       setYBuffer([]); // reset buffer on mode transition
+      setXBuffer([]); // reset buffer on mode transition
     }
     const value = p.pvValue?.value;
     if (inEditMode) {
@@ -39,7 +40,7 @@ const PlotComp: React.FC<WidgetUpdate> = ({ data }) => {
         return next;
       });
     }
-  }, [p.pvValue, inEditMode, prevInEditMode, bufferSize]);
+  }, [p.pvValue?.value, inEditMode, prevInEditMode, bufferSize]);
 
   // update X values
   useEffect(() => {
@@ -54,7 +55,7 @@ const PlotComp: React.FC<WidgetUpdate> = ({ data }) => {
         return next;
       });
     }
-  }, [p.xAxisPVValue, inEditMode, bufferSize]);
+  }, [p.xAxisPVValue?.value, inEditMode, bufferSize]);
 
   return (
     <div
@@ -89,7 +90,6 @@ const PlotComp: React.FC<WidgetUpdate> = ({ data }) => {
             },
           },
           xaxis: {
-            type: xBuffer.length ? "date" : undefined,
             title: {
               text: p.xAxisTitle?.value,
               font: {
