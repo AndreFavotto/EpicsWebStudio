@@ -1,0 +1,28 @@
+services:
+  epicswebsuite-dev:
+    build:
+      target: dev
+      args:
+        GIT_REPO: ${GIT_REPO}
+        GIT_TAG: ${GIT_TAG}
+    volumes:
+      - .:/app # Mount the source code for development
+      - /app/node_modules # Prevent host node_modules from interfering
+    image: epicswebsuite-dev:${GIT_TAG}
+    container_name: epicswebsuite-dev
+    network_mode: "host"
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - epicswebsuite-pvapyws
+  epicswebsuite-pvapyws:
+    build:
+      context: ./pvaPy
+      args:
+        EPICS_DEFAULT_PROTOCOL: pva
+        EPICS_CA_ADDR_LIST: "localhost"
+        EPICS_PVA_ADDR_LIST: "localhost"
+    image: epicswebsuite-pvapyws:${GIT_TAG}
+    container_name: epicswebsuite-pvapyws
+    network_mode: "host"
+    restart: always
