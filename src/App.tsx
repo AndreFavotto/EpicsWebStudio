@@ -1,32 +1,30 @@
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import "./App.css";
-import GridZone from "./components/GridZone/GridZone";
-import SideBar from "./components/SideBar/SideBar"
-import type { Widget } from "./types/widgets"
+import { GridZone } from "./components/GridZone/";
+import WidgetSelector from "./components/WidgetSelector/WidgetSelector";
+import PropertyEditor from "./components/PropertyEditor/PropertyEditor";
+import NavBar from "./components/NavBar/NavBar";
+import { useEditorContext } from "./context/useEditorContext";
+import { GRID_ID } from "./constants/constants";
 
 const App: React.FC = () => {
-  const [Widgets, setWidgets] = useState<Widget[]>([]);
-
-  const handleDropWidget = (widget: Widget) => {
-    setWidgets((prev) => [...prev, widget]);
-  };
-
-  const openPreview = () => {
-    localStorage.setItem("previewLayout", JSON.stringify(Widgets));
-    window.open("/preview", "_blank");
-  };
-
+  const { editorWidgets } = useEditorContext();
+  const gridProperties = useMemo(() => editorWidgets.find((w) => w.id === GRID_ID), [editorWidgets]);
   return (
     <div className="app">
-      {/* <button onClick={openPreview} className="preview-button">
-        Preview Runtime (new tab)
-      </button> */}
-      <div className="sideBar">
-        <SideBar></SideBar>
+      <div className="appBar">
+        <NavBar />
       </div>
-      <div className="designer-area">
-        <h3>Designer</h3>
-        <GridZone dropped={Widgets} onDropWidget={handleDropWidget} />
+      <div className="designerArea">
+        <div className="widgetSelector">
+          <WidgetSelector />
+        </div>
+        <div id="gridContainer">
+          <GridZone.component data={gridProperties!} />
+        </div>
+        <div className="propertyEditor">
+          <PropertyEditor />
+        </div>
       </div>
     </div>
   );

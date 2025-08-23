@@ -1,69 +1,44 @@
-# React + TypeScript + Vite
+# EPICS Web Suite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+No-code web drag and drop OPI builder for EPICS applications.
 
-Currently, two official plugins are available:
+> NOTE: This app is under development, so not all planned features are yet functional, but feel free to try it out!
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The gateway between EPICS and the browser is done via [PV Web Socket (PVWS)](https://github.com/ornl-epics/pvws).
 
-## Expanding the ESLint configuration
+## Dependencies
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Docker (tested with 28.1.1)
+- Docker Compose (tested with v2.35.1)
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Launch development version
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+1. Clone this repo
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2. `cd docker`
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. Create your .env: Since we don't yet use secrets or certificates, you can just copy [.env.example](./docker/.env.example) into your `.env` in the same folder.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+4. Launch the app: `docker compose -f docker-compose-dev.yml up`. The application should be available in `localhost:5173`.
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Link to EPICS
+
+If launched via the compose file provided, no further configuration is needed. Tailoring of the PVWS configurations (default protocol (ca|pva), CA_ADDR_LIST, PVA_ADDR_LIST, etc) can be made in the [setenv.sh](docker/pvws/setenv.sh) file.
+
+As is, the default protocol is set to pva. This means you can put the PV names directly in the "PV Name" field of the widgets if your IOC has a PVA server.
+If you wish to use Channel Access instead, you can specify the protocol by typing `ca://PVNAME` in the PV field or change the default protocol directly in the setenv.sh file. For more information, see [PVWS project](https://github.com/ornl-epics/pvws).
+
+## Features
+
+- Infinite pan/zoom canvas: gives you freedom to build your interface and test layouts;
+  - Use the mouse scroll to zoom in/out. While middle button is clicked, pan mode is activated. A single click in the middle button re-centers the grid.
+- Customizable grid: change size, background color and other properties as you wish. Widget snapping to grid is available as well.
+- Edit and Runtime modes:
+  - Edit mode: total freedom and control of your widgets.
+  - Runtime: Communication to PVA/CA servers is established and information is updated live.
+    > Hint: Only the widgets inside the "window area" (dashed in grey) are exported. You can edit the exported window size by opening the lateral menu while in edit mode.
+- Multiple widgets (for now not that many... widgets are under development!)
+
+## Notes
+
+This is a React + TypeScript application. Several components and elements of the design are based in [Material UI library](https://mui.com/material-ui/)

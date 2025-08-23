@@ -1,41 +1,32 @@
+/* Root container */
 .app {
   display: flex;
-  height: 100vh;
-  font-family: sans-serif;
-}
-
-.draggable {
-  background-color: #007bff;
-  color: white;
-  padding: 0.5rem;
-  margin-bottom: 0.5rem;
-  text-align: center;
-  border-radius: 4px;
-  cursor: grab;
-  user-select: none;
-}
-
-.designer-area {
-  padding: 1rem;
-  width: 90vw;
-  display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
-}
-
-.widget-container {
   height: 100%;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center; 
 }
 
-.preview-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+/* Area below the AppBar */
+.designerArea {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: row;
+  margin-top: 64px; /* Height of AppBar Toolbar (default MUI) */
+}
+
+/* Sidebar */
+.widgetSelector {
+  height: 100%;
+}
+
+/* Central grid area */
+#gridContainer {
+  height: calc(100% - 64px);
   width: 100%;
+  position: absolute;
+}
+
+/* Property editor on the right */
+.propertyEditor {
+  height: 100%;
 }

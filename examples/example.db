@@ -1,0 +1,60 @@
+record(calc, "test:seconds") {
+  field(DESC, "time elapsed")
+  field(INPA, "test:seconds")
+  field(CALC, "A+0.1")
+  field(SCAN, ".1 second")
+}
+
+record(ao, "test:freq"){
+  field(DESC, "sin frequency")
+  field(VAL, "0.1")
+  field(DRVH, "1") # Limited freq due to 10Hz update on seconds
+  field(DRVL, "0")
+}
+
+record(ao, "test:ampl"){
+  field(DESC, "sin amplitude")
+  field(VAL, "1")
+}
+
+record(calc, "test:sin"){
+  field(DESC, "Sinus wave")
+  field(INPA, "test:seconds CP")
+  field(INPB, "test:ampl")
+  field(INPC, "test:freq")
+  field(CALC, "B*SIN(2*PI*C*A)")
+  field(PREC, "3")
+  field(VAL, "0")
+}
+
+record(compress, "test:sinArr"){
+  field(DESC, "Sin array")
+  field(ALG, "Circular Buffer")
+  field(INP, "test:sin CP")
+  field(NSAM, "80")
+}
+
+record(bo, "test:bo") {
+  field(DESC, "Binary output")
+  field(ZNAM, "Off")
+  field(ONAM, "On")
+  field(OUT, "test:bi PP")
+}
+
+record(bi, "test:bi") {
+  field(DESC, "Binary input")
+  field(ZNAM, "Off")
+  field(ONAM, "On")
+}
+
+record(ao, "test:ao") {
+  field(DESC, "Analog output")
+  field(PREC, "3")
+  field(OUT, "test:ai PP")
+}
+
+record(ai, "test:ai") {
+  field(DESC, "Analog input")
+  field(PREC, "3")
+}
+

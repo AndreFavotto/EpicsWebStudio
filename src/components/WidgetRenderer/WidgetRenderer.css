@@ -1,0 +1,14 @@
+.selectable,
+.selected {
+  overflow: hidden;
+  position: absolute;
+}
+
+.selected {
+  outline: 2px dashed var(--highlighted);
+  box-shadow: 2 2 2px rgba(33, 150, 243, 0.5);
+}
+
+.groupBox {
+  box-sizing: border-box;
+}

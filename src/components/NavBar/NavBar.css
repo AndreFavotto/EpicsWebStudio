@@ -1,0 +1,14 @@
+.rightButtons {
+  display: flex;
+  align-items: center;
+  margin-left: 3;
+  gap: 2;
+  flex-shrink: 0;
+}
+
+.fileButtons {
+  margin-left: 20px;
+  width: 100px;
+  display: flex;
+  justify-content: space-between;
+}
