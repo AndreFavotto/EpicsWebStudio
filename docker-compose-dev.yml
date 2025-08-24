@@ -18,6 +18,8 @@ services:
   epicswebsuite-pvapyws:
     build:
       context: ./pvaPyWS
+    volumes:
+      - ./pvaPyWS:/app
     image: epicswebsuite-pvapyws:${GIT_TAG}
     container_name: epicswebsuite-pvapyws
     network_mode: "host"
