@@ -17,12 +17,12 @@ services:
       - epicswebsuite-pvapyws
   epicswebsuite-pvapyws:
     build:
-      context: ./pvaPy
-      args:
-        EPICS_DEFAULT_PROTOCOL: pva
-        EPICS_CA_ADDR_LIST: "localhost"
-        EPICS_PVA_ADDR_LIST: "localhost"
+      context: ./pvaPyWS
     image: epicswebsuite-pvapyws:${GIT_TAG}
     container_name: epicswebsuite-pvapyws
     network_mode: "host"
     restart: always
+    environment:
+      EPICS_DEFAULT_PROTOCOL: ${EPICS_DEFAULT_PROTOCOL}
+      EPICS_CA_ADDR_LIST: ${EPICS_CA_ADDR_LIST}
+      EPICS_PVA_ADDR_LIST: ${EPICS_PVA_ADDR_LIST}

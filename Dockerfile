@@ -9,7 +9,7 @@ WORKDIR /app
 COPY --from=source_fetch /app ./
 RUN npm install
 
-CMD ["npm", "run", "dev", "--", "--host"]
+CMD npm run dev -- --host
 # --------------------------------------------
 # Production environment
 FROM node:20-alpine AS build
