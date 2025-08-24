@@ -56,6 +56,7 @@ class ValueAlarm:
 class PVData:
   pv: Optional[str] = None
   value: Optional[Union[float, List[float], List[int], List[str]]] = None
+  valueText: Optional[str] = None
   alarm: Optional[Alarm] = None
   timeStamp: Optional[TimeStamp] = None
   display: Optional[Display] = None
@@ -77,15 +78,27 @@ def encode_base64_array(array, dtype):
 
 
 def parse_pv(pv_obj: PvObject) -> PVData:
+  b64dbl = b64flt = b64int = b64srt = b64byt = value = valueText = None
   pv_dict = pv_obj.get()
-  value = pv_dict.get("value")
-  b64dbl = b64flt = b64int = b64srt = b64byt = None
-
-  if isinstance(value, (list, np.ndarray)) and len(value) > 0:
-    arr = np.asarray(value)
+  
+  # Value
+  valueField = pv_dict.get("value")
+  ## epics:nt/NTScalar:1.0
+  if(isinstance(valueField, (float, int, str))):
+    value = valueField
+  ## epics:nt/NTEnum:1.0
+  elif(isinstance(valueField, dict)):
+    #TODO: check if other epics NTs send dicts as value
+    index = valueField.get("index")
+    choices = valueField.get("choices")
+    if(index is not None and choices is not None):
+      valueText = choices[index]
+      value = index
+  ## epics:nt/NTScalarArray
+  elif isinstance(valueField, (list, np.ndarray)):
+    arr = np.asarray(valueField)
     if np.issubdtype(arr.dtype, np.floating):
       b64dbl = encode_base64_array(arr, np.float64)
-      value = None
     elif np.issubdtype(arr.dtype, np.integer):
       if arr.min() >= -128 and arr.max() <= 255:
         b64byt = encode_base64_array(arr, np.uint8)
@@ -93,7 +106,6 @@ def parse_pv(pv_obj: PvObject) -> PVData:
         b64srt = encode_base64_array(arr, np.int16)
       else:
         b64int = encode_base64_array(arr, np.int32)
-      value = None
 
   # Alarm
   alarm = None
@@ -151,6 +163,7 @@ def parse_pv(pv_obj: PvObject) -> PVData:
 
   return PVData(
     value=value,
+    valueText=valueText,
     alarm=alarm,
     timeStamp=timestamp,
     display=display,

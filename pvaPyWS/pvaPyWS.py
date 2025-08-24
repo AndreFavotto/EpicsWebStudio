@@ -19,6 +19,7 @@ async def send_update(pv_name: str, pv_obj):
     "type": "update",
     "pv": pv_name,
     "value": pv_data.value,
+    "valueText": pv_data.valueText,
     "alarm": pv_data.alarm.__dict__ if pv_data.alarm else None,
     "timeStamp": pv_data.timeStamp.__dict__ if pv_data.timeStamp else None,
     "display": pv_data.display.__dict__ if pv_data.display else None,
