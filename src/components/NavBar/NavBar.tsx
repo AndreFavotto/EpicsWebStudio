@@ -42,7 +42,7 @@ const StyledAppBar = styled(MuiAppBar, {
 }));
 
 export default function NavBar() {
-  const { mode, updateMode, wdgSelectorOpen, setWdgSelectorOpen } = useEditorContext();
+  const { mode, updateMode, wdgSelectorOpen, setWdgSelectorOpen, downloadWidgets, loadWidgets } = useEditorContext();
   const drawerWidth = WIDGET_SELECTOR_WIDTH;
 
   const handleRuntimeClick = () => {
@@ -51,13 +51,25 @@ export default function NavBar() {
   };
 
   const handleDownload = () => {
-    // TODO: implement download logic
-    console.log("Download clicked");
+    downloadWidgets();
   };
 
   const handleUpload = () => {
-    // TODO: implement upload logic
-    console.log("Upload clicked");
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json";
+    input.onchange = async (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        loadWidgets(text);
+      } catch (err) {
+        console.error("Failed to read file:", err);
+      }
+    };
+    input.click();
   };
 
   return (

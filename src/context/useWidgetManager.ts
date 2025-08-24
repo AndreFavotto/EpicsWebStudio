@@ -6,9 +6,11 @@ import type {
   PropertyUpdates,
   MultiWidgetPropertyUpdates,
   GridPosition,
+  ExportedWidget,
 } from "../types/widgets";
 import { GridZone } from "../components/GridZone";
-import { MAX_HISTORY } from "../constants/constants";
+import { GRID_ID, MAX_HISTORY } from "../constants/constants";
+import WidgetRegistry from "../components/WidgetRegistry/WidgetRegistry";
 
 function deepCloneWidgetList(widgets: Widget[]): Widget[] {
   return widgets.map(deepCloneWidget);
@@ -373,6 +375,81 @@ export function useWidgetManager() {
     [updateEditorWidgetList, copiedGroupBounds]
   );
 
+  const downloadWidgets = useCallback(() => {
+    const simplified = editorWidgets.map(
+      (widget) =>
+        ({
+          id: widget.id,
+          widgetName: widget.widgetName,
+          properties: Object.fromEntries(
+            Object.entries(widget.editableProperties).map(([key, def]) => [key, def.value])
+          ),
+        } as ExportedWidget)
+    );
+
+    const dataStr = JSON.stringify(simplified, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "widgets.json";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  }, [editorWidgets]);
+
+  const loadWidgets = useCallback(
+    (widgetsData: string | ExportedWidget[]) => {
+      try {
+        let parsed: ExportedWidget[];
+        if (typeof widgetsData === "string") {
+          parsed = JSON.parse(widgetsData);
+        } else {
+          parsed = widgetsData;
+        }
+
+        const imported = parsed
+          .map((raw, idx) => {
+            let baseWdg;
+            if (idx == 0) {
+              if (raw.id !== GRID_ID) {
+                throw new Error("Missing or invalid grid properties. Did you move the grid from first position?");
+              }
+              baseWdg = GridZone;
+            } else {
+              baseWdg = WidgetRegistry[raw.widgetName];
+            }
+            if (!baseWdg) {
+              console.warn(`Unknown widget type: ${raw.widgetName}`);
+              return null;
+            }
+
+            // deep clone the registry entry so we don’t mutate the registry itself
+            const instance = deepCloneWidget(baseWdg);
+            instance.id = raw.id;
+
+            // overlay values from the file
+            for (const [key, val] of Object.entries(raw.properties ?? {})) {
+              const propName = key as PropertyKey;
+              if (instance.editableProperties[propName]) {
+                instance.editableProperties[propName].value = val;
+              }
+            }
+
+            return instance;
+          })
+          .filter(Boolean) as Widget[];
+        console.log(imported);
+        updateEditorWidgetList(imported);
+        setSelectedWidgetIDs([]);
+      } catch (err) {
+        console.error("Failed to load widgets:", err);
+      }
+    },
+    [updateEditorWidgetList]
+  );
+
   return {
     editorWidgets,
     setEditorWidgets,
@@ -404,5 +481,7 @@ export function useWidgetManager() {
     alignVerticalCenter,
     distributeHorizontal,
     distributeVertical,
+    downloadWidgets,
+    loadWidgets,
   };
 }
