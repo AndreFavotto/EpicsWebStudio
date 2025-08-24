@@ -1,16 +1,16 @@
 import { useRef, useMemo } from "react";
-import { PVWSManager } from "../components/PVWS/PVWSManager";
-import type { PVWSMessage } from "../types/pvws";
+import { WSManager } from "../WSManager/WSManager";
+import type { WSMessage } from "../types/pvaPyWS";
 import type { MultiWidgetPropertyUpdates } from "../types/widgets";
 import type { useWidgetManager } from "./useWidgetManager";
 
-export default function usePVWS(
+export default function usePvaPyWS(
   editorWidgets: ReturnType<typeof useWidgetManager>["editorWidgets"],
   batchWidgetUpdate: ReturnType<typeof useWidgetManager>["batchWidgetUpdate"]
 ) {
-  const PVWS = useRef<PVWSManager | null>(null);
+  const ws = useRef<WSManager | null>(null);
 
-  const updatePVValue = (msg: PVWSMessage) => {
+  const updatePVValue = (msg: WSMessage) => {
     const pv = msg.pv;
     const newValue = msg.value;
 
@@ -29,15 +29,15 @@ export default function usePVWS(
   };
 
   const startNewSession = () => {
-    if (PVWS.current) {
-      PVWS.current.stop();
+    if (ws.current) {
+      ws.current.stop();
     }
-    PVWS.current = new PVWSManager(updatePVValue);
-    PVWS.current?.start(PVList);
+    ws.current = new WSManager(updatePVValue);
+    ws.current?.start(PVList);
   };
 
   const writePVValue = (pv: string, newValue: number | string) => {
-    PVWS.current?.writeToPV(pv, newValue);
+    ws.current?.writeToPV(pv, newValue);
   };
 
   const clearPVValues = () => {
@@ -56,11 +56,11 @@ export default function usePVWS(
   const PVList = useMemo(() => {
     const set = new Set<string>();
     for (const w of editorWidgets) {
-      if (w.editableProperties?.pvName) set.add(w.editableProperties.pvName.value);
-      if (w.editableProperties?.xAxisPVName) set.add(w.editableProperties.xAxisPVName.value);
+      if (w.editableProperties?.pvName?.value) set.add(w.editableProperties.pvName.value);
+      if (w.editableProperties?.xAxisPVName?.value) set.add(w.editableProperties.xAxisPVName.value);
     }
     return Array.from(set);
   }, [editorWidgets]);
 
-  return { PVWS, updatePVValue, writePVValue, clearPVValues, startNewSession, PVList };
+  return { ws, updatePVValue, writePVValue, clearPVValues, startNewSession, PVList };
 }

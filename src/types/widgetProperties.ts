@@ -1,6 +1,6 @@
 import type { WidgetProperty, PropertyValue, WidgetProperties } from "./widgets";
 import { COLORS } from "../constants/constants";
-import type { PVWSMessageValue } from "./pvws";
+import type { PVValue } from "./pvaPyWS";
 
 /* helper to make sure each property value is correctly typed */
 function defineProp<T extends PropertyValue>(prop: WidgetProperty<T>): WidgetProperty<T> {
@@ -45,7 +45,7 @@ export const PROPERTY_SCHEMAS = {
   pvName:          defineProp({ selType: "text", label: "PV Name", value: "" as string, category: "EPICS" }),
   precisionFromPV: defineProp({ selType: "boolean", label: "Disabled", value: true as boolean, category: "EPICS" }),
   actionValue:     defineProp({ selType: "text", label: "Action Value", value: 1 as number | string, category: "EPICS" }),
-  pvValue:         defineProp({ selType: "none", label: "PV Value", value: "" as PVWSMessageValue, category: "EPICS" }),
+  pvValue:         defineProp({ selType: "none", label: "PV Value", value: "" as PVValue, category: "EPICS" }),
   // placeholder for number array - needed for now to match all types in PropertyValue
   placeholder:     defineProp({ selType: "select", label: "placeholder prop", value: [] as number[], category: "placeholder" }),
   // Specific Properties
@@ -65,7 +65,7 @@ export const PROPERTY_SCHEMAS = {
   logscaleY:       defineProp({ selType: "boolean", label: "Apply log to Y", value: false as boolean, category: "Layout" }),
   plotLineStyle:   defineProp({ selType: "select", label: "Line style", value: "lines+markers" as "lines+markers"|"lines"|"markers", options: ["lines+markers", "lines", "markers"], category: "Style" }),
   xAxisPVName:     defineProp({ selType: "text", label: "X axis PV", value: "" as string, category: "EPICS" }),
-  xAxisPVValue:    defineProp({ selType: "none", label: "X axis PV value", value: "" as PVWSMessageValue, category: "EPICS" }),
+  xAxisPVValue:    defineProp({ selType: "none", label: "X axis PV value", value: "" as PVValue, category: "EPICS" }),
   plotBufferSize:  defineProp({ selType: "number", label: "Buffer size (if scalar PVs)", value: 50 as number, category: "Layout" }),
 };
 

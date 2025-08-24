@@ -1,5 +1,5 @@
 import { useState } from "react";
-import usePVWS from "./usePVWS";
+import usePVWS from "./usePvaPyWS";
 import { EDIT_MODE, GRID_ID, type Mode } from "../constants/constants";
 import { useWidgetManager } from "./useWidgetManager";
 

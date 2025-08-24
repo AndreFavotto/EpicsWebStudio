@@ -1,13 +1,13 @@
-import { PVWSClient } from "./PVWSClient";
-import * as CONSTS from "../../constants/constants";
-import type { PVWSMessage } from "../../types/pvws";
+import { WSClient } from "./WSClient";
+import type { WSMessage } from "../types/pvaPyWS";
+import { WS_URL } from "../constants/constants";
 
-export class PVWSManager {
-  private client: PVWSClient | null = null;
+export class WSManager {
+  private client: WSClient | null = null;
   private PVList: string[] = [];
-  private handleMessage: (msg: PVWSMessage) => void;
+  private handleMessage: (msg: WSMessage) => void;
 
-  constructor(handleMessage: (msg: PVWSMessage) => void) {
+  constructor(handleMessage: (msg: WSMessage) => void) {
     this.handleMessage = handleMessage;
   }
 
@@ -20,13 +20,13 @@ export class PVWSManager {
   start(PVList: string[]): void {
     this.PVList = PVList;
     if (this.client) return;
-    this.client = new PVWSClient(CONSTS.PVWS_URL, this.handleConnect, this.handleMessage);
+    this.client = new WSClient(WS_URL, this.handleConnect, this.handleMessage);
     this.client.open();
   }
 
   stop(): void {
     if (!this.client) return;
-    this.client.clear(this.PVList);
+    this.client.unsubscribe(this.PVList);
     this.client.close();
     this.client = null;
   }

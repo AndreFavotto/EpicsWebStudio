@@ -2,7 +2,7 @@ import type { SvgIconProps } from "@mui/material/SvgIcon";
 import { PROPERTY_SCHEMAS } from "./widgetProperties";
 
 export type PropertySelectorType = "text" | "number" | "boolean" | "colorSelector" | "select" | "none";
-export type PropertyValue = string | number | number[] | boolean;
+export type PropertyValue = string | string[] | number | number[] | boolean;
 export interface WidgetProperty<T extends PropertyValue = PropertyValue> {
   selType: PropertySelectorType;
   label: string;
