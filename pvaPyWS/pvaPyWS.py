@@ -1,6 +1,7 @@
 import asyncio
 import json
 import websockets
+from os import getenv
 from websockets.legacy.server import WebSocketServerProtocol
 from typing import Dict, Set
 from pvaPyClient import PvaPyClient
@@ -9,7 +10,7 @@ from pvaccess import ProviderType
 
 subscriptions: Dict[WebSocketServerProtocol, Set[str]] = {}
 client = None
-
+default_protocol = getenv("EPICS_DEFAULT_PROTOCOL", "pva")
 
 async def send_update(pv_name: str, pv_obj):
   pv_data: PVData = parse_pv(pv_obj)
@@ -41,6 +42,7 @@ async def send_update(pv_name: str, pv_obj):
 
 async def handler(ws: WebSocketServerProtocol):
   global client
+  global default_protocol
   subscriptions[ws] = set()
   loop = asyncio.get_running_loop()
 
@@ -48,7 +50,8 @@ async def handler(ws: WebSocketServerProtocol):
     asyncio.run_coroutine_threadsafe(send_update(pv_name, pv_obj), loop)
 
   if not client:
-    client = PvaPyClient(message_callback, provider=ProviderType.PVA)
+    provider = ProviderType.CA if default_protocol.lower() == "ca" else ProviderType.PVA
+    client = PvaPyClient(message_callback, provider=provider)
 
   try:
     async for message in ws:
