@@ -58,3 +58,11 @@ record(ai, "test:ai") {
   field(PREC, "3")
 }
 
+record(stringout, "test:strout") {
+  field(DESC, "String output")
+  field(OUT, "test:stringin PP")
+}
+
+record(stringin, "test:strin") {
+  field(DESC, "String input")
+}
