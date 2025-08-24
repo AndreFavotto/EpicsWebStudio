@@ -7,10 +7,9 @@ RUN git clone ${GIT_REPO} /app && cd /app && git checkout ${GIT_TAG}
 FROM node:20-alpine AS dev
 WORKDIR /app
 COPY --from=source_fetch /app ./
-COPY ./entrypoint.dev.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN npm install
 
-ENTRYPOINT [ "/entrypoint.sh" ]
+CMD npm run dev -- --host
 # --------------------------------------------
 # Production environment
 FROM node:20-alpine AS build

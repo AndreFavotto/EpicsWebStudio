@@ -1,10 +1,10 @@
 import { useState } from "react";
-import usePVWS from "./usePVWS";
+import usePvaPyWS from "./usePvaPyWS";
 import { EDIT_MODE, GRID_ID, type Mode } from "../constants/constants";
 import { useWidgetManager } from "./useWidgetManager";
 
 export default function useUIManager(
-  PVWS: ReturnType<typeof usePVWS>["PVWS"],
+  ws: ReturnType<typeof usePvaPyWS>["ws"],
   clearPVValues: () => void,
   startNewSession: () => void,
   setSelectedWidgetIDs: ReturnType<typeof useWidgetManager>["setSelectedWidgetIDs"],
@@ -17,8 +17,8 @@ export default function useUIManager(
   const updateMode = (newMode: Mode) => {
     const isEdit = newMode == EDIT_MODE;
     if (isEdit) {
-      PVWS.current?.stop();
-      PVWS.current = null;
+      ws.current?.stop();
+      ws.current = null;
       clearPVValues();
     } else {
       setSelectedWidgetIDs([]);
