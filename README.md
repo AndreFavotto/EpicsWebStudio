@@ -4,7 +4,7 @@ No-code web drag and drop OPI builder for EPICS applications.
 
 > NOTE: This app is under development, so not all planned features are yet functional, but feel free to try it out!
 
-The gateway between EPICS and the browser is done via [PV Web Socket (PVWS)](https://github.com/ornl-epics/pvws).
+The gateway between EPICS and the browser is done via [./pvaPyWS](./pvaPyWS).
 
 ## Dependencies
 
@@ -15,18 +15,20 @@ The gateway between EPICS and the browser is done via [PV Web Socket (PVWS)](htt
 
 1. Clone this repo
 
-2. `cd docker`
+2. Create your .env: Since we don't yet use secrets or certificates, you can just copy [.env.example](./.env.example) into your `.env`.
 
-3. Create your .env: Since we don't yet use secrets or certificates, you can just copy [.env.example](./docker/.env.example) into your `.env` in the same folder.
+```
+cp .env.example .env
+```
 
-4. Launch the app: `docker compose -f docker-compose-dev.yml up`. The application should be available in `localhost:5173`.
+3. Launch the app: `docker compose -f docker-compose-dev.yml up`. The application should be available in `localhost:5173`.
 
 ## Link to EPICS
 
-If launched via the compose file provided, no further configuration is needed. Tailoring of the PVWS configurations (default protocol (ca|pva), CA_ADDR_LIST, PVA_ADDR_LIST, etc) can be made in the [setenv.sh](docker/pvws/setenv.sh) file.
+If launched via the compose file provided, no further configuration is needed. Tailoring of the EPICS communication configurations (default protocol (ca|pva), CA_ADDR_LIST, PVA_ADDR_LIST, etc) can be made in your `.env` file.
 
 As is, the default protocol is set to pva. This means you can put the PV names directly in the "PV Name" field of the widgets if your IOC has a PVA server.
-If you wish to use Channel Access instead, you can specify the protocol by typing `ca://PVNAME` in the PV field or change the default protocol directly in the setenv.sh file. For more information, see [PVWS project](https://github.com/ornl-epics/pvws).
+If you wish to use Channel Access instead, you can specify the protocol by typing `ca://PVNAME` in the PV field or change the default protocol directly in the `.env` file.
 
 ## Features
 
