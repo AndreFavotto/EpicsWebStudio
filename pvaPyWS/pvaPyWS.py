@@ -8,6 +8,7 @@ from pvaPyClient import PvaPyClient
 from pvParser import parse_pv, PVData
 from pvaccess import ProviderType
 
+# Track PVs per websocket for filtering outgoing updates
 subscriptions: Dict[WebSocketServerProtocol, Set[str]] = {}
 client = None
 default_protocol = getenv("EPICS_DEFAULT_PROTOCOL", "pva")
@@ -32,6 +33,8 @@ async def send_update(pv_name: str, pv_obj):
   # remove None values
   message = {k: v for k, v in message.items() if v is not None}
   data = json.dumps(message)
+
+  # Send only to clients subscribed to this PV
   for ws, pv_set in subscriptions.items():
     if pv_name in pv_set:
       try:
@@ -43,6 +46,8 @@ async def send_update(pv_name: str, pv_obj):
 async def handler(ws: WebSocketServerProtocol):
   global client
   global default_protocol
+  client_id = f"{ws.remote_address[0]}:{ws.remote_address[1]}"
+  print(f"New connection from {client_id}")
   subscriptions[ws] = set()
   loop = asyncio.get_running_loop()
 
@@ -57,26 +62,39 @@ async def handler(ws: WebSocketServerProtocol):
     async for message in ws:
       msg = json.loads(message)
       msg_type = msg.get("type")
+
       if msg_type == "subscribe":
         pv_list = msg.get("pvs", [])
-        subscriptions[ws].update(pv_list)
-        client.subscribe_list(list(subscriptions[ws]))
+        for pv in pv_list:
+          subscriptions[ws].add(pv)
+          client.subscribe(client_id, pv)
+
       elif msg_type == "unsubscribe":
         pv_list = msg.get("pvs", [])
         for pv in pv_list:
           if pv in subscriptions[ws]:
             subscriptions[ws].remove(pv)
-            client.unsubscribe(pv)
+            client.unsubscribe(client_id, pv)
+
       elif msg_type == "write":
         pv_name = msg.get("pv")
         value = msg.get("value")
         if pv_name and value is not None:
           client.write_to_pv(pv_name, value)
+
       else:
         await ws.send(json.dumps({"type": "error", "message": "Unknown message type"}))
+
   except Exception as e:
-    print(f"error handling message: {e}")
-    
+    print(f"error handling message from {client_id}: {e}")
+
+  finally:
+    # Cleanup on disconnect
+    print(f"client disconnected: {client_id}")
+    subscriptions.pop(ws, None)
+    client.unsubscribe_all(client_id)
+
+
 async def main():
   async with websockets.serve(handler, "localhost", 8080):
     print("WebSocket server running on ws://localhost:8080")

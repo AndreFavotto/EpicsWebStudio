@@ -1,10 +1,10 @@
-from typing import Callable, Dict, Optional, List
+from typing import Callable, Dict, Set
 from pvaccess import Channel, ProviderType
 
 
 class PvaPyClient:
   """
-  Manages PV subscriptions and writes using PvaPy with per-PV methods.
+  Manages PV subscriptions per client_id.
   """
 
   def __init__(self, handle_update: Callable[[str, object], None], provider=ProviderType.PVA):
@@ -13,6 +13,7 @@ class PvaPyClient:
     provider: ProviderType.PVA or ProviderType.CA
     """
     self._channels: Dict[str, Channel] = {}
+    self._subscribers: Dict[str, Set[str]] = {}  # pv_name -> set(client_ids)
     self._handle_update = handle_update
     self._provider = provider
 
@@ -24,42 +25,52 @@ class PvaPyClient:
 
     return callback
 
-  def subscribe(self, pv: str):
-    """Subscribe to a single PV."""
-    if pv in self._channels:
-      return
-    ch = Channel(pv, self._provider)
-    ch.subscribe("monitor", self._on_update(pv))
-    ch.startMonitor()
-    self._channels[pv] = ch
-
-  def subscribe_list(self, PVList: List[str]):
-    """Start subscriptions for a list of PVs."""
-    self._PVList = PVList
-    for pv in PVList:
-      if pv in self._channels:
-        continue
-      ch = Channel(pv, self._provider)
-      ch.subscribe("monitor", self._on_update(pv))
+  def subscribe(self, client_id: str, pv_name: str):
+    """Subscribe a single client to a PV."""
+    if pv_name not in self._channels:
+      ch = Channel(pv_name, self._provider)
+      ch.subscribe("monitor", self._on_update(pv_name))
       ch.startMonitor()
-      self._channels[pv] = ch
+      self._channels[pv_name] = ch
+      self._subscribers[pv_name] = set()
 
-  def unsubscribe(self, pv: str):
-    """Unsubscribe from a single PV."""
-    ch: Optional[Channel] = self._channels.pop(pv, None)
-    if ch:
-      ch.unsubscribe("monitor")
-      ch.stopMonitor()
+    self._subscribers[pv_name].add(client_id)
 
-  def unsubscribe_all(self):
-    """Unsubscribe from all PVs."""
-    for ch in self._channels.values():
-      ch.unsubscribe("monitor")
-      ch.stopMonitor()
-    self._channels.clear()
+  def unsubscribe(self, client_id: str, pv_name: str):
+    """Unsubscribe a single client from a PV."""
+    if pv_name not in self._subscribers:
+      return
+
+    self._subscribers[pv_name].discard(client_id)
+
+    # If no clients remain, stop monitoring
+    if not self._subscribers[pv_name]:
+      ch = self._channels.pop(pv_name, None)
+      if ch:
+        ch.unsubscribe("monitor")
+        ch.stopMonitor()
+      del self._subscribers[pv_name]
+
+  def unsubscribe_all(self, client_id: str):
+    """Remove client_id from all PV subscriptions."""
+    empty_pvs = []
+    for pv, clients in self._subscribers.items():
+      clients.discard(client_id)
+      if not clients:
+        empty_pvs.append(pv)
+
+    # Stop monitors for PVs with no subscribers left
+    for pv in empty_pvs:
+      ch = self._channels.pop(pv, None)
+      if ch:
+        ch.unsubscribe("monitor")
+        ch.stopMonitor()
+      del self._subscribers[pv]
 
   def write_to_pv(self, pv: str, value):
-    """Write a value to a PV (if subscribed)."""
+    """Write a value to a PV (only if subscribed)."""
     ch = self._channels.get(pv)
-    if ch:
-      ch.put(value)
+    if not ch:
+      print(f"Trying to write to not subscribed {pv}. Ignoring.")
+      return
+    ch.put(value)
