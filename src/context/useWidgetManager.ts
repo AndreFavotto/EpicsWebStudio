@@ -32,8 +32,10 @@ export function useWidgetManager() {
   const copiedGroupBounds = useRef({ x: 0, y: 0, width: 0, height: 0 });
   const selectedWidgets = editorWidgets.filter((w) => selectedWidgetIDs.includes(w.id));
   const editingWidgets = useMemo(() => {
-    return selectedWidgets.length > 0 ? selectedWidgets : [GridZone];
-  }, [selectedWidgets]);
+    return selectedWidgets.length > 0
+      ? selectedWidgets
+      : [editorWidgets.find((w) => w.id === GRID_ID) ?? editorWidgets[0]];
+  }, [selectedWidgets, editorWidgets]);
 
   const groupBounds = useMemo(() => {
     if (selectedWidgets.length === 0) return null;

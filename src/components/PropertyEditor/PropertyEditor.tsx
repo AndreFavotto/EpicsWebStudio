@@ -1,16 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { styled, type Theme, type CSSObject } from "@mui/material/styles";
-import {
-  Drawer as MuiDrawer,
-  Toolbar,
-  List,
-  Divider,
-  ListItem,
-  ListItemText,
-  IconButton,
-  Tooltip,
-  ListSubheader,
-} from "@mui/material";
+import { Drawer as MuiDrawer } from "@mui/material";
+import Toolbar from "@mui/material/Toolbar";
+import List from "@mui/material/List";
+import Divider from "@mui/material/Divider";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import IconButton from "@mui/material/IconButton";
+import Tooltip from "@mui/material/Tooltip";
+import ListSubheader from "@mui/material/ListSubheader";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useEditorContext } from "../../context/useEditorContext";
@@ -21,7 +19,7 @@ import type {
   WidgetProperty,
   MultiWidgetPropertyUpdates,
 } from "../../types/widgets";
-import { PROPERTY_EDITOR_WIDTH, EDIT_MODE } from "../../constants/constants";
+import { PROPERTY_EDITOR_WIDTH, EDIT_MODE, FRONT_UI_ZIDX } from "../../constants/constants";
 import TextFieldProperty from "./TextFieldProperty";
 import BooleanProperty from "./BooleanProperty";
 import ColorProperty from "./ColorProperty";
@@ -108,8 +106,7 @@ const getGroupedProperties = (properties: WidgetProperties) => {
 };
 
 const PropertyEditor: React.FC = () => {
-  const { mode, selectedWidgetIDs, editingWidgets, batchWidgetUpdate, setPropertyEditorFocused, maxWdgZIndex } =
-    useEditorContext();
+  const { mode, selectedWidgetIDs, editingWidgets, batchWidgetUpdate, setPropertyEditorFocused } = useEditorContext();
   const isOnlyGridSelected = selectedWidgetIDs.length === 0;
   const singleWidget = editingWidgets.length === 1;
   const [open, setOpen] = useState(false);
@@ -237,7 +234,7 @@ const PropertyEditor: React.FC = () => {
         onFocus={() => setPropertyEditorFocused(true)}
         onBlur={() => setPropertyEditorFocused(false)}
         slotProps={{ paper: { elevation: 8 } }}
-        sx={{ zIndex: maxWdgZIndex + 1 }}
+        sx={{ zIndex: FRONT_UI_ZIDX + 1 }}
       >
         <Toolbar />
         <List sx={{ width: "100%" }}>
