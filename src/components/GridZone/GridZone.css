@@ -3,6 +3,7 @@
   height: 100%;
   overflow: hidden;
   position: relative;
+  z-index: var(--back-ui-zidx);
 }
 
 .centerRef {
@@ -11,7 +12,7 @@
   left: 0;
   width: 0;
   height: 0;
-  z-index: var(--front-ui-zidx);
+  z-index: var(--back-ui-zidx);
 }
 
 .centerRef.centerMark::before,
