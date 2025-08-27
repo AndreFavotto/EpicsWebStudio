@@ -5,9 +5,31 @@
   position: relative;
 }
 
-.userWindow {
+.centerRef {
   position: absolute;
-  outline: 1px dashed var(--light-gray);
-  box-sizing: border-box;
-  transform-origin: 0% 0%;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+}
+
+.centerRef.centerMark::before,
+.centerRef::after {
+  content: "";
+  position: absolute;
+  background: black;
+}
+
+.centerRef.centerMark::before {
+  width: 20px;
+  height: 1px;
+  left: -10px;
+  top: 0;
+}
+
+.centerRef.centerMark::after {
+  height: 20px;
+  width: 1px;
+  top: -10px;
+  left: 0;
 }
