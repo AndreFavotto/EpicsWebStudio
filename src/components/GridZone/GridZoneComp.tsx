@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { GridPosition, Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
 import { useEditorContext } from "../../context/useEditorContext.tsx";
-import { BACK_UI_ZIDX, EDIT_MODE } from "../../constants/constants.ts";
+import { EDIT_MODE } from "../../constants/constants.ts";
 import Selecto from "react-selecto";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import "./GridZone.css";
@@ -248,7 +248,6 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       onAuxClick={handleAuxClick}
       style={{
         cursor: isPanning ? "grabbing" : "default",
-        zIndex: BACK_UI_ZIDX,
         backgroundColor: props.backgroundColor?.value,
         backgroundImage: gridLineVisible
           ? `linear-gradient(${props.gridLineColor!.value} 1px, transparent 1px),
@@ -260,10 +259,8 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
     >
       <div
         id="centerRef"
-        className={`centerRef ${mode === EDIT_MODE ? "centerMark" : ""}`}
+        className={`centerRef ${mode === EDIT_MODE && props.centerVisible?.value ? "centerMark" : ""}`}
         style={{
-          zIndex: BACK_UI_ZIDX,
-          //center mark also serves as the widget scaler
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
         }}
       >
