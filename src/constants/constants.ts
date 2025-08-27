@@ -21,7 +21,7 @@ export const BACK_UI_ZIDX = parseInt(
   getComputedStyle(document.documentElement, null).getPropertyValue("--back-ui-zidx")
 );
 export const FRONT_UI_ZIDX = parseInt(
-  getComputedStyle(document.documentElement, null).getPropertyValue("--back-ui-zidx")
+  getComputedStyle(document.documentElement, null).getPropertyValue("--front-ui-zidx")
 );
 
 export const APP_SRC_URL = "https://github.com/AndreFavotto/epicsWebSuite";
