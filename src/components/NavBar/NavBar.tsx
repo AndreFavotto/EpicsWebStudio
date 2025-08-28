@@ -76,16 +76,18 @@ export default function NavBar() {
     <Box sx={{ display: "flex" }}>
       <StyledAppBar component="nav" position="fixed" open={wdgSelectorOpen} drawerWidth={drawerWidth}>
         <Toolbar sx={{ minHeight: 56, px: 2 }}>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={() => setWdgSelectorOpen((o) => !o)}
-            sx={{ mr: 2 }}
-            size="small"
-          >
-            <MenuIcon />
-          </IconButton>
+          {mode == EDIT_MODE && (
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={() => setWdgSelectorOpen((o) => !o)}
+              sx={{ mr: 2 }}
+              size="small"
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
 
           <Typography variant="h6" component="div" sx={{ flexShrink: 0 }}>
             EPICS Web Suite
