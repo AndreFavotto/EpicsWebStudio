@@ -1,4 +1,3 @@
-import { COLORS } from "../../../constants/constants";
 import { PROPERTY_SCHEMAS, COMMON_PROPS, TEXT_PROPS } from "../../../types/widgetProperties";
 import type { Widget } from "../../../types/widgets";
 import { TextLabelComp } from "./TextLabelComp";
@@ -15,6 +14,6 @@ export const TextLabel: Widget = {
     ...COMMON_PROPS,
     ...TEXT_PROPS,
     label: { ...PROPERTY_SCHEMAS.label, value: "Text Label" },
-    backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.transparent },
+    backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: "transparent" },
   },
 } as const;

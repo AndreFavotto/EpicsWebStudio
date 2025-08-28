@@ -111,13 +111,13 @@ export default function NavBar() {
           </Button>
           <div className="fileButtons">
             <Tooltip title="Export file">
-              <IconButton onClick={handleDownload}>
-                <FileDownloadIcon />
+              <IconButton onClick={handleDownload} sx={{ "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
+                <FileDownloadIcon sx={{ color: "white" }} />
               </IconButton>
             </Tooltip>
             <Tooltip title="Import file">
-              <IconButton onClick={handleUpload}>
-                <FileUploadIcon />
+              <IconButton onClick={handleUpload} sx={{ "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
+                <FileUploadIcon sx={{ color: "white" }} />
               </IconButton>
             </Tooltip>
           </div>

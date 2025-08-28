@@ -14,6 +14,8 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
+    "@types/react-color": "^3.0.13",
+    "@uiw/react-color": "^2.8.0",
     "plotly.js": "^3.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

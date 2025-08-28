@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { GridPosition, Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
 import { useEditorContext } from "../../context/useEditorContext.tsx";
-import { EDIT_MODE, MAX_ZOOM, MIN_ZOOM } from "../../constants/constants.ts";
+import { EDIT_MODE, MAX_ZOOM, MIN_ZOOM, RUNTIME_MODE } from "../../constants/constants.ts";
 import Selecto from "react-selecto";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import "./GridZone.css";
@@ -36,8 +36,8 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const [contextMenuVisible, setContextMenuVisible] = useState(false);
   const [mouseOverMenu, setMouseOverMenu] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [shouldCenterPan, setShouldCenterPan] = useState(true); //start centralizing screen
-
+  const [shouldCenterPan, setShouldCenterPan] = useState(true);
+  const disableSelecto = mouseOverMenu || isDragging || gridGrabbed.current || mode == RUNTIME_MODE;
   const gridSize = props.gridSize!.value;
   const snapToGrid = props.snapToGrid?.value;
   const gridLineVisible = props.gridLineVisible?.value;
@@ -266,7 +266,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       >
         <WidgetRenderer scale={zoom} ensureGridCoordinate={ensureGridCoordinate} setIsDragging={setIsDragging} />
       </div>
-      {!mouseOverMenu && !isDragging && !gridGrabbed && mode == EDIT_MODE && (
+      {!disableSelecto && (
         <Selecto
           ref={selectoRef}
           container={document.getElementById("gridContainer")}

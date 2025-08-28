@@ -34,7 +34,7 @@ export const PROPERTY_SCHEMAS = {
   textHAlign:      defineProp({ selType: "select", label: "Text Horiz. Align", value: "left" as string, options: ["left", "center", "right"], category: "Font" }),
   textVAlign:      defineProp({ selType: "select", label: "Text Vert. Align", value: "middle" as string, options: ["top", "middle", "bottom"], category: "Font" }),
   // Grid options
-  gridLineColor:   defineProp({ selType: "colorSelector", label: "Grid Line Color", value: COLORS.gridLineColor, category: "Grid" }),
+  gridLineColor:   defineProp({ selType: "colorSelector", label: "Grid Line Color", value: COLORS.gridLineColor, category: "Style" }),
   gridLineVisible: defineProp({ selType: "boolean", label: "Grid Visible", value: true as boolean, category: "Grid" }),
   gridSize:        defineProp({ selType: "number", label: "Grid Size", value: 20 as number, category: "Grid" }),
   snapToGrid:      defineProp({ selType: "boolean", label: "Snap items", value: true as boolean, category: "Grid" }),
@@ -98,7 +98,7 @@ export const TEXT_PROPS: WidgetProperties = {
 };
 
 export const PLOT_PROPS: WidgetProperties = {
-  backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.white },
+  backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: "white" },
   lineColor: PROPERTY_SCHEMAS.lineColor,
   plotTitle: PROPERTY_SCHEMAS.plotTitle,
   xAxisTitle: PROPERTY_SCHEMAS.xAxisTitle,

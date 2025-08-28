@@ -12,7 +12,7 @@ interface SelectPropertyProps {
   propName: PropertyKey;
   label: string;
   value: PropertyValue;
-  options: string[]; // Could be extended to value-label pairs if needed
+  options: string[];
   onChange: (propName: PropertyKey, newValue: PropertyValue) => void;
 }
 
