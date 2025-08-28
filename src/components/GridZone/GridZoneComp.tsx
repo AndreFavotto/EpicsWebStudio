@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { GridPosition, Widget, WidgetUpdate } from "../../types/widgets";
 import WidgetRegistry from "../WidgetRegistry/WidgetRegistry";
 import { useEditorContext } from "../../context/useEditorContext.tsx";
-import { EDIT_MODE } from "../../constants/constants.ts";
+import { EDIT_MODE, MAX_ZOOM, MIN_ZOOM } from "../../constants/constants.ts";
 import Selecto from "react-selecto";
 import ContextMenu from "../ContextMenu/ContextMenu";
 import "./GridZone.css";
@@ -27,7 +27,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const lastPosRef = useRef<GridPosition>({ x: 0, y: 0 });
   const mousePosRef = useRef<GridPosition>({ x: 0, y: 0 });
   const selectoRef = useRef<Selecto>(null);
-  const isMiddleButtonDownRef = useRef(false);
+  const gridGrabbed = useRef(false);
 
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState<GridPosition>({ x: 0, y: 0 });
@@ -123,8 +123,8 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
     const scaleFactor = 1.1;
     const direction = e.deltaY < 0 ? 1 : -1;
-    const newZoom = zoom * (direction > 0 ? scaleFactor : 1 / scaleFactor);
-
+    const z = zoom * (direction > 0 ? scaleFactor : 1 / scaleFactor);
+    const newZoom = Math.min(Math.max(z, MIN_ZOOM), MAX_ZOOM); // keep between limits
     const container = gridRef.current;
     if (!container) return;
 
@@ -143,8 +143,8 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button === 1) {
-      isMiddleButtonDownRef.current = true;
+    if (e.button === 1 || (e.button === 0 && e.ctrlKey)) {
+      gridGrabbed.current = true;
       lastPosRef.current = { x: e.clientX, y: e.clientY };
       e.preventDefault();
     }
@@ -181,8 +181,8 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
         x: ensureGridCoordinate(userX),
         y: ensureGridCoordinate(userY),
       };
-      // move screen if middle button pressed
-      if (isMiddleButtonDownRef.current) {
+      // move screen if grid is grabbed (middle button / ctrl drag)
+      if (gridGrabbed.current) {
         const dx = e.clientX - lastPosRef.current.x;
         const dy = e.clientY - lastPosRef.current.y;
         // Only consider a pan if there is actual movement
@@ -195,7 +195,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
     };
 
     const handleMouseUp = () => {
-      isMiddleButtonDownRef.current = false;
+      gridGrabbed.current = false;
     };
 
     window.addEventListener("mousemove", handleMouseMove);
@@ -204,7 +204,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isMiddleButtonDownRef, isPanning, setIsPanning, ensureGridCoordinate, pan, zoom, mode]);
+  }, [gridGrabbed, isPanning, setIsPanning, ensureGridCoordinate, pan, zoom, mode]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -247,7 +247,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       onClick={handleClick}
       onAuxClick={handleAuxClick}
       style={{
-        cursor: isPanning ? "grabbing" : "default",
+        cursor: gridGrabbed.current ? "grabbing" : "default",
         backgroundColor: props.backgroundColor?.value,
         backgroundImage: gridLineVisible
           ? `linear-gradient(${props.gridLineColor!.value} 1px, transparent 1px),
@@ -266,7 +266,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
       >
         <WidgetRenderer scale={zoom} ensureGridCoordinate={ensureGridCoordinate} setIsDragging={setIsDragging} />
       </div>
-      {!mouseOverMenu && !isDragging && mode == EDIT_MODE && (
+      {!mouseOverMenu && !isDragging && !gridGrabbed && mode == EDIT_MODE && (
         <Selecto
           ref={selectoRef}
           container={document.getElementById("gridContainer")}

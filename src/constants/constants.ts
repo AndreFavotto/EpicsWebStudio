@@ -33,6 +33,8 @@ export const WIDGET_SELECTOR_WIDTH = 200; //px
 export const PROPERTY_EDITOR_WIDTH = 320; //px
 export const GRID_ID = "__grid__";
 export const MAX_HISTORY = 100; // history of actions for undo/redo
+export const MAX_ZOOM = 100;
+export const MIN_ZOOM = 0.2;
 export const FLEX_ALIGN_MAP: Record<string, CSSProperties["justifyContent"]> = {
   left: "flex-start",
   center: "center",
