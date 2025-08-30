@@ -51,7 +51,7 @@ export default function NavBar() {
   };
 
   const handleDownload = () => {
-    downloadWidgets();
+    void downloadWidgets();
   };
 
   const handleUpload = () => {
@@ -131,7 +131,6 @@ export default function NavBar() {
                   Contributions
                 </Link>
               </Button>
-              <Button sx={{ color: "white" }}>Login</Button>
             </div>
           </Box>
         </Toolbar>

@@ -377,7 +377,8 @@ export function useWidgetManager() {
     [updateEditorWidgetList, copiedGroupBounds]
   );
 
-  const downloadWidgets = useCallback(() => {
+  const downloadWidgets = useCallback(async () => {
+    const defaultName = "ews-opi.json";
     const simplified = editorWidgets.map(
       (widget) =>
         ({
@@ -391,13 +392,46 @@ export function useWidgetManager() {
 
     const dataStr = JSON.stringify(simplified, null, 2);
     const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
 
+    // Extend the Window type locally with File System Access API
+    interface FileSystemWindow extends Window {
+      showSaveFilePicker?: (options?: SaveFilePickerOptions) => Promise<FileSystemFileHandle>;
+    }
+    const fsWindow = window as FileSystemWindow;
+
+    if (fsWindow.showSaveFilePicker) {
+      try {
+        const handle = await fsWindow.showSaveFilePicker({
+          suggestedName: defaultName,
+          types: [
+            {
+              description: "JSON Files",
+              accept: { "application/json": [".json"] },
+            },
+          ],
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        return;
+      } catch (err) {
+        if ((err as DOMException).name === "AbortError") {
+          return;
+        }
+        console.error("Failed to save via File System Access API", err);
+      }
+    }
+
+    // Fallback for browsers that dont support file system interaction
+    const filename = prompt("Enter filename:", defaultName) ?? defaultName;
+    const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "widgets.json";
+    a.download = filename;
+    document.body.appendChild(a);
     a.click();
-
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }, [editorWidgets]);
 
