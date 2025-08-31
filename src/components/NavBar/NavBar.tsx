@@ -45,7 +45,7 @@ export default function NavBar() {
   const { mode, updateMode, wdgSelectorOpen, setWdgSelectorOpen, downloadWidgets, loadWidgets } = useEditorContext();
   const drawerWidth = WIDGET_SELECTOR_WIDTH;
 
-  const handleRuntimeClick = () => {
+  const handleModeToggleClick = () => {
     if (mode === RUNTIME_MODE) updateMode(EDIT_MODE);
     else updateMode(RUNTIME_MODE);
   };
@@ -96,7 +96,7 @@ export default function NavBar() {
           <Button
             variant="outlined"
             startIcon={<PlayArrowIcon />}
-            onClick={handleRuntimeClick}
+            onClick={handleModeToggleClick}
             sx={{
               color: "white",
               borderColor: "white",
