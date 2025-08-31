@@ -143,7 +143,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button === 1 || (e.button === 0 && e.ctrlKey)) {
+    if (e.button === 1 || (e.button === 0 && e.altKey)) {
       gridGrabbed.current = true;
       lastPosRef.current = { x: e.clientX, y: e.clientY };
       e.preventDefault();
@@ -169,7 +169,6 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      // update mouse position
       const rect = gridRef.current?.getBoundingClientRect();
       if (!rect) return;
       const rawX = e.clientX - rect.left;
@@ -181,7 +180,6 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
         x: ensureGridCoordinate(userX),
         y: ensureGridCoordinate(userY),
       };
-      // move screen if grid is grabbed (middle button / ctrl drag)
       if (gridGrabbed.current) {
         const dx = e.clientX - lastPosRef.current.x;
         const dy = e.clientY - lastPosRef.current.y;
