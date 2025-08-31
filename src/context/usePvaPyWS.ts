@@ -1,14 +1,25 @@
-import { useRef, useMemo } from "react";
-import { WSManager } from "../WSManager/WSManager";
+import { useRef, useMemo, useState } from "react";
+import { WSClient } from "../WSClient/WSClient";
 import type { WSMessage } from "../types/pvaPyWS";
 import type { MultiWidgetPropertyUpdates } from "../types/widgets";
 import type { useWidgetManager } from "./useWidgetManager";
+import { WS_URL } from "../constants/constants";
 
 export default function usePvaPyWS(
   editorWidgets: ReturnType<typeof useWidgetManager>["editorWidgets"],
   batchWidgetUpdate: ReturnType<typeof useWidgetManager>["batchWidgetUpdate"]
 ) {
-  const ws = useRef<WSManager | null>(null);
+  const ws = useRef<WSClient | null>(null);
+  const PVList = useMemo(() => {
+    const set = new Set<string>();
+    for (const w of editorWidgets) {
+      if (w.editableProperties?.pvName?.value) set.add(w.editableProperties.pvName.value);
+      if (w.editableProperties?.xAxisPVName?.value) set.add(w.editableProperties.xAxisPVName.value);
+    }
+    return Array.from(set);
+  }, [editorWidgets]);
+
+  const [isWSConnected, setWSConnected] = useState(false);
 
   const updatePVValue = (msg: WSMessage) => {
     const pv = msg.pv;
@@ -28,16 +39,25 @@ export default function usePvaPyWS(
     }
   };
 
+  const handleConnect = (connected: boolean) => {
+    setWSConnected(connected);
+    if (connected) {
+      ws.current?.subscribe(PVList);
+    }
+  };
+
   const startNewSession = () => {
     if (ws.current) {
-      ws.current.stop();
+      ws.current.unsubscribe(PVList);
+      ws.current.close();
+      ws.current = null;
     }
-    ws.current = new WSManager(updatePVValue);
-    ws.current?.start(PVList);
+    ws.current = new WSClient(WS_URL, handleConnect, updatePVValue);
+    ws.current.open();
   };
 
   const writePVValue = (pv: string, newValue: number | string) => {
-    ws.current?.writeToPV(pv, newValue);
+    ws.current?.write(pv, newValue);
   };
 
   const clearPVValues = () => {
@@ -53,14 +73,21 @@ export default function usePvaPyWS(
     batchWidgetUpdate(updates, false);
   };
 
-  const PVList = useMemo(() => {
-    const set = new Set<string>();
-    for (const w of editorWidgets) {
-      if (w.editableProperties?.pvName?.value) set.add(w.editableProperties.pvName.value);
-      if (w.editableProperties?.xAxisPVName?.value) set.add(w.editableProperties.xAxisPVName.value);
-    }
-    return Array.from(set);
-  }, [editorWidgets]);
+  const stopSession = () => {
+    if (!ws.current) return;
+    ws.current.unsubscribe(PVList);
+    ws.current.close();
+    ws.current = null;
+    setWSConnected(false);
+  };
 
-  return { ws, updatePVValue, writePVValue, clearPVValues, startNewSession, PVList };
+  return {
+    ws,
+    PVList,
+    isWSConnected,
+    startNewSession,
+    stopSession,
+    writePVValue,
+    clearPVValues,
+  };
 }

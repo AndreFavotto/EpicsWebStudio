@@ -17,7 +17,7 @@ export default function useUIManager(
   const updateMode = (newMode: Mode) => {
     const isEdit = newMode == EDIT_MODE;
     if (isEdit) {
-      ws.current?.stop();
+      ws.current?.close();
       ws.current = null;
       clearPVValues();
     } else {
