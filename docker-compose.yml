@@ -1,24 +1,24 @@
 services:
-  epicswebsuite:
+  epicswebstudio:
     build:
       target: prod
       args:
         GIT_REPO: ${GIT_REPO}
         GIT_TAG: ${GIT_TAG}
         PROD_PORT: ${PROD_PORT}
-    image: epicswebsuite:${GIT_TAG}
-    container_name: epicswebsuite
+    image: epicswebstudio:${GIT_TAG}
+    container_name: epicswebstudio
     network_mode: "host"
     environment:
       - NODE_ENV=production
     depends_on:
-      - epicswebsuite-pvapyws
+      - epicswebstudio-pvapyws
 
-  epicswebsuite-pvapyws:
+  epicswebstudio-pvapyws:
     build:
       context: ./pvaPyWS
-    image: epicswebsuite-pvapyws:${GIT_TAG}
-    container_name: epicswebsuite-pvapyws
+    image: epicswebstudio-pvapyws:${GIT_TAG}
+    container_name: epicswebstudio-pvapyws
     network_mode: "host"
     restart: always
     environment:

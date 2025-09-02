@@ -1,5 +1,5 @@
 services:
-  epicswebsuite-dev:
+  epicswebstudio-dev:
     build:
       target: dev
       args:
@@ -8,20 +8,20 @@ services:
     volumes:
       - .:/app # Mount the source code for development
       - /app/node_modules # Prevent host node_modules from interfering
-    image: epicswebsuite-dev:${GIT_TAG}
-    container_name: epicswebsuite-dev
+    image: epicswebstudio-dev:${GIT_TAG}
+    container_name: epicswebstudio-dev
     network_mode: "host"
     environment:
       - NODE_ENV=development
     depends_on:
-      - epicswebsuite-pvapyws
-  epicswebsuite-pvapyws:
+      - epicswebstudio-pvapyws
+  epicswebstudio-pvapyws:
     build:
       context: ./pvaPyWS
     volumes:
       - ./pvaPyWS:/app
-    image: epicswebsuite-pvapyws:${GIT_TAG}
-    container_name: epicswebsuite-pvapyws
+    image: epicswebstudio-pvapyws:${GIT_TAG}
+    container_name: epicswebstudio-pvapyws
     network_mode: "host"
     restart: always
     environment:

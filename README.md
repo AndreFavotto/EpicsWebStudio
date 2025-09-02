@@ -1,4 +1,4 @@
-# EPICS Web Suite
+# EPICS Web Studio
 
 No-code web drag and drop OPI builder for EPICS applications.
 

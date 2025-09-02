@@ -90,7 +90,7 @@ export default function NavBar() {
           )}
 
           <Typography variant="h6" component="div" sx={{ flexShrink: 0 }}>
-            EPICS Web Suite
+            EPICS Web Studio
           </Typography>
 
           <Button
