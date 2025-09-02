@@ -23,6 +23,7 @@ export interface WidgetUpdate {
   data: Widget;
 }
 export type WidgetIconType = React.FC<SvgIconProps>;
+
 export interface Widget {
   id: string;
   widgetLabel: string;
@@ -31,6 +32,12 @@ export interface Widget {
   component: React.FC<WidgetUpdate>;
   category: string;
   editableProperties: WidgetProperties;
+}
+
+export interface ExportedWidget {
+  id: string;
+  widgetName: string;
+  properties: Partial<Record<PropertyKey, PropertyValue>>;
 }
 
 export interface GridPosition {

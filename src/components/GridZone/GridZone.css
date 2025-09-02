@@ -3,11 +3,38 @@
   height: 100%;
   overflow: hidden;
   position: relative;
+  z-index: var(--back-ui-zidx);
 }
 
-.userWindow {
+.centerRef {
   position: absolute;
-  outline: 1px dashed var(--light-gray);
-  box-sizing: border-box;
-  transform-origin: 0% 0%;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  z-index: var(--back-ui-zidx);
+}
+
+.centerRef.centerMark::before,
+.centerRef::after {
+  content: "";
+  position: absolute;
+  background: black;
+  z-index: var(--front-ui-zidx);
+}
+
+.centerRef.centerMark::before {
+  width: 20px;
+  height: 1px;
+  left: -10px;
+  top: 0;
+  z-index: var(--front-ui-zidx);
+}
+
+.centerRef.centerMark::after {
+  height: 20px;
+  width: 1px;
+  top: -10px;
+  left: 0;
+  z-index: var(--front-ui-zidx);
 }

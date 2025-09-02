@@ -34,13 +34,11 @@ export const PROPERTY_SCHEMAS = {
   textHAlign:      defineProp({ selType: "select", label: "Text Horiz. Align", value: "left" as string, options: ["left", "center", "right"], category: "Font" }),
   textVAlign:      defineProp({ selType: "select", label: "Text Vert. Align", value: "middle" as string, options: ["top", "middle", "bottom"], category: "Font" }),
   // Grid options
-  gridLineColor:   defineProp({ selType: "colorSelector", label: "Grid Line Color", value: COLORS.gridLineColor, category: "Grid" }),
+  gridLineColor:   defineProp({ selType: "colorSelector", label: "Grid Line Color", value: COLORS.gridLineColor, category: "Style" }),
   gridLineVisible: defineProp({ selType: "boolean", label: "Grid Visible", value: true as boolean, category: "Grid" }),
   gridSize:        defineProp({ selType: "number", label: "Grid Size", value: 20 as number, category: "Grid" }),
   snapToGrid:      defineProp({ selType: "boolean", label: "Snap items", value: true as boolean, category: "Grid" }),
-  // Window options
-  windowWidth:     defineProp({ selType: "number", label: "Window Width", value: 1280 as number, category: "Window" }),
-  windowHeight:    defineProp({ selType: "number", label: "Window Height", value: 720 as number, category: "Window" }),
+  centerVisible:   defineProp({ selType: "boolean", label: "Center mark visible", value: true as boolean, category: "Grid" }),
   // EPICS
   pvName:          defineProp({ selType: "text", label: "PV Name", value: "" as string, category: "EPICS" }),
   precisionFromPV: defineProp({ selType: "boolean", label: "Disabled", value: true as boolean, category: "EPICS" }),
@@ -100,7 +98,7 @@ export const TEXT_PROPS: WidgetProperties = {
 };
 
 export const PLOT_PROPS: WidgetProperties = {
-  backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.white },
+  backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: "white" },
   lineColor: PROPERTY_SCHEMAS.lineColor,
   plotTitle: PROPERTY_SCHEMAS.plotTitle,
   xAxisTitle: PROPERTY_SCHEMAS.xAxisTitle,

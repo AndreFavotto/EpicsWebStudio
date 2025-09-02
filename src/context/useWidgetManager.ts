@@ -6,9 +6,11 @@ import type {
   PropertyUpdates,
   MultiWidgetPropertyUpdates,
   GridPosition,
+  ExportedWidget,
 } from "../types/widgets";
 import { GridZone } from "../components/GridZone";
-import { MAX_HISTORY } from "../constants/constants";
+import { GRID_ID, MAX_HISTORY } from "../constants/constants";
+import WidgetRegistry from "../components/WidgetRegistry/WidgetRegistry";
 
 function deepCloneWidgetList(widgets: Widget[]): Widget[] {
   return widgets.map(deepCloneWidget);
@@ -30,8 +32,10 @@ export function useWidgetManager() {
   const copiedGroupBounds = useRef({ x: 0, y: 0, width: 0, height: 0 });
   const selectedWidgets = editorWidgets.filter((w) => selectedWidgetIDs.includes(w.id));
   const editingWidgets = useMemo(() => {
-    return selectedWidgets.length > 0 ? selectedWidgets : [GridZone];
-  }, [selectedWidgets]);
+    return selectedWidgets.length > 0
+      ? selectedWidgets
+      : [editorWidgets.find((w) => w.id === GRID_ID) ?? editorWidgets[0]];
+  }, [selectedWidgets, editorWidgets]);
 
   const groupBounds = useMemo(() => {
     if (selectedWidgets.length === 0) return null;
@@ -373,6 +377,115 @@ export function useWidgetManager() {
     [updateEditorWidgetList, copiedGroupBounds]
   );
 
+  const downloadWidgets = useCallback(async () => {
+    const defaultName = "ews-opi.json";
+    const simplified = editorWidgets.map(
+      (widget) =>
+        ({
+          id: widget.id,
+          widgetName: widget.widgetName,
+          properties: Object.fromEntries(
+            Object.entries(widget.editableProperties).map(([key, def]) => [key, def.value])
+          ),
+        } as ExportedWidget)
+    );
+
+    const dataStr = JSON.stringify(simplified, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+
+    // Extend the Window type locally with File System Access API
+    interface FileSystemWindow extends Window {
+      showSaveFilePicker?: (options?: SaveFilePickerOptions) => Promise<FileSystemFileHandle>;
+    }
+    const fsWindow = window as FileSystemWindow;
+
+    if (fsWindow.showSaveFilePicker) {
+      try {
+        const handle = await fsWindow.showSaveFilePicker({
+          suggestedName: defaultName,
+          types: [
+            {
+              description: "JSON Files",
+              accept: { "application/json": [".json"] },
+            },
+          ],
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        return;
+      } catch (err) {
+        if ((err as DOMException).name === "AbortError") {
+          return;
+        }
+        console.error("Failed to save via File System Access API", err);
+      }
+    }
+
+    // Fallback for browsers that dont support file system interaction
+    const filename = prompt("Enter filename:", defaultName) ?? defaultName;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [editorWidgets]);
+
+  const loadWidgets = useCallback(
+    (widgetsData: string | ExportedWidget[]) => {
+      try {
+        let parsed: ExportedWidget[];
+        if (typeof widgetsData === "string") {
+          parsed = JSON.parse(widgetsData);
+        } else {
+          parsed = widgetsData;
+        }
+
+        const imported = parsed
+          .map((raw, idx) => {
+            let baseWdg;
+            if (idx == 0) {
+              if (raw.id !== GRID_ID) {
+                throw new Error("Missing or invalid grid properties. Did you move the grid from first position?");
+              }
+              baseWdg = GridZone;
+            } else {
+              baseWdg = WidgetRegistry[raw.widgetName];
+            }
+            if (!baseWdg) {
+              console.warn(`Unknown widget type: ${raw.widgetName}`);
+              return null;
+            }
+
+            // deep clone the registry entry so we don’t mutate the registry itself
+            const instance = deepCloneWidget(baseWdg);
+            instance.id = raw.id;
+
+            // overlay values from the file
+            for (const [key, val] of Object.entries(raw.properties ?? {})) {
+              const propName = key as PropertyKey;
+              if (instance.editableProperties[propName]) {
+                instance.editableProperties[propName].value = val;
+              }
+            }
+
+            return instance;
+          })
+          .filter(Boolean) as Widget[];
+        console.log(imported);
+        updateEditorWidgetList(imported);
+        setSelectedWidgetIDs([]);
+      } catch (err) {
+        console.error("Failed to load widgets:", err);
+      }
+    },
+    [updateEditorWidgetList]
+  );
+
   return {
     editorWidgets,
     setEditorWidgets,
@@ -404,5 +517,7 @@ export function useWidgetManager() {
     alignVerticalCenter,
     distributeHorizontal,
     distributeVertical,
+    downloadWidgets,
+    loadWidgets,
   };
 }

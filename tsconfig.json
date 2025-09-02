@@ -1,11 +1,9 @@
 {
   "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
   "compilerOptions": {
-    "lib": ["es6", "dom"],
+    "lib": ["es2021", "dom", "dom.iterable"],
+    "types": ["@types/wicg-file-system-access"],
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,

@@ -1,6 +1,5 @@
 from typing import Callable, Dict, Set
-from pvaccess import Channel, ProviderType
-
+from pvaccess import Channel, ProviderType, PvString, PvDouble, PvInt, ScalarType, NtEnum
 
 class PvaPyClient:
   """
@@ -19,12 +18,41 @@ class PvaPyClient:
 
   def _on_update(self, pv_name: str):
     """Internal callback for subscription updates."""
-
     def callback(value):
       self._handle_update(pv_name, value)
-
     return callback
+  
+  def _on_write(self, pv):
+    """Internal callback for pv write handling."""
+    # do nothing for now
+    return
 
+  def _on_write_error(self, code):
+    """Internal callback for pv write error handling."""
+    print('Write failed. Returned error code: %s' % code)
+    
+  def _make_pvobject(self, ch, value):
+    field = ch.get().getStructureDict()
+    # Simple scalar types
+    if 'value' in field:
+        vfield = field['value']
+        # Enum: dict with 'index' and 'choices'
+        if isinstance(vfield, dict) and 'index' in vfield and 'choices' in vfield:
+            val = ch.get()["value"]
+            choices = [str(c) for c in val['choices']]
+            return NtEnum(choices, int(value))
+        # Scalar INT
+        elif vfield == ScalarType.INT:
+            return PvInt(int(value))
+        # Scalar DOUBLE
+        elif vfield == ScalarType.DOUBLE:
+            return PvDouble(float(value))
+        # Scalar STRING
+        elif vfield == ScalarType.STRING:
+            return PvString(str(value))
+    # fallback
+    return PvString(str(value))
+  
   def subscribe(self, client_id: str, pv_name: str):
     """Subscribe a single client to a PV."""
     if pv_name not in self._channels:
@@ -73,4 +101,5 @@ class PvaPyClient:
     if not ch:
       print(f"Trying to write to not subscribed {pv}. Ignoring.")
       return
-    ch.put(value)
+    obj = self._make_pvobject(ch, value)
+    ch.asyncPut(obj, self._on_write, self._on_write_error)

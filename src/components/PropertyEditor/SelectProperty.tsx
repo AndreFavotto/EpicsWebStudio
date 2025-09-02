@@ -1,13 +1,18 @@
 // src/components/PropertyFields/SelectProperty.tsx
 import React from "react";
-import { ListItem, FormControl, InputLabel, Select, MenuItem, type SelectChangeEvent } from "@mui/material";
+import ListItem from "@mui/material/ListItem";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import type { SelectChangeEvent } from "@mui/material/Select";
 import type { PropertyKey, PropertyValue } from "../../types/widgets";
 
 interface SelectPropertyProps {
   propName: PropertyKey;
   label: string;
   value: PropertyValue;
-  options: string[]; // Could be extended to value-label pairs if needed
+  options: string[];
   onChange: (propName: PropertyKey, newValue: PropertyValue) => void;
 }
 

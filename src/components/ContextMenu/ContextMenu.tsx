@@ -6,15 +6,13 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Typography from "@mui/material/Typography";
 import { useEditorContext } from "../../context/useEditorContext";
-import {
-  ContentCopy,
-  ContentCut,
-  ContentPaste,
-  KeyboardArrowUp,
-  KeyboardArrowDown,
-  FlipToFront,
-  FlipToBack,
-} from "@mui/icons-material";
+import ContentCopy from "@mui/icons-material/ContentCopy";
+import ContentCut from "@mui/icons-material/ContentCut";
+import ContentPaste from "@mui/icons-material/ContentPaste";
+import KeyboardArrowUp from "@mui/icons-material/KeyboardArrowUp";
+import KeyboardArrowDown from "@mui/icons-material/KeyboardArrowDown";
+import FlipToFront from "@mui/icons-material/FlipToFront";
+import FlipToBack from "@mui/icons-material/FlipToBack";
 import { EDIT_MODE, FRONT_UI_ZIDX } from "../../constants/constants";
 import type { GridPosition } from "../../types/widgets";
 

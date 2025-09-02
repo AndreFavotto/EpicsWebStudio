@@ -42,47 +42,61 @@ const StyledAppBar = styled(MuiAppBar, {
 }));
 
 export default function NavBar() {
-  const { mode, updateMode, wdgSelectorOpen, setWdgSelectorOpen } = useEditorContext();
+  const { mode, updateMode, wdgSelectorOpen, setWdgSelectorOpen, downloadWidgets, loadWidgets } = useEditorContext();
   const drawerWidth = WIDGET_SELECTOR_WIDTH;
 
-  const handleRuntimeClick = () => {
+  const handleModeToggleClick = () => {
     if (mode === RUNTIME_MODE) updateMode(EDIT_MODE);
     else updateMode(RUNTIME_MODE);
   };
 
   const handleDownload = () => {
-    // TODO: implement download logic
-    console.log("Download clicked");
+    void downloadWidgets();
   };
 
   const handleUpload = () => {
-    // TODO: implement upload logic
-    console.log("Upload clicked");
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json";
+    input.onchange = async (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        loadWidgets(text);
+      } catch (err) {
+        console.error("Failed to read file:", err);
+      }
+    };
+    input.click();
   };
 
   return (
     <Box sx={{ display: "flex" }}>
       <StyledAppBar component="nav" position="fixed" open={wdgSelectorOpen} drawerWidth={drawerWidth}>
         <Toolbar sx={{ minHeight: 56, px: 2 }}>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={() => setWdgSelectorOpen((o) => !o)}
-            sx={{ mr: 2 }}
-            size="small"
-          >
-            <MenuIcon />
-          </IconButton>
+          {mode == EDIT_MODE && (
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={() => setWdgSelectorOpen((o) => !o)}
+              sx={{ mr: 2 }}
+              size="small"
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
 
           <Typography variant="h6" component="div" sx={{ flexShrink: 0 }}>
-            EPICS Web Suite
+            EPICS Web Studio
           </Typography>
 
           <Button
             variant="outlined"
             startIcon={<PlayArrowIcon />}
-            onClick={handleRuntimeClick}
+            onClick={handleModeToggleClick}
             sx={{
               color: "white",
               borderColor: "white",
@@ -97,13 +111,13 @@ export default function NavBar() {
           </Button>
           <div className="fileButtons">
             <Tooltip title="Export file">
-              <IconButton onClick={handleDownload}>
-                <FileDownloadIcon />
+              <IconButton onClick={handleDownload} sx={{ "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
+                <FileDownloadIcon sx={{ color: "white" }} />
               </IconButton>
             </Tooltip>
             <Tooltip title="Import file">
-              <IconButton onClick={handleUpload}>
-                <FileUploadIcon />
+              <IconButton onClick={handleUpload} sx={{ "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" } }}>
+                <FileUploadIcon sx={{ color: "white" }} />
               </IconButton>
             </Tooltip>
           </div>
@@ -117,7 +131,6 @@ export default function NavBar() {
                   Contributions
                 </Link>
               </Button>
-              <Button sx={{ color: "white" }}>Login</Button>
             </div>
           </Box>
         </Toolbar>

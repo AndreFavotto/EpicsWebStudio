@@ -2,7 +2,8 @@ record(calc, "test:seconds") {
   field(DESC, "time elapsed")
   field(INPA, "test:seconds")
   field(CALC, "A+0.1")
-  field(SCAN, ".1 second")
+  field(SCAN, ".2 second")
+  field(PREC, "3")
 }
 
 record(ao, "test:freq"){
@@ -58,3 +59,11 @@ record(ai, "test:ai") {
   field(PREC, "3")
 }
 
+record(stringout, "test:strout") {
+  field(DESC, "String output")
+  field(OUT, "test:stringin PP")
+}
+
+record(stringin, "test:strin") {
+  field(DESC, "String input")
+}

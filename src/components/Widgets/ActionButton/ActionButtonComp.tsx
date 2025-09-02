@@ -38,6 +38,7 @@ const ActionButtonComp: React.FC<WidgetUpdate> = ({ data }) => {
         borderWidth: p.borderWidth?.value,
         borderColor: p.borderColor?.value,
       }}
+      disableRipple={mode !== RUNTIME_MODE}
       disabled={p.disabled!.value}
       variant="contained"
       onClick={(e) => handleClick(e)}
