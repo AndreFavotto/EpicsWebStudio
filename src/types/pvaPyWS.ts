@@ -1,7 +1,5 @@
 export type WSMessageType = "update" | "subscribe" | "unsubscribe" | "write";
-export type PVScalar = number | string;
-export type PVArray = number[] | string[];
-export type PVValue = PVScalar | PVArray;
+export type PVValue = number | number[] | string | string[];
 
 interface Alarm {
   severity: number;
@@ -60,3 +58,15 @@ export interface WSMessage {
   b64srt?: string;
   b64byt?: string;
 }
+
+export interface PVData {
+  name: string;
+  value: PVValue;
+  alarm?: Alarm;
+  timeStamp?: TimeStamp;
+  display?: Display;
+  control?: Control;
+  valueAlarm?: ValueAlarm;
+}
+
+export type MultiPvData = Record<string, PVData>;

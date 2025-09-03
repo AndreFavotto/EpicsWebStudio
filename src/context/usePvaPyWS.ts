@@ -1,42 +1,35 @@
-import { useRef, useMemo, useState } from "react";
+import { useRef, useState } from "react";
 import { WSClient } from "../WSClient/WSClient";
-import type { WSMessage } from "../types/pvaPyWS";
-import type { MultiWidgetPropertyUpdates } from "../types/widgets";
+import type { PVData, WSMessage } from "../types/pvaPyWS";
 import type { useWidgetManager } from "./useWidgetManager";
 import { WS_URL } from "../constants/constants";
 
 export default function usePvaPyWS(
-  editorWidgets: ReturnType<typeof useWidgetManager>["editorWidgets"],
-  batchWidgetUpdate: ReturnType<typeof useWidgetManager>["batchWidgetUpdate"]
+  PVList: ReturnType<typeof useWidgetManager>["PVList"],
+  updatePVData: ReturnType<typeof useWidgetManager>["updatePVData"]
 ) {
   const ws = useRef<WSClient | null>(null);
-  const PVList = useMemo(() => {
-    const set = new Set<string>();
-    for (const w of editorWidgets) {
-      if (w.editableProperties?.pvName?.value) set.add(w.editableProperties.pvName.value);
-      if (w.editableProperties?.xAxisPVName?.value) set.add(w.editableProperties.xAxisPVName.value);
-    }
-    return Array.from(set);
-  }, [editorWidgets]);
-
   const [isWSConnected, setWSConnected] = useState(false);
 
-  const updatePVValue = (msg: WSMessage) => {
-    const pv = msg.pv;
-    const newValue = msg.value;
+  const parseWSMessage = (msg: WSMessage): PVData => {
+    return {
+      name: msg.pv,
+      value: msg.value ?? "",
+      alarm: msg.alarm,
+      timeStamp: msg.timeStamp,
+      display: msg.display,
+      control: msg.control,
+      valueAlarm: msg.valueAlarm,
+    };
+  };
 
-    const updates: MultiWidgetPropertyUpdates = {};
-    editorWidgets.forEach((w) => {
-      if (w.editableProperties.pvName?.value === pv) {
-        updates[w.id] = { pvValue: newValue };
-      } else if (w.editableProperties.xAxisPVName?.value === pv) {
-        updates[w.id] = { xAxisPVValue: newValue };
-      }
-    });
-
-    if (Object.keys(updates).length > 0) {
-      batchWidgetUpdate(updates, false);
+  const onMessage = (msg: WSMessage) => {
+    if (!PVList.includes(msg.pv)) {
+      console.warn(`received message from unsolicited PV: ${msg.pv}`);
+      return;
     }
+    const pvData = parseWSMessage(msg);
+    updatePVData(pvData);
   };
 
   const handleConnect = (connected: boolean) => {
@@ -52,25 +45,12 @@ export default function usePvaPyWS(
       ws.current.close();
       ws.current = null;
     }
-    ws.current = new WSClient(WS_URL, handleConnect, updatePVValue);
+    ws.current = new WSClient(WS_URL, handleConnect, onMessage);
     ws.current.open();
   };
 
   const writePVValue = (pv: string, newValue: number | string) => {
     ws.current?.write(pv, newValue);
-  };
-
-  const clearPVValues = () => {
-    const updates: MultiWidgetPropertyUpdates = {};
-    editorWidgets.forEach((w) => {
-      if (w.editableProperties.pvValue !== undefined) {
-        updates[w.id] = { pvValue: undefined };
-      }
-      if (w.editableProperties.xAxisPVValue !== undefined) {
-        updates[w.id] = { xAxisPVValue: undefined };
-      }
-    });
-    batchWidgetUpdate(updates, false);
   };
 
   const stopSession = () => {
@@ -88,6 +68,5 @@ export default function usePvaPyWS(
     startNewSession,
     stopSession,
     writePVValue,
-    clearPVValues,
   };
 }
