@@ -3,6 +3,7 @@ import { COMMON_PROPS, PROPERTY_SCHEMAS, TEXT_PROPS } from "../../../types/widge
 import type { Widget } from "../../../types/widgets";
 import SendIcon from "@mui/icons-material/Send";
 import { COLORS } from "../../../constants/constants";
+import type { PVData } from "../../../types/pvaPyWS";
 
 export const ActionButton: Widget = {
   id: "__ActionButton__",
@@ -11,13 +12,13 @@ export const ActionButton: Widget = {
   widgetIcon: SendIcon,
   widgetLabel: "Action Button",
   category: "Controls",
+  pvData: {} as PVData,
   editableProperties: {
     ...COMMON_PROPS,
     ...TEXT_PROPS,
     label: { ...PROPERTY_SCHEMAS.label, value: "Action Button" },
     backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.buttonColor },
     pvName: PROPERTY_SCHEMAS.pvName,
-    pvValue: PROPERTY_SCHEMAS.pvValue,
     actionValue: PROPERTY_SCHEMAS.actionValue,
     disabled: PROPERTY_SCHEMAS.disabled,
   },

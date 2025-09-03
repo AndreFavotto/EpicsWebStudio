@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
 import Plot from "react-plotly.js";
 import { useEditorContext } from "../../../context/useEditorContext";
@@ -17,45 +17,59 @@ const PlotComp: React.FC<WidgetUpdate> = ({ data }) => {
   const inEditMode = mode === EDIT_MODE;
   const prevInEditMode = usePrev(inEditMode);
   const p = data.editableProperties;
-  const bufferSize = p.plotBufferSize?.value ?? 50; // fixed number of points
+  const bufferSize = p.plotBufferSize?.value ?? 50;
+  const YAxisPVLabel = "Y Axis";
+  const XAxisPVLabel = "X Axis";
 
   const [yBuffer, setYBuffer] = useState<number[]>([]);
   const [xBuffer, setXBuffer] = useState<number[]>([]);
 
+  const getPvValue = useCallback(
+    (axisPVLabel: string) => {
+      return data.multiPvData?.[axisPVLabel]?.value;
+    },
+    [data.multiPvData]
+  );
+
   // update Y values
   useEffect(() => {
     if (prevInEditMode !== undefined && prevInEditMode !== inEditMode) {
-      setYBuffer([]); // reset buffer on mode transition
-      setXBuffer([]); // reset buffer on mode transition
+      setYBuffer([]);
+      setXBuffer([]);
     }
-    const value = p.pvValue?.value;
+
     if (inEditMode) {
-      setYBuffer([10, 15, 13, 17]); // illustrative default
-    } else if (Array.isArray(value)) {
-      setYBuffer(value); // direct use of array
-    } else if (typeof value === "number") {
+      setYBuffer([10, 15, 13, 17]);
+      setXBuffer([0, 1, 2, 3]);
+      return;
+    }
+
+    const yVal = getPvValue(YAxisPVLabel);
+    if (typeof yVal === "number") {
       setYBuffer((prev) => {
-        const next = [...prev, value];
+        const next = [...prev, yVal];
         if (next.length > bufferSize) next.shift();
         return next;
       });
+    } else if (Array.isArray(yVal) && yVal.every((v) => typeof v === "number")) {
+      setYBuffer(yVal);
     }
-  }, [p.pvValue?.value, inEditMode, prevInEditMode, bufferSize]);
+  }, [getPvValue, inEditMode, prevInEditMode, bufferSize]);
 
   // update X values
   useEffect(() => {
     if (inEditMode) return;
-    const value = p.xAxisPVValue?.value;
-    if (Array.isArray(value)) {
-      setXBuffer(value);
-    } else if (typeof value === "number") {
+    const xVal = getPvValue(XAxisPVLabel);
+    if (typeof xVal === "number") {
       setXBuffer((prev) => {
-        const next = [...prev, value];
+        const next = [...prev, xVal];
         if (next.length > bufferSize) next.shift();
         return next;
       });
+    } else if (Array.isArray(xVal) && xVal.every((v) => typeof v === "number")) {
+      setXBuffer(xVal);
     }
-  }, [p.xAxisPVValue?.value, inEditMode, bufferSize]);
+  }, [getPvValue, inEditMode, bufferSize]);
 
   return (
     <div

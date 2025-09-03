@@ -2,6 +2,7 @@ import { BitIndicatorComp } from "./BitIndicatorComp";
 import { PROPERTY_SCHEMAS, COMMON_PROPS } from "../../../types/widgetProperties";
 import type { Widget } from "../../../types/widgets";
 import FlakyIcon from "@mui/icons-material/Flaky";
+import type { PVData } from "../../../types/pvaPyWS";
 
 const { borderRadius, backgroundColor, ...FILTERED_COMMON_PROPS } = COMMON_PROPS;
 
@@ -12,6 +13,7 @@ export const BitIndicator: Widget = {
   widgetIcon: FlakyIcon,
   widgetLabel: "Bit Indicator",
   category: "Monitoring",
+  pvData: {} as PVData,
   editableProperties: {
     ...FILTERED_COMMON_PROPS,
     width: { ...PROPERTY_SCHEMAS.width, value: 40 },
@@ -24,6 +26,5 @@ export const BitIndicator: Widget = {
     invertBitOrder: PROPERTY_SCHEMAS.invertBitOrder,
     spacing: PROPERTY_SCHEMAS.spacing,
     pvName: PROPERTY_SCHEMAS.pvName,
-    pvValue: PROPERTY_SCHEMAS.pvValue,
   },
 } as const;
