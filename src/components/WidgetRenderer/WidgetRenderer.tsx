@@ -11,6 +11,21 @@ interface RendererProps {
   ensureGridCoordinate: (coord: number) => number;
   setIsDragging: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+/**
+ * WidgetRenderer is responsible for rendering all editor widgets and handling their interactions.
+ *
+ * @features
+ * - Rendering individual widgets from the WidgetRegistry
+ * - Supporting multi-selection and group manipulation
+ * - Dragging and resizing widgets with snapping to grid
+ * - Updating widget properties in the editor context
+ * - Handling keyboard events (e.g., Delete key for removal)
+ *
+ * @param scale Current zoom level of the grid
+ * @param ensureGridCoordinate Function to snap items to grid (if snap activated)
+ * @param setIsDragging Callback to indicate dragging state
+ */
 const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, setIsDragging }) => {
   const {
     mode,

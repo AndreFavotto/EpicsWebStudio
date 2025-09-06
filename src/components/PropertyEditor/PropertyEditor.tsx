@@ -106,6 +106,22 @@ const getGroupedProperties = (properties: WidgetProperties) => {
   return groups;
 };
 
+/**
+ * PropertyEditor renders the side panel that allows editing properties of the selected widget(s) in the editor.
+ *
+ * @features
+ * - Automatically opens when a widget is selected.
+ * - Shows either single widget properties or common properties across multiple selected widgets.
+ * - Groups properties by category, allowing collapsible sections.
+ * - Supports all PropertySelectorType definitions.
+ * - Updates multiple widgets at once when properties are edited in batch.
+ * - Toggle button to open/close the editor manually.
+ *
+ * @notes
+ * - Only visible in EDIT_MODE.
+ * - Width is defined by PROPERTY_EDITOR_WIDTH constant.
+ * - Focus state is managed to coordinate with the editor context.
+ */
 const PropertyEditor: React.FC = () => {
   const { mode, selectedWidgetIDs, editingWidgets, batchWidgetUpdate, setPropertyEditorFocused } = useEditorContext();
   const isOnlyGridSelected = selectedWidgetIDs.length === 0;
