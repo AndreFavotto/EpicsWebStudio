@@ -10,25 +10,26 @@ export default function usePvaPyWS(
 ) {
   const ws = useRef<WSClient | null>(null);
   const [isWSConnected, setWSConnected] = useState(false);
-
-  const parseWSMessage = (msg: WSMessage): PVData => {
-    return {
-      pv: msg.pv,
-      value: msg.value ?? "",
-      alarm: msg.alarm,
-      timeStamp: msg.timeStamp,
-      display: msg.display,
-      control: msg.control,
-      valueAlarm: msg.valueAlarm,
-    };
-  };
+  // use "cache" to store metadata
+  const pvCache = useRef<Record<string, PVData>>({});
 
   const onMessage = (msg: WSMessage) => {
     if (!PVList.includes(msg.pv)) {
       console.warn(`received message from unsolicited PV: ${msg.pv}`);
       return;
     }
-    const pvData = parseWSMessage(msg);
+
+    const prev = pvCache.current[msg.pv] ?? {};
+    const pvData: PVData = {
+      pv: msg.pv,
+      value: msg.value ?? prev.value,
+      alarm: msg.alarm ?? prev.alarm,
+      timeStamp: msg.timeStamp ?? prev.timeStamp,
+      display: prev.display ?? msg.display, // sent only on first update
+      control: prev.control ?? msg.control, // sent only on first update
+      valueAlarm: prev.valueAlarm ?? msg.valueAlarm, // sent only on first update
+    };
+    pvCache.current[msg.pv] = pvData;
     updatePVData(pvData);
   };
 

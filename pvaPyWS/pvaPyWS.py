@@ -3,40 +3,55 @@ import json
 import websockets
 from os import getenv
 from websockets.legacy.server import WebSocketServerProtocol
-from typing import Dict, Set
+from typing import Dict, Set, Tuple
 from pvaPyClient import PvaPyClient
 from pvParser import parse_pv, PVData
 from pvaccess import ProviderType
 
-subscriptions: Dict[str, Set[WebSocketServerProtocol]] = {} # map clients subscribed to each PV
+# map PV -> set of websocket clients
+subscriptions: Dict[str, Set[WebSocketServerProtocol]] = {}
+
+# track if metadata has been sent per (ws, pv_name)
+sent_metadata: Dict[Tuple[WebSocketServerProtocol, str], bool] = {}
+
 client = None
 default_protocol = getenv("EPICS_DEFAULT_PROTOCOL", "pva")
 
 async def send_update(pv_name: str, pv_obj):
   pv_data: PVData = parse_pv(pv_obj)
-  message: PVData = {
+
+  # base message (dynamic fields only)
+  base_message = {
     "type": "update",
     "pv": pv_name,
     "value": pv_data.value,
     "valueText": pv_data.valueText,
     "alarm": pv_data.alarm.__dict__ if pv_data.alarm else None,
     "timeStamp": pv_data.timeStamp.__dict__ if pv_data.timeStamp else None,
-    "display": pv_data.display.__dict__ if pv_data.display else None,
-    "control": pv_data.control.__dict__ if pv_data.control else None,
-    "valueAlarm": pv_data.valueAlarm.__dict__ if pv_data.valueAlarm else None,
     "b64dbl": pv_data.b64dbl,
     "b64flt": pv_data.b64flt,
     "b64int": pv_data.b64int,
     "b64srt": pv_data.b64srt,
     "b64byt": pv_data.b64byt,
   }
-  # remove None values
-  message = {k: v for k, v in message.items() if v is not None}
-  data = json.dumps(message)
 
-  # Look up just the subscribers of this PV
-  clients = subscriptions.get(pv_name, set())
-  for ws in set(clients):
+  # send to all subscribed clients
+  for ws in set(subscriptions.get(pv_name, set())):
+    key = (ws, pv_name)
+    message = dict(base_message)
+
+    # include metadata only once per (ws, pv)
+    if not sent_metadata.get(key):
+      message.update({
+        "display": pv_data.display.__dict__ if pv_data.display else None,
+        "control": pv_data.control.__dict__ if pv_data.control else None,
+        "valueAlarm": pv_data.valueAlarm.__dict__ if pv_data.valueAlarm else None,
+      })
+      sent_metadata[key] = True
+
+    # strip None fields
+    data = json.dumps({k: v for k, v in message.items() if v is not None})
+
     try:
       await ws.send(data)
     except Exception:
@@ -78,6 +93,7 @@ async def handler(ws: WebSocketServerProtocol):
             if not subscriptions[pv]:
               del subscriptions[pv]
             client.unsubscribe(client_id, pv)
+          sent_metadata.pop((ws, pv), None)
 
       elif msg_type == "write":
         pv_name = msg.get("pv")
@@ -98,6 +114,7 @@ async def handler(ws: WebSocketServerProtocol):
       clients.discard(ws)
       if not clients:
         del subscriptions[pv]
+      sent_metadata.pop((ws, pv), None)
     client.unsubscribe_all(client_id)
 
 
