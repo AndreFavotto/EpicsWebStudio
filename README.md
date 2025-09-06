@@ -2,7 +2,7 @@
 
 No-code web drag and drop OPI builder for EPICS applications.
 
-> NOTE: This app is under development, so not all planned features are yet functional, but feel free to try it out!
+> NOTE: Follow the app development and mapped improvements on [EWS Project Dashboard](https://github.com/users/AndreFavotto/projects/2)
 
 The gateway between EPICS and the browser is done via [./pvaPyWS](./pvaPyWS).
 

@@ -9,10 +9,10 @@ export type EditorContextType = ReturnType<typeof useWidgetManager> &
 
 export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const widgetManager = useWidgetManager();
-  const ws = usePvaPyWS(widgetManager.editorWidgets, widgetManager.batchWidgetUpdate);
+  const ws = usePvaPyWS(widgetManager.PVList, widgetManager.updatePVData);
   const ui = useUIManager(
     ws.ws,
-    ws.clearPVValues,
+    widgetManager.clearPVData,
     ws.startNewSession,
     widgetManager.setSelectedWidgetIDs,
     widgetManager.updateWidgetProperties

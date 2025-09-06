@@ -5,6 +5,7 @@ import { useEditorContext } from "../../../context/useEditorContext";
 
 const BitIndicatorComp: React.FC<WidgetUpdate> = ({ data }) => {
   const p = data.editableProperties;
+  const pvData = data.pvData;
   const { mode } = useEditorContext();
 
   if (!p.visible?.value) return null;
@@ -14,8 +15,7 @@ const BitIndicatorComp: React.FC<WidgetUpdate> = ({ data }) => {
   const offColor = p.offColor?.value;
   const invertOrder = p.invertBitOrder?.value;
   const orientation = p.orientation?.value;
-
-  const value = mode === RUNTIME_MODE ? Number(p.pvValue?.value ?? 0) : 0;
+  const value = mode === RUNTIME_MODE ? Number(pvData?.value ?? 0) : 0;
 
   let bitIndexes = Array.from({ length: bitsCount }, (_, i) => i);
   if (invertOrder) {

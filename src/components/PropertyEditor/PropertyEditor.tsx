@@ -25,6 +25,7 @@ import BooleanProperty from "./BooleanProperty";
 import ColorProperty from "./ColorProperty";
 import SelectProperty from "./SelectProperty";
 import { CATEGORY_DISPLAY_ORDER } from "../../types/widgetProperties";
+import PvListProperty from "./PVListProperty";
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: PROPERTY_EDITOR_WIDTH,
@@ -204,6 +205,8 @@ const PropertyEditor: React.FC = () => {
                 case "text":
                 case "number":
                   return <TextFieldProperty key={propName} {...commonProps} selType={selType} />;
+                case "pvList":
+                  return <PvListProperty key={propName} {...commonProps} />;
                 case "boolean":
                   return <BooleanProperty key={propName} {...commonProps} />;
                 case "colorSelector":

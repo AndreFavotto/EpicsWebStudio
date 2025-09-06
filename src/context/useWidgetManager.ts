@@ -11,6 +11,7 @@ import type {
 import { GridZone } from "../components/GridZone";
 import { GRID_ID, MAX_HISTORY } from "../constants/constants";
 import WidgetRegistry from "../components/WidgetRegistry/WidgetRegistry";
+import type { PVData } from "../types/pvaPyWS";
 
 function deepCloneWidgetList(widgets: Widget[]): Widget[] {
   return widgets.map(deepCloneWidget);
@@ -461,7 +462,7 @@ export function useWidgetManager() {
               return null;
             }
 
-            // deep clone the registry entry so we don’t mutate the registry itself
+            // deep clone the registry entry so we don't mutate the registry itself
             const instance = deepCloneWidget(baseWdg);
             instance.id = raw.id;
 
@@ -485,6 +486,78 @@ export function useWidgetManager() {
     },
     [updateEditorWidgetList]
   );
+
+  const updatePVData = (newPVData: PVData) => {
+    updateEditorWidgetList((prev) =>
+      prev.map((w) => {
+        // --- single PV case
+        if (w.editableProperties.pvName?.value === newPVData.pv) {
+          return {
+            ...w,
+            pvData: {
+              ...w.pvData,
+              ...newPVData,
+              value: newPVData.value ?? w.pvData?.value,
+            },
+          };
+        }
+
+        // --- multi PV case
+        if (w.editableProperties.pvNames) {
+          const updatedMultiPvData: Record<string, PVData> = {
+            ...w.multiPvData,
+          };
+
+          for (const pv of Object.values(w.editableProperties.pvNames.value)) {
+            if (pv === newPVData.pv) {
+              updatedMultiPvData[pv] = {
+                ...w.multiPvData?.[pv],
+                ...newPVData,
+                value: newPVData.value ?? w.multiPvData?.[pv]?.value,
+              };
+            }
+          }
+
+          return {
+            ...w,
+            multiPvData: updatedMultiPvData,
+          };
+        }
+        return w;
+      })
+    );
+  };
+
+  const clearPVData = () => {
+    updateEditorWidgetList(
+      (prev) =>
+        prev.map((w) => {
+          if (w.pvData) {
+            return { ...w, pvData: {} as PVData };
+          } else if (w.multiPvData) {
+            return { ...w, multiPvData: {} as Record<string, PVData> };
+          }
+          return w;
+        }),
+      false
+    );
+  };
+
+  const PVList = useMemo(() => {
+    const set = new Set<string>();
+    for (const w of editorWidgets) {
+      if (w.editableProperties?.pvName?.value) {
+        set.add(w.editableProperties.pvName.value);
+      }
+      const multiPV = w.editableProperties?.pvNames?.value;
+      if (multiPV) {
+        Object.values(multiPV).forEach((pv) => {
+          if (pv) set.add(pv);
+        });
+      }
+    }
+    return Array.from(set);
+  }, [editorWidgets]);
 
   return {
     editorWidgets,
@@ -519,5 +592,8 @@ export function useWidgetManager() {
     distributeVertical,
     downloadWidgets,
     loadWidgets,
+    updatePVData,
+    clearPVData,
+    PVList,
   };
 }
