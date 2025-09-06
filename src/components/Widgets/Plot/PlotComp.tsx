@@ -1,8 +1,9 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
 import Plot from "react-plotly.js";
 import { useEditorContext } from "../../../context/useEditorContext";
 import { COLORS, EDIT_MODE } from "../../../constants/constants";
+import { XAxisPVLabel, YAxisPVLabel } from "./Plot";
 
 function usePrev<T>(value: T): T | undefined {
   const ref = useRef<T | undefined>(undefined);
@@ -18,20 +19,14 @@ const PlotComp: React.FC<WidgetUpdate> = ({ data }) => {
   const prevInEditMode = usePrev(inEditMode);
   const p = data.editableProperties;
   const bufferSize = p.plotBufferSize?.value ?? 50;
-  const YAxisPVLabel = "Y Axis";
-  const XAxisPVLabel = "X Axis";
 
   const [yBuffer, setYBuffer] = useState<number[]>([]);
   const [xBuffer, setXBuffer] = useState<number[]>([]);
 
-  const getPvValue = useCallback(
-    (axisPVLabel: string) => {
-      return data.multiPvData?.[axisPVLabel]?.value;
-    },
-    [data.multiPvData]
-  );
+  const yVal = data.multiPvData?.[YAxisPVLabel]?.value;
+  const xVal = data.multiPvData?.[XAxisPVLabel]?.value;
 
-  // update Y values
+  // --- Y effect
   useEffect(() => {
     if (prevInEditMode !== undefined && prevInEditMode !== inEditMode) {
       setYBuffer([]);
@@ -44,7 +39,6 @@ const PlotComp: React.FC<WidgetUpdate> = ({ data }) => {
       return;
     }
 
-    const yVal = getPvValue(YAxisPVLabel);
     if (typeof yVal === "number") {
       setYBuffer((prev) => {
         const next = [...prev, yVal];
@@ -54,12 +48,12 @@ const PlotComp: React.FC<WidgetUpdate> = ({ data }) => {
     } else if (Array.isArray(yVal) && yVal.every((v) => typeof v === "number")) {
       setYBuffer(yVal);
     }
-  }, [getPvValue, inEditMode, prevInEditMode, bufferSize]);
+  }, [yVal, inEditMode, prevInEditMode, bufferSize]);
 
-  // update X values
+  // --- X effect
   useEffect(() => {
     if (inEditMode) return;
-    const xVal = getPvValue(XAxisPVLabel);
+
     if (typeof xVal === "number") {
       setXBuffer((prev) => {
         const next = [...prev, xVal];
@@ -69,7 +63,7 @@ const PlotComp: React.FC<WidgetUpdate> = ({ data }) => {
     } else if (Array.isArray(xVal) && xVal.every((v) => typeof v === "number")) {
       setXBuffer(xVal);
     }
-  }, [getPvValue, inEditMode, bufferSize]);
+  }, [xVal, inEditMode, bufferSize]);
 
   return (
     <div

@@ -40,7 +40,7 @@ export const PROPERTY_SCHEMAS = {
   centerVisible:   defineProp({ selType: "boolean", label: "Center mark visible", value: true as boolean, category: "Grid" }),
   // EPICS
   pvName:          defineProp({ selType: "text", label: "PV Name", value: "" as string, category: "EPICS" }),
-  pvNames:         defineProp({ selType: "pvList", label: "PV Names", value: {} as Record<string, string>, category: "EPICS" }), //to be implemented
+  pvNames:         defineProp({ selType: "pvList", label: "PV Names", value: {} as Record<string, string>, category: "EPICS" }),
   precisionFromPV: defineProp({ selType: "boolean", label: "Disabled", value: true as boolean, category: "EPICS" }),
   actionValue:     defineProp({ selType: "text", label: "Action Value", value: 1 as number | string, category: "EPICS" }),
   // Specific Properties
@@ -55,11 +55,11 @@ export const PROPERTY_SCHEMAS = {
   //Graph
   lineColor:       defineProp({ selType: "colorSelector", label: "Line Color", value: COLORS.graphLineColor, category: "Style" }),
   plotTitle:       defineProp({ selType: "text", label: "Title", value: "Title" as string, category: "Layout" }),
-  xAxisTitle:      defineProp({ selType: "text", label: "X axis title", value: "Time" as string, category: "Layout" }),
+  xAxisTitle:      defineProp({ selType: "text", label: "X axis title", value: "X axis" as string, category: "Layout" }),
   yAxisTitle:      defineProp({ selType: "text", label: "Y axis title", value: "Y axis" as string, category: "Layout" }),
   logscaleY:       defineProp({ selType: "boolean", label: "Apply log to Y", value: false as boolean, category: "Layout" }),
-  plotLineStyle:   defineProp({ selType: "select", label: "Line style", value: "lines+markers" as "lines+markers"|"lines"|"markers", options: ["lines+markers", "lines", "markers"], category: "Style" }),
-  plotBufferSize:  defineProp({ selType: "number", label: "Buffer size (if scalar PVs)", value: 50 as number, category: "Layout" }),
+  plotLineStyle:   defineProp({ selType: "select", label: "Line style", value: "lines" as "lines+markers"|"lines"|"markers", options: ["lines+markers", "lines", "markers"], category: "Style" }),
+  plotBufferSize:  defineProp({ selType: "number", label: "Buffer size (if scalar PVs)", value: 80 as number, category: "Layout" }),
 };
 
 export const CATEGORY_DISPLAY_ORDER = ["Grid", "Layout", "Style", "Font", "General", "EPICS", "Window", "Other"];

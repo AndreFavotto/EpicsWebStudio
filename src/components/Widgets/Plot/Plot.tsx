@@ -4,6 +4,9 @@ import type { Widget } from "../../../types/widgets";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import type { MultiPvData } from "../../../types/pvaPyWS";
 
+export const YAxisPVLabel = "Y Axis PV";
+export const XAxisPVLabel = "X Axis PV (optional)";
+
 export const Plot: Widget = {
   id: "__PlotComp__",
   component: PlotComp,
@@ -17,7 +20,7 @@ export const Plot: Widget = {
     width: { ...PROPERTY_SCHEMAS.width, value: 480 },
     height: { ...PROPERTY_SCHEMAS.height, value: 260 },
     ...TEXT_PROPS,
-    pvNames: { ...PROPERTY_SCHEMAS.pvNames, value: { "Y Axis": "", "X Axis:": "" } },
+    pvNames: { ...PROPERTY_SCHEMAS.pvNames, value: { [YAxisPVLabel]: "", [XAxisPVLabel]: "" } },
     ...PLOT_PROPS,
   },
 } as const;
