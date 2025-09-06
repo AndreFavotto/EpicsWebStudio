@@ -23,8 +23,11 @@ const PlotComp: React.FC<WidgetUpdate> = ({ data }) => {
   const [yBuffer, setYBuffer] = useState<number[]>([]);
   const [xBuffer, setXBuffer] = useState<number[]>([]);
 
-  const yVal = data.multiPvData?.[YAxisPVLabel]?.value;
-  const xVal = data.multiPvData?.[XAxisPVLabel]?.value;
+  const yPVName = p.pvNames?.value?.[YAxisPVLabel];
+  const xPVName = p.pvNames?.value?.[XAxisPVLabel];
+
+  const yVal = yPVName ? data.multiPvData?.[yPVName]?.value : undefined;
+  const xVal = xPVName ? data.multiPvData?.[xPVName]?.value : undefined;
 
   // --- Y effect
   useEffect(() => {

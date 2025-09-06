@@ -508,12 +508,12 @@ export function useWidgetManager() {
             ...w.multiPvData,
           };
 
-          for (const [label, pv] of Object.entries(w.editableProperties.pvNames.value)) {
+          for (const pv of Object.values(w.editableProperties.pvNames.value)) {
             if (pv === newPVData.pv) {
-              updatedMultiPvData[label] = {
-                ...w.multiPvData?.[label],
+              updatedMultiPvData[pv] = {
+                ...w.multiPvData?.[pv],
                 ...newPVData,
-                value: newPVData.value ?? w.multiPvData?.[label]?.value,
+                value: newPVData.value ?? w.multiPvData?.[pv]?.value,
               };
             }
           }
