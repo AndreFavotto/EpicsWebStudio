@@ -61,36 +61,28 @@ export class WSClient {
       return;
     }
 
-    const jm = uncheckedMessage;
+    const msg = uncheckedMessage;
 
-    if (jm.type === "update") {
-      if (jm.b64dbl !== undefined) {
-        jm.value = Array.from(new Float64Array(base64ToArrayBuffer(jm.b64dbl)));
-        delete jm.b64dbl;
-      } else if (jm.b64flt !== undefined) {
-        jm.value = Array.from(new Float32Array(base64ToArrayBuffer(jm.b64flt)));
-        delete jm.b64flt;
-      } else if (jm.b64srt !== undefined) {
-        jm.value = Array.from(new Int16Array(base64ToArrayBuffer(jm.b64srt)));
-        delete jm.b64srt;
-      } else if (jm.b64int !== undefined) {
-        jm.value = Array.from(new Int32Array(base64ToArrayBuffer(jm.b64int)));
-        delete jm.b64int;
-      } else if (jm.b64byt !== undefined) {
-        jm.value = Array.from(new Uint8Array(base64ToArrayBuffer(jm.b64byt)));
-        delete jm.b64byt;
+    if (msg.type === "update") {
+      // decode base64 arrays into JS arrays
+      if (msg.b64dbl !== undefined) {
+        msg.value = Array.from(new Float64Array(base64ToArrayBuffer(msg.b64dbl)));
+        delete msg.b64dbl;
+      } else if (msg.b64flt !== undefined) {
+        msg.value = Array.from(new Float32Array(base64ToArrayBuffer(msg.b64flt)));
+        delete msg.b64flt;
+      } else if (msg.b64srt !== undefined) {
+        msg.value = Array.from(new Int16Array(base64ToArrayBuffer(msg.b64srt)));
+        delete msg.b64srt;
+      } else if (msg.b64int !== undefined) {
+        msg.value = Array.from(new Int32Array(base64ToArrayBuffer(msg.b64int)));
+        delete msg.b64int;
+      } else if (msg.b64byt !== undefined) {
+        msg.value = Array.from(new Uint8Array(base64ToArrayBuffer(msg.b64byt)));
+        delete msg.b64byt;
       }
-
-      let value = this.values[jm.pv ?? ""];
-
-      value ??= { pv: jm.pv, type: "update" };
-
-      Object.assign(value, jm);
-      this.values[jm.pv ?? ""] = value;
-      this.message_handler(value);
-    } else {
-      this.message_handler(jm);
     }
+    this.message_handler(msg);
   }
 
   private handleError(event: Event): void {
