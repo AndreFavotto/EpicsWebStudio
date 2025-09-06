@@ -1,11 +1,21 @@
 import type { WidgetProperty, PropertyValue, WidgetProperties } from "./widgets";
 import { COLORS } from "../constants/constants";
 
-/* helper to make sure each property value is correctly typed */
+/**
+ * Helper function to enforce proper typing of widget properties.
+ * Returns the property object as-is but ensures TypeScript infers the correct type.
+ * @param prop - A WidgetProperty object
+ * @returns The same WidgetProperty object with type enforcement
+ */
 function defineProp<T extends PropertyValue>(prop: WidgetProperty<T>): WidgetProperty<T> {
   return prop;
 }
 
+/**
+ * Master schema of all widget properties.
+ * Each key defines a property, its type, default value, category, and optional options for select-type properties.
+ * Used to standardize widget property definitions across the app.
+ */
 /* prettier-ignore */
 export const PROPERTY_SCHEMAS = {
   // Shared Properties
@@ -52,7 +62,7 @@ export const PROPERTY_SCHEMAS = {
   offColor:        defineProp({ selType: "colorSelector", label: "Off Color", value: COLORS.offColor, category: "Style" }),
   spacing:         defineProp({ selType: "number", label: "Spacing", value: 1 as number, category: "Style" }),
   square:          defineProp({ selType: "boolean", label: "Square", value: false as boolean, category: "Style" }),
-  //Graph
+  // Graph
   lineColor:       defineProp({ selType: "colorSelector", label: "Line Color", value: COLORS.graphLineColor, category: "Style" }),
   plotTitle:       defineProp({ selType: "text", label: "Title", value: "Title" as string, category: "Layout" }),
   xAxisTitle:      defineProp({ selType: "text", label: "X axis title", value: "X axis" as string, category: "Layout" }),
@@ -62,26 +72,31 @@ export const PROPERTY_SCHEMAS = {
   plotBufferSize:  defineProp({ selType: "number", label: "Buffer size (if scalar PVs)", value: 80 as number, category: "Layout" }),
 };
 
+/**
+ * Defines the preferred order for displaying property categories in the UI.
+ */
 export const CATEGORY_DISPLAY_ORDER = ["Grid", "Layout", "Style", "Font", "General", "EPICS", "Window", "Other"];
 
-/* property groups */
+/**
+ * Common set of widget properties shared across most widgets.
+ */
 export const COMMON_PROPS: WidgetProperties = {
-  //layout
   x: PROPERTY_SCHEMAS.x,
   y: PROPERTY_SCHEMAS.y,
   width: PROPERTY_SCHEMAS.width,
   height: PROPERTY_SCHEMAS.height,
-  //style
   backgroundColor: PROPERTY_SCHEMAS.backgroundColor,
   borderColor: PROPERTY_SCHEMAS.borderColor,
   borderStyle: PROPERTY_SCHEMAS.borderStyle,
   borderWidth: PROPERTY_SCHEMAS.borderWidth,
   borderRadius: PROPERTY_SCHEMAS.borderRadius,
-  // General
   visible: PROPERTY_SCHEMAS.visible,
   tooltip: PROPERTY_SCHEMAS.tooltip,
 };
 
+/**
+ * Common text-related properties for widgets displaying text.
+ */
 export const TEXT_PROPS: WidgetProperties = {
   fontSize: PROPERTY_SCHEMAS.fontSize,
   fontFamily: PROPERTY_SCHEMAS.fontFamily,
@@ -92,6 +107,9 @@ export const TEXT_PROPS: WidgetProperties = {
   textHAlign: PROPERTY_SCHEMAS.textHAlign,
 };
 
+/**
+ * Properties commonly used for plot widgets.
+ */
 export const PLOT_PROPS: WidgetProperties = {
   backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: "white" },
   lineColor: PROPERTY_SCHEMAS.lineColor,
