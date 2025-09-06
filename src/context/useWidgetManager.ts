@@ -11,12 +11,22 @@ import type {
 import { GridZone } from "../components/GridZone";
 import { GRID_ID, MAX_HISTORY } from "../constants/constants";
 import WidgetRegistry from "../components/WidgetRegistry/WidgetRegistry";
-import type { PVData } from "../types/pvaPyWS";
+import type { MultiPvData, PVData } from "../types/pvaPyWS";
 
+/**
+ * Deep clone a list of widgets.
+ * @param widgets Array of widgets to clone
+ * @returns A deep-cloned array of widgets
+ */
 function deepCloneWidgetList(widgets: Widget[]): Widget[] {
   return widgets.map(deepCloneWidget);
 }
 
+/**
+ * Deep clone a single widget including its editable properties.
+ * @param widget Widget to clone
+ * @returns Cloned widget
+ */
 function deepCloneWidget(widget: Widget): Widget {
   return {
     ...widget,
@@ -24,6 +34,17 @@ function deepCloneWidget(widget: Widget): Widget {
   };
 }
 
+/**
+ * Hook to manage the editor's widgets and their state.
+ *
+ * Provides functionality for:
+ * - Selection management
+ * - Undo/redo history
+ * - Copy/paste of widgets
+ * - Alignment and distribution
+ * - Updating widget properties and PV data
+ * - Import/export of widget configurations
+ */
 export function useWidgetManager() {
   const [undoStack, setUndoStack] = useState<Widget[][]>([]);
   const [redoStack, setRedoStack] = useState<Widget[][]>([]);
@@ -57,6 +78,12 @@ export function useWidgetManager() {
     };
   }, [selectedWidgets]);
 
+  /**
+   * Update the full widget list.
+   * Optionally records undo history.
+   * @param newWidgets New widget list or updater function
+   * @param keepHistory Whether to store this change in undo stack
+   */
   const updateEditorWidgetList = useCallback(
     (newWidgets: Widget[] | ((prev: Widget[]) => Widget[]), keepHistory = true) => {
       if (keepHistory) {
@@ -73,6 +100,11 @@ export function useWidgetManager() {
     [editorWidgets]
   );
 
+  /**
+   * Apply multiple property updates to widgets.
+   * @param updates Object mapping widget IDs to property updates
+   * @param keepHistory Whether to store this change in undo stack
+   */
   const batchWidgetUpdate = (updates: MultiWidgetPropertyUpdates, keepHistory = true) => {
     const idsToUpdate = new Set(Object.keys(updates));
     updateEditorWidgetList(
@@ -98,18 +130,38 @@ export function useWidgetManager() {
     );
   };
 
+  /**
+   * Get a widget by its ID.
+   * @param id Widget ID
+   * @returns Widget object or undefined
+   */
   const getWidget = useCallback((id: string) => editorWidgets.find((w) => w.id === id), [editorWidgets]);
 
+  /**
+   * Add a new widget to the editor.
+   * @param newWidget Widget to add
+   */
   const addWidget = (newWidget: Widget) => {
     updateEditorWidgetList((prev) => [...prev, newWidget]);
   };
 
+  /**
+   * Update properties of a single widget.
+   * @param id Widget ID
+   * @param changes Object mapping property keys to new values
+   * @param keepHistory Whether to store this change in undo stack
+   */
   const updateWidgetProperties = (id: string, changes: PropertyUpdates, keepHistory = true) => {
     const updates: MultiWidgetPropertyUpdates = { [id]: changes };
     batchWidgetUpdate(updates, keepHistory);
   };
 
   type ReorderDirection = "forward" | "backward" | "front" | "back";
+
+  /**
+   * Move selected widgets one step in the selected diretion on the z-axis.
+   *  @param direction "forward" | "backward" | "front" | "back"
+   */
   const reorderWidgets = (direction: ReorderDirection) => {
     updateEditorWidgetList((prev) => {
       // Always keep GridZone fixed at index 0
@@ -170,6 +222,9 @@ export function useWidgetManager() {
     reorderWidgets("back");
   };
 
+  /**
+   * Align selected widgets by the left margin.
+   */
   const alignLeft = () => {
     if (selectedWidgets.length < 2) return;
     const leftX = Math.min(...selectedWidgets.map((w) => w.editableProperties.x?.value ?? 0));
@@ -180,6 +235,9 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
+  /**
+   * Align selected widgets by the right margin.
+   */
   const alignRight = () => {
     if (selectedWidgets.length < 2) return;
     const rightX = Math.max(
@@ -193,6 +251,9 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
+  /**
+   * Align selected widgets by the top margin.
+   */
   const alignTop = () => {
     if (selectedWidgets.length < 2) return;
     const topY = Math.min(...selectedWidgets.map((w) => w.editableProperties.y?.value ?? 0));
@@ -203,6 +264,9 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
+  /**
+   * Align selected widgets by the bottom margin.
+   */
   const alignBottom = () => {
     if (selectedWidgets.length < 2) return;
     const bottomY = Math.max(
@@ -216,6 +280,9 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
+  /**
+   * Align selected widgets by the horizontal center.
+   */
   const alignHorizontalCenter = () => {
     if (selectedWidgets.length < 2) return;
     const minX = Math.min(...selectedWidgets.map((w) => w.editableProperties.x?.value ?? 0));
@@ -232,6 +299,9 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
+  /**
+   * Align selected widgets by the vertical center.
+   */
   const alignVerticalCenter = () => {
     if (selectedWidgets.length < 2) return;
     const minY = Math.min(...selectedWidgets.map((w) => w.editableProperties.y?.value ?? 0));
@@ -248,8 +318,12 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
+  /**
+   * Distribute selected widgets (3 or more) horizontally.
+   * @warning Functionality not tested yet!
+   */
   const distributeHorizontal = () => {
-    if (selectedWidgets.length < 3) return; // Need at least 3 to distribute
+    if (selectedWidgets.length < 3) return;
 
     const sorted = [...selectedWidgets].sort(
       (a, b) => (a.editableProperties.x?.value ?? 0) - (b.editableProperties.x?.value ?? 0)
@@ -276,8 +350,12 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
+  /**
+   * Distribute selected widgets (3 or more) vertically.
+   * @warning Functionality not tested yet!
+   */
   const distributeVertical = () => {
-    if (selectedWidgets.length < 3) return; // Need at least 3 to distribute
+    if (selectedWidgets.length < 3) return;
 
     const sorted = [...selectedWidgets].sort(
       (a, b) => (a.editableProperties.y?.value ?? 0) - (b.editableProperties.y?.value ?? 0)
@@ -304,6 +382,9 @@ export function useWidgetManager() {
     batchWidgetUpdate(updates);
   };
 
+  /**
+   * Undo the last editor state change.
+   */
   const handleUndo = useCallback(() => {
     setUndoStack((prevUndo) => {
       if (prevUndo.length === 0) return prevUndo;
@@ -318,6 +399,9 @@ export function useWidgetManager() {
     });
   }, [editorWidgets]);
 
+  /**
+   * Redo the last undone editor state change.
+   */
   const handleRedo = useCallback(() => {
     setRedoStack((prevRedo) => {
       if (prevRedo.length === 0) return prevRedo;
@@ -331,6 +415,10 @@ export function useWidgetManager() {
     });
   }, [editorWidgets]);
 
+  /**
+   * Copy currently selected widgets to clipboard.
+   * @note the widget clipboard is managed internally. The actual system clipboard is not used here.
+   */
   const copyWidget = useCallback(() => {
     if (selectedWidgets.length === 0) return;
     if (selectedWidgets.length > 1 && groupBounds) {
@@ -343,6 +431,10 @@ export function useWidgetManager() {
       });
   }, [selectedWidgets, groupBounds]);
 
+  /**
+   * Paste widgets from clipboard at a specified grid position.
+   * @param pos Position to paste widgets at
+   */
   const pasteWidget = useCallback(
     (pos: GridPosition) => {
       if (clipboard.current.length === 0) return;
@@ -378,6 +470,9 @@ export function useWidgetManager() {
     [updateEditorWidgetList, copiedGroupBounds]
   );
 
+  /**
+   * Export current widgets to JSON file.
+   */
   const downloadWidgets = useCallback(async () => {
     const defaultName = "ews-opi.json";
     const simplified = editorWidgets.map(
@@ -436,6 +531,10 @@ export function useWidgetManager() {
     URL.revokeObjectURL(url);
   }, [editorWidgets]);
 
+  /**
+   * Load widgets from JSON or ExportedWidget array.
+   * @param widgetsData JSON string or array of ExportedWidget
+   */
   const loadWidgets = useCallback(
     (widgetsData: string | ExportedWidget[]) => {
       try {
@@ -462,7 +561,6 @@ export function useWidgetManager() {
               return null;
             }
 
-            // deep clone the registry entry so we don't mutate the registry itself
             const instance = deepCloneWidget(baseWdg);
             instance.id = raw.id;
 
@@ -487,10 +585,14 @@ export function useWidgetManager() {
     [updateEditorWidgetList]
   );
 
+  /**
+   * Update a widget's PV data (single or multi-PV).
+   * @param newPVData Updated PV data
+   */
   const updatePVData = (newPVData: PVData) => {
     updateEditorWidgetList((prev) =>
       prev.map((w) => {
-        // --- single PV case
+        // single PV case
         if (w.editableProperties.pvName?.value === newPVData.pv) {
           return {
             ...w,
@@ -502,9 +604,9 @@ export function useWidgetManager() {
           };
         }
 
-        // --- multi PV case
+        // multi PV case
         if (w.editableProperties.pvNames) {
-          const updatedMultiPvData: Record<string, PVData> = {
+          const updatedMultiPvData: MultiPvData = {
             ...w.multiPvData,
           };
 
@@ -528,6 +630,9 @@ export function useWidgetManager() {
     );
   };
 
+  /**
+   * Clear/reset all PV data from widgets.
+   */
   const clearPVData = () => {
     updateEditorWidgetList(
       (prev) =>
@@ -543,6 +648,9 @@ export function useWidgetManager() {
     );
   };
 
+  /**
+   * List of all PVs held by widgets.
+   */
   const PVList = useMemo(() => {
     const set = new Set<string>();
     for (const w of editorWidgets) {

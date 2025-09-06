@@ -4,15 +4,33 @@ import type { PVData, WSMessage } from "../types/pvaPyWS";
 import type { useWidgetManager } from "./useWidgetManager";
 import { WS_URL } from "../constants/constants";
 
+/**
+ * Hook that manages a WebSocket session to the PV WebSocket.
+ *
+ * - Handles subscribing/unsubscribing PVs
+ * - Caches metadata that is sent only once
+ * - Forwards processed PVData updates back to the widget manager
+ *
+ * @param PVList List of PVs to subscribe to
+ * @param updatePVData Callback to update PV data in the widget manager
+ */
 export default function usePvaPyWS(
   PVList: ReturnType<typeof useWidgetManager>["PVList"],
   updatePVData: ReturnType<typeof useWidgetManager>["updatePVData"]
 ) {
+  /** WebSocket client instance */
   const ws = useRef<WSClient | null>(null);
   const [isWSConnected, setWSConnected] = useState(false);
-  // use "cache" to store metadata
   const pvCache = useRef<Record<string, PVData>>({});
 
+  /**
+   * Handles incoming WebSocket messages.
+   * - Filters unsolicited PVs
+   * - Merges new values with cached metadata
+   * - Forwards updates to widget manager
+   *
+   * @param msg Message received from the PV WebSocket
+   */
   const onMessage = (msg: WSMessage) => {
     if (!PVList.includes(msg.pv)) {
       console.warn(`received message from unsolicited PV: ${msg.pv}`);
@@ -25,14 +43,20 @@ export default function usePvaPyWS(
       value: msg.value ?? prev.value,
       alarm: msg.alarm ?? prev.alarm,
       timeStamp: msg.timeStamp ?? prev.timeStamp,
-      display: prev.display ?? msg.display, // sent only on first update
-      control: prev.control ?? msg.control, // sent only on first update
-      valueAlarm: prev.valueAlarm ?? msg.valueAlarm, // sent only on first update
+      display: prev.display ?? msg.display,
+      control: prev.control ?? msg.control,
+      valueAlarm: prev.valueAlarm ?? msg.valueAlarm,
     };
     pvCache.current[msg.pv] = pvData;
     updatePVData(pvData);
   };
 
+  /**
+   * Handles connection state changes.
+   * Subscribes to PV list when connected.
+   *
+   * @param connected Whether the WS connection is active
+   */
   const handleConnect = (connected: boolean) => {
     setWSConnected(connected);
     if (connected) {
@@ -40,6 +64,10 @@ export default function usePvaPyWS(
     }
   };
 
+  /**
+   * Starts a new WebSocket session.
+   * Closes an existing session if one is active.
+   */
   const startNewSession = () => {
     if (ws.current) {
       ws.current.unsubscribe(PVList);
@@ -50,10 +78,20 @@ export default function usePvaPyWS(
     ws.current.open();
   };
 
+  /**
+   * Writes a new value to a PV.
+   *
+   * @param pv Name of the PV
+   * @param newValue Value to write
+   */
   const writePVValue = (pv: string, newValue: number | string) => {
     ws.current?.write(pv, newValue);
   };
 
+  /**
+   * Stops the current WebSocket session.
+   * Unsubscribes PVs, closes the connection, clears state.
+   */
   const stopSession = () => {
     if (!ws.current) return;
     ws.current.unsubscribe(PVList);
