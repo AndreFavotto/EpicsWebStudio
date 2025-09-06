@@ -1,4 +1,3 @@
-/* Root container */
 .app {
   display: flex;
   flex-direction: column;
@@ -6,7 +5,6 @@
   width: 100%;
 }
 
-/* Area below the AppBar */
 .designerArea {
   display: flex;
   flex: 1 1 auto;
@@ -14,19 +12,16 @@
   margin-top: 64px; /* Height of AppBar Toolbar (default MUI) */
 }
 
-/* Sidebar */
 .widgetSelector {
   height: 100%;
 }
 
-/* Central grid area */
 #gridContainer {
   height: calc(100% - 64px);
   width: 100%;
   position: absolute;
 }
 
-/* Property editor on the right */
 .propertyEditor {
   height: 100%;
 }

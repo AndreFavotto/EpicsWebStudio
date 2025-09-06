@@ -103,6 +103,19 @@ const DraggableItem: React.FC<DraggableItemProps> = ({ item, open }) => {
   );
 };
 
+/**
+ * WidgetSelector renders the sidebar containing all available widgets for the editor.
+ *
+ * Features:
+ * - Groups widgets by category and displays them in a collapsible drawer
+ * - Allows widgets to be dragged from the selector into the grid/editor
+ * - Shows icons and labels, with tooltips when collapsed
+ * - Automatically hides when editor is not in EDIT_MODE
+ *
+ * Context:
+ * - Relies on `useEditorContext` for editor mode and drawer open state
+ * - Uses WidgetRegistry to dynamically fetch all available widget definitions
+ */
 const WidgetSelector: React.FC = () => {
   const { mode, wdgSelectorOpen, setWdgSelectorOpen } = useEditorContext();
   const palette: Record<string, Widget> = React.useMemo(

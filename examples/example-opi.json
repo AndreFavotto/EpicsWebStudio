@@ -221,15 +221,16 @@
       "textColor": "#000000",
       "textVAlign": "middle",
       "textHAlign": "left",
-      "pvName": "test:sin",
-      "pvValue": -0.3747626292520864,
+      "pvNames": {
+        "Y Axis PV": "test:sin",
+        "X Axis PV (optional)": "test:seconds"
+      },
       "lineColor": "#0353a4",
       "plotTitle": "Scalar plot",
       "xAxisTitle": "t",
       "yAxisTitle": "sin(t)",
       "plotLineStyle": "lines",
       "logscaleY": false,
-      "xAxisPVName": "test:seconds",
       "plotBufferSize": 100
     }
   },
@@ -461,15 +462,16 @@
       "textColor": "#000000",
       "textVAlign": "middle",
       "textHAlign": "left",
-      "pvName": "test:sin",
-      "pvValue": -0.3747626292520864,
+      "pvNames": {
+        "Y Axis PV": "test:sinArr",
+        "X Axis PV (optional)": ""
+      },
       "lineColor": "#0353a4",
       "plotTitle": "Waveform plot",
       "xAxisTitle": "Index",
       "yAxisTitle": "sin(t)",
       "plotLineStyle": "lines",
       "logscaleY": false,
-      "xAxisPVName": "test:seconds",
       "plotBufferSize": 50
     }
   },

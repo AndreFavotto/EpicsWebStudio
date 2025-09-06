@@ -9,6 +9,22 @@ import "./GridZone.css";
 import WidgetRenderer from "../WidgetRenderer/WidgetRenderer.tsx";
 import ToolbarButtons from "../Toolbar/Toolbar.tsx";
 
+/**
+ * GridZoneComp renders the main editor canvas where widgets are displayed, moved, and interacted with.
+ *
+ * @features
+ * - Drag and drop new widgets from the registry.
+ * - Panning and zooming of the grid.
+ * - Selection of multiple widgets using drag selection (via Selecto).
+ * - Calls context menu actions like cut, copy, paste, z-order management.
+ * - Monitors keyboard shortcuts.
+ *
+ * @param data WidgetUpdate object containing editable properties for the grid.
+ *
+ * @notes
+ * - Zooming is constrained by MIN_ZOOM and MAX_ZOOM constants.
+ * - Panning centers the grid on first load or when middle mouse button is used.
+ */
 const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   const props = data.editableProperties;
   const {

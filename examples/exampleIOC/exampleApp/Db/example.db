@@ -2,7 +2,7 @@ record(calc, "test:seconds") {
   field(DESC, "time elapsed")
   field(INPA, "test:seconds")
   field(CALC, "A+0.1")
-  field(SCAN, ".2 second")
+  field(SCAN, ".1 second")
   field(PREC, "3")
 }
 
