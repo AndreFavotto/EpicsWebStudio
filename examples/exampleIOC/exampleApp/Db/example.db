@@ -61,7 +61,7 @@ record(ai, "test:ai") {
 
 record(stringout, "test:strout") {
   field(DESC, "String output")
-  field(OUT, "test:stringin PP")
+  field(OUT, "test:strin PP")
 }
 
 record(stringin, "test:strin") {

@@ -4,8 +4,6 @@ No-code web drag and drop OPI builder for EPICS applications.
 
 > NOTE: Follow the app development and mapped improvements on [EWS Project Dashboard](https://github.com/users/AndreFavotto/projects/2)
 
-The gateway between EPICS and the browser is done via [./pvaPyWS](./pvaPyWS).
-
 ## Dependencies
 
 - Docker (tested with 28.1.1)
@@ -23,23 +21,24 @@ cp .env.example .env
 
 3. Launch the app: `docker compose -f docker-compose-dev.yml up`. The application should be available in `localhost:5173`.
 
-## Link to EPICS
+> If launched via the compose file provided, no further configuration is needed. Tailoring of the EPICS communication configurations (default protocol (ca|pva), CA_ADDR_LIST, PVA_ADDR_LIST, etc) can be made in your `.env` file.
 
-If launched via the compose file provided, no further configuration is needed. Tailoring of the EPICS communication configurations (default protocol (ca|pva), CA_ADDR_LIST, PVA_ADDR_LIST, etc) can be made in your `.env` file.
+## Examples
 
-As is, the default protocol is set to pva. This means you can put the PV names directly in the "PV Name" field of the widgets if your IOC has a PVA server.
-If you wish to use Channel Access instead, you can specify the protocol by typing `ca://PVNAME` in the PV field or change the default protocol directly in the `.env` file.
+In the [examples folder](./examples/) you will find an EPICS IOC and one OPI ready for you to try the app.
 
-## Features
+1. In a machine with EPICS installed, run [exampleIOC](exampleIOC).
 
-- Infinite pan/zoom canvas: gives you freedom to build your interface and test layouts;
-  - Use the mouse scroll to zoom in/out. While middle button is clicked, pan mode is activated. A single click in the middle button re-centers the grid.
-- Customizable grid: change size, background color and other properties as you wish. Widget snapping to grid is available as well.
-- Edit and Runtime modes:
-  - Edit mode: total freedom and control of your widgets.
-  - Runtime: Communication to PVA/CA servers is established and information is updated live.
-    > Hint: Only the widgets inside the "window area" (dashed in grey) are exported. You can edit the exported window size by opening the lateral menu while in edit mode.
-- Multiple widgets (for now not that many... widgets are under development!)
+   - It is a standard EPICS IOC, so edit the RELEASE file with the path to your BASE and build it. Then, run the st.cmd in `iocBoot/iocexample`.
+   - Alternatively, just run [example.db](./exampleIOC/exampleApp/Db/example.db) directly with softIocPVA: `softIocPVA -d example.db`.
+   - Run `dbl` to see the available PVs.
+
+> If you are running the IOC in a different machine than the web app, make sure to edit `EPICS_PVA_ADDR_LIST`/`EPICS_CA_ADDR_LIST` with the host address (see [.env](.env.example))
+
+2. Launch EWS and click in the upload but ton (up arrow in the nav bar). Select the file [example-opi.json](./examples/example-opi.json). Edit it as you will.
+   Whenever you are ready, clik the "Preview" button to start communication. You should see something similar to this:
+
+![Example image](./public/example.png)
 
 ## Notes
 

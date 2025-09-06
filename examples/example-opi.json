@@ -8,7 +8,7 @@
       "gridSize": 10,
       "gridLineVisible": true,
       "snapToGrid": true,
-      "centerVisible": true
+      "centerVisible": false
     }
   },
   {
@@ -16,9 +16,9 @@
     "widgetName": "Rectangle",
     "properties": {
       "x": -380,
-      "y": -70,
+      "y": -90,
       "width": 360,
-      "height": 300,
+      "height": 180,
       "backgroundColor": "rgba(206, 212, 218, 1)",
       "borderColor": "#000000",
       "borderStyle": "none",
@@ -33,9 +33,9 @@
     "widgetName": "Rectangle",
     "properties": {
       "x": -380,
-      "y": -240,
+      "y": -210,
       "width": 360,
-      "height": 120,
+      "height": 100,
       "backgroundColor": "rgba(206, 212, 218, 1)",
       "borderColor": "#000000",
       "borderStyle": "none",
@@ -49,8 +49,8 @@
     "id": "TextLabel-1756423437778",
     "widgetName": "TextLabel",
     "properties": {
-      "x": -240,
-      "y": 150,
+      "x": -220,
+      "y": 230,
       "width": 100,
       "height": 40,
       "backgroundColor": "transparent",
@@ -75,7 +75,7 @@
     "widgetName": "BitIndicator",
     "properties": {
       "x": -100,
-      "y": -180,
+      "y": -170,
       "width": 40,
       "height": 40,
       "borderColor": "#000000",
@@ -98,7 +98,7 @@
     "widgetName": "ActionButton",
     "properties": {
       "x": -360,
-      "y": -180,
+      "y": -170,
       "width": 100,
       "height": 40,
       "backgroundColor": "#979dac",
@@ -114,7 +114,7 @@
       "fontItalic": false,
       "textColor": "#000000",
       "textVAlign": "middle",
-      "textHAlign": "left",
+      "textHAlign": "center",
       "label": "ON",
       "pvName": "test:bo",
       "actionValue": 1,
@@ -126,7 +126,7 @@
     "widgetName": "ActionButton",
     "properties": {
       "x": -240,
-      "y": -180,
+      "y": -170,
       "width": 100,
       "height": 40,
       "backgroundColor": "#979dac",
@@ -142,7 +142,7 @@
       "fontItalic": false,
       "textColor": "#000000",
       "textVAlign": "middle",
-      "textHAlign": "left",
+      "textHAlign": "center",
       "label": "OFF",
       "pvName": "test:bo",
       "actionValue": "0",
@@ -154,7 +154,7 @@
     "widgetName": "TextLabel",
     "properties": {
       "x": -240,
-      "y": -240,
+      "y": -210,
       "width": 100,
       "height": 40,
       "backgroundColor": "transparent",
@@ -179,7 +179,7 @@
     "widgetName": "TextLabel",
     "properties": {
       "x": -260,
-      "y": -70,
+      "y": -90,
       "width": 140,
       "height": 40,
       "backgroundColor": "transparent",
@@ -203,8 +203,8 @@
     "id": "Plot-1756423770925",
     "widgetName": "Plot",
     "properties": {
-      "x": 10,
-      "y": -250,
+      "x": 20,
+      "y": -210,
       "width": 450,
       "height": 240,
       "backgroundColor": "white",
@@ -239,7 +239,7 @@
     "widgetName": "InputField",
     "properties": {
       "x": -250,
-      "y": -10,
+      "y": -40,
       "width": 100,
       "height": 40,
       "backgroundColor": "#ffffff",
@@ -265,7 +265,7 @@
     "widgetName": "TextUpdate",
     "properties": {
       "x": -140,
-      "y": -10,
+      "y": -40,
       "width": 100,
       "height": 40,
       "backgroundColor": "rgba(168, 176, 185, 1)",
@@ -291,7 +291,7 @@
     "widgetName": "TextLabel",
     "properties": {
       "x": -360,
-      "y": -10,
+      "y": -40,
       "width": 100,
       "height": 40,
       "backgroundColor": "transparent",
@@ -316,7 +316,7 @@
     "widgetName": "TextLabel",
     "properties": {
       "x": -360,
-      "y": 50,
+      "y": 20,
       "width": 100,
       "height": 40,
       "backgroundColor": "transparent",
@@ -341,7 +341,7 @@
     "widgetName": "InputField",
     "properties": {
       "x": -250,
-      "y": 50,
+      "y": 20,
       "width": 100,
       "height": 40,
       "backgroundColor": "#ffffff",
@@ -367,7 +367,7 @@
     "widgetName": "TextUpdate",
     "properties": {
       "x": -140,
-      "y": 50,
+      "y": 20,
       "width": 100,
       "height": 40,
       "backgroundColor": "#ced4da",
@@ -393,7 +393,7 @@
     "widgetName": "TextUpdate",
     "properties": {
       "x": -140,
-      "y": 50,
+      "y": 20,
       "width": 100,
       "height": 40,
       "backgroundColor": "rgba(168, 176, 185, 1)",
@@ -418,8 +418,8 @@
     "id": "TextUpdate-1756424178380-u4kmanrbsf",
     "widgetName": "TextUpdate",
     "properties": {
-      "x": -150,
-      "y": 150,
+      "x": -130,
+      "y": 230,
       "width": 100,
       "height": 40,
       "backgroundColor": "rgba(168, 176, 185, 1)",
@@ -444,8 +444,8 @@
     "id": "Plot-1756424275992-ro7zxfm7h4",
     "widgetName": "Plot",
     "properties": {
-      "x": 10,
-      "y": 10,
+      "x": 20,
+      "y": 50,
       "width": 450,
       "height": 220,
       "backgroundColor": "white",
@@ -480,7 +480,7 @@
     "widgetName": "TextLabel",
     "properties": {
       "x": -380,
-      "y": -310,
+      "y": -280,
       "width": 840,
       "height": 40,
       "backgroundColor": "transparent",
@@ -490,7 +490,7 @@
       "borderRadius": 2,
       "visible": true,
       "tooltip": "",
-      "fontSize": 20,
+      "fontSize": 32,
       "fontFamily": "sans-serif",
       "fontBold": true,
       "fontItalic": false,
@@ -498,6 +498,125 @@
       "textVAlign": "middle",
       "textHAlign": "center",
       "label": "Example screen"
+    }
+  },
+  {
+    "id": "Rectangle-1757195425408-jf869ppw4dp",
+    "widgetName": "Rectangle",
+    "properties": {
+      "x": -380,
+      "y": 100,
+      "width": 360,
+      "height": 110,
+      "backgroundColor": "rgba(206, 212, 218, 1)",
+      "borderColor": "#000000",
+      "borderStyle": "none",
+      "borderWidth": 1,
+      "borderRadius": 10,
+      "visible": true,
+      "tooltip": ""
+    }
+  },
+  {
+    "id": "TextLabel-1757195425408-qj0bg7mgt9g",
+    "widgetName": "TextLabel",
+    "properties": {
+      "x": -260,
+      "y": 100,
+      "width": 140,
+      "height": 40,
+      "backgroundColor": "transparent",
+      "borderColor": "#000000",
+      "borderStyle": "none",
+      "borderWidth": 1,
+      "borderRadius": 2,
+      "visible": true,
+      "tooltip": "",
+      "fontSize": 16,
+      "fontFamily": "sans-serif",
+      "fontBold": true,
+      "fontItalic": false,
+      "textColor": "#000000",
+      "textVAlign": "middle",
+      "textHAlign": "left",
+      "label": "String In/Out"
+    }
+  },
+  {
+    "id": "InputField-1757195425409-teb9qwhzt1",
+    "widgetName": "InputField",
+    "properties": {
+      "x": -250,
+      "y": 150,
+      "width": 100,
+      "height": 40,
+      "backgroundColor": "#ffffff",
+      "borderColor": "#000000",
+      "borderStyle": "none",
+      "borderWidth": 1,
+      "borderRadius": 2,
+      "visible": true,
+      "tooltip": "",
+      "fontSize": 14,
+      "fontFamily": "sans-serif",
+      "fontBold": false,
+      "fontItalic": false,
+      "textColor": "#000000",
+      "textVAlign": "middle",
+      "textHAlign": "left",
+      "pvName": "test:strout",
+      "disabled": false
+    }
+  },
+  {
+    "id": "TextUpdate-1757195425409-zqenoyhlcu",
+    "widgetName": "TextUpdate",
+    "properties": {
+      "x": -140,
+      "y": 150,
+      "width": 100,
+      "height": 40,
+      "backgroundColor": "rgba(168, 176, 185, 1)",
+      "borderColor": "#000000",
+      "borderStyle": "none",
+      "borderWidth": 1,
+      "borderRadius": 2,
+      "visible": true,
+      "tooltip": "",
+      "fontSize": 14,
+      "fontFamily": "sans-serif",
+      "fontBold": false,
+      "fontItalic": false,
+      "textColor": "#000000",
+      "textVAlign": "middle",
+      "textHAlign": "left",
+      "label": "Text Update",
+      "pvName": "test:strin"
+    }
+  },
+  {
+    "id": "TextLabel-1757195425409-6q7a8g2zobn",
+    "widgetName": "TextLabel",
+    "properties": {
+      "x": -360,
+      "y": 150,
+      "width": 100,
+      "height": 40,
+      "backgroundColor": "transparent",
+      "borderColor": "#000000",
+      "borderStyle": "none",
+      "borderWidth": 1,
+      "borderRadius": 2,
+      "visible": true,
+      "tooltip": "",
+      "fontSize": 14,
+      "fontFamily": "sans-serif",
+      "fontBold": false,
+      "fontItalic": false,
+      "textColor": "#000000",
+      "textVAlign": "middle",
+      "textHAlign": "left",
+      "label": "Any label"
     }
   }
 ]
