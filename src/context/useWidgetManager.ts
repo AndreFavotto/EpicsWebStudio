@@ -491,7 +491,7 @@ export function useWidgetManager() {
     updateEditorWidgetList((prev) =>
       prev.map((w) => {
         // --- single PV case
-        if (w.editableProperties.pvName?.value === newPVData.name) {
+        if (w.editableProperties.pvName?.value === newPVData.pv) {
           return {
             ...w,
             pvData: {
@@ -509,7 +509,7 @@ export function useWidgetManager() {
           };
 
           for (const [label, pv] of Object.entries(w.editableProperties.pvNames.value)) {
-            if (pv === newPVData.name) {
+            if (pv === newPVData.pv) {
               updatedMultiPvData[label] = {
                 ...w.multiPvData?.[label],
                 ...newPVData,

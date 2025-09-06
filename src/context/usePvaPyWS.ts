@@ -13,7 +13,7 @@ export default function usePvaPyWS(
 
   const parseWSMessage = (msg: WSMessage): PVData => {
     return {
-      name: msg.pv,
+      pv: msg.pv,
       value: msg.value ?? "",
       alarm: msg.alarm,
       timeStamp: msg.timeStamp,

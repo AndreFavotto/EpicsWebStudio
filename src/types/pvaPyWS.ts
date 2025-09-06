@@ -1,6 +1,6 @@
 export type WSMessageType = "update" | "subscribe" | "unsubscribe" | "write";
 export type PVValue = number | number[] | string | string[];
-
+// structure based on EPICS Normative Types
 interface Alarm {
   severity: number;
   status: number;
@@ -60,7 +60,7 @@ export interface WSMessage {
 }
 
 export interface PVData {
-  name: string;
+  pv: string;
   value: PVValue;
   alarm?: Alarm;
   timeStamp?: TimeStamp;
