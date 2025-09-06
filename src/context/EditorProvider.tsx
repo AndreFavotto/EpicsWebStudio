@@ -27,10 +27,12 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const ws = usePvaPyWS(widgetManager.PVList, widgetManager.updatePVData);
   const ui = useUIManager(
     ws.ws,
-    widgetManager.clearPVData,
     ws.startNewSession,
+    widgetManager.clearPVData,
+    widgetManager.editorWidgets,
     widgetManager.setSelectedWidgetIDs,
-    widgetManager.updateWidgetProperties
+    widgetManager.updateWidgetProperties,
+    widgetManager.loadWidgets
   );
 
   const value: EditorContextType = {

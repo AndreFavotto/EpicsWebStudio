@@ -575,7 +575,6 @@ export function useWidgetManager() {
             return instance;
           })
           .filter(Boolean) as Widget[];
-        console.log(imported);
         updateEditorWidgetList(imported);
         setSelectedWidgetIDs([]);
       } catch (err) {
