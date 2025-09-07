@@ -26,5 +26,6 @@ export const BitIndicator: Widget = {
     invertBitOrder: PROPERTY_SCHEMAS.invertBitOrder,
     spacing: PROPERTY_SCHEMAS.spacing,
     pvName: PROPERTY_SCHEMAS.pvName,
+    alarmBorder: PROPERTY_SCHEMAS.alarmBorder,
   },
 } as const;

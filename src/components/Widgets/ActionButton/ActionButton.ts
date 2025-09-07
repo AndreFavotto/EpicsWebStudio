@@ -21,5 +21,6 @@ export const ActionButton: Widget = {
     pvName: PROPERTY_SCHEMAS.pvName,
     actionValue: PROPERTY_SCHEMAS.actionValue,
     disabled: PROPERTY_SCHEMAS.disabled,
+    alarmBorder: PROPERTY_SCHEMAS.alarmBorder,
   },
 } as const;

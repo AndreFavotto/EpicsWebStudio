@@ -2,6 +2,7 @@ import React from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
 import { EDIT_MODE, RUNTIME_MODE } from "../../../constants/constants";
 import { useEditorContext } from "../../../context/useEditorContext";
+import AlarmBorder from "../../AlarmBorder/AlarmBorder";
 
 const BitIndicatorComp: React.FC<WidgetUpdate> = ({ data }) => {
   const p = data.editableProperties;
@@ -43,21 +44,23 @@ const BitIndicatorComp: React.FC<WidgetUpdate> = ({ data }) => {
   });
 
   return (
-    <div
-      title={p.tooltip?.value ?? ""}
-      style={{
-        width: p.width?.value,
-        height: p.height?.value,
-        display: "flex",
-        gap: p.spacing?.value,
-        flexDirection: orientation === "Horizontal" ? "row" : "column",
-        justifyContent: "center",
-        boxSizing: "border-box",
-        alignItems: "center",
-      }}
-    >
-      {bits}
-    </div>
+    <AlarmBorder alarmData={pvData?.alarm} enable={p.alarmBorder?.value}>
+      <div
+        title={p.tooltip?.value ?? ""}
+        style={{
+          width: p.width?.value,
+          height: p.height?.value,
+          display: "flex",
+          gap: p.spacing?.value,
+          flexDirection: orientation === "Horizontal" ? "row" : "column",
+          justifyContent: "center",
+          boxSizing: "border-box",
+          alignItems: "center",
+        }}
+      >
+        {bits}
+      </div>
+    </AlarmBorder>
   );
 };
 

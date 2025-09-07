@@ -26,6 +26,14 @@ record(calc, "test:sin"){
   field(CALC, "B*SIN(2*PI*C*A)")
   field(PREC, "3")
   field(VAL, "0")
+  field(HIHI, "0.8")
+  field(HIGH, "0.5")
+  field(LOW, "-0.5")
+  field(LOLO, "-0.8")
+  field(HHSV, "MAJOR")
+  field(HSV, "MINOR")
+  field(LSV, "MINOR")
+  field(LLSV, "MAJOR")
 }
 
 record(compress, "test:sinArr"){
