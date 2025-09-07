@@ -19,5 +19,6 @@ export const InputField: Widget = {
     backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.inputColor },
     pvName: PROPERTY_SCHEMAS.pvName,
     disabled: PROPERTY_SCHEMAS.disabled,
+    alarmBorder: PROPERTY_SCHEMAS.alarmBorder,
   },
 } as const;

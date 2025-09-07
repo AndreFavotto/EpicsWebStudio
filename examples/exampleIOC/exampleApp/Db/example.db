@@ -46,6 +46,7 @@ record(bi, "test:bi") {
   field(DESC, "Binary input")
   field(ZNAM, "Off")
   field(ONAM, "On")
+  field(PINI, "YES")
 }
 
 record(ao, "test:ao") {
@@ -57,6 +58,17 @@ record(ao, "test:ao") {
 record(ai, "test:ai") {
   field(DESC, "Analog input")
   field(PREC, "3")
+  field(VAL, "5")
+  field(HIHI, "10")
+  field(HIGH, "7")
+  field(LOW, "3")
+  field(LOLO, "0")
+  field(DRVH, "10")
+  field(DRVL, "0")
+  field(HHSV, "MAJOR")
+  field(HSV, "MINOR")
+  field(LSV, "MINOR")
+  field(LLSV, "MAJOR")
 }
 
 record(stringout, "test:strout") {
@@ -66,4 +78,6 @@ record(stringout, "test:strout") {
 
 record(stringin, "test:strin") {
   field(DESC, "String input")
+  field(VAL, "hello world!")
+  field(PINI, "YES")
 }

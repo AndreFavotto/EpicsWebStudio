@@ -15,6 +15,10 @@ export const COLORS = {
   highlighted: getComputedStyle(document.documentElement).getPropertyValue("--highlighted").trim(),
   onColor: getComputedStyle(document.documentElement).getPropertyValue("--on-color").trim(),
   offColor: getComputedStyle(document.documentElement).getPropertyValue("--off-color").trim(),
+  minor: getComputedStyle(document.documentElement).getPropertyValue("--minor").trim(),
+  major: getComputedStyle(document.documentElement).getPropertyValue("--major").trim(),
+  invalid: getComputedStyle(document.documentElement).getPropertyValue("--invalid").trim(),
+  disconnected: getComputedStyle(document.documentElement).getPropertyValue("--disconnected").trim(),
 
   // Neutrals / base
   backgroundColor: getComputedStyle(document.documentElement).getPropertyValue("--background-color").trim(),

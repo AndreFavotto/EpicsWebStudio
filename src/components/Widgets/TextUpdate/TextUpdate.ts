@@ -19,5 +19,6 @@ export const TextUpdate: Widget = {
     label: { ...PROPERTY_SCHEMAS.label, value: "Text Update" },
     backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.readColor },
     pvName: PROPERTY_SCHEMAS.pvName,
+    alarmBorder: PROPERTY_SCHEMAS.alarmBorder,
   },
 } as const;
