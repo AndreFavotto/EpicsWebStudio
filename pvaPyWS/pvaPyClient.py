@@ -1,12 +1,15 @@
 from typing import Callable, Dict, Set
 from pvaccess import Channel, ProviderType, PvString, PvDouble, PvInt, ScalarType, NtEnum
+from os import getenv
+
+default_protocol = getenv("EPICS_DEFAULT_PROTOCOL", "pva")
 
 class PvaPyClient:
   """
   Manages PV subscriptions per client_id.
   """
 
-  def __init__(self, handle_update: Callable[[str, object], None], provider=ProviderType.PVA):
+  def __init__(self, handle_update: Callable[[str, object], None]):
     """
     handle_update: callable(pv_name: str, value: object)
     provider: ProviderType.PVA or ProviderType.CA
@@ -14,7 +17,7 @@ class PvaPyClient:
     self._channels: Dict[str, Channel] = {}
     self._subscribers: Dict[str, Set[str]] = {}  # pv_name -> set(client_ids)
     self._handle_update = handle_update
-    self._provider = provider
+    self._default_provider = ProviderType.CA if default_protocol.lower() == "ca" else ProviderType.PVA
 
   def _on_update(self, pv_name: str):
     """Internal callback for subscription updates."""
@@ -56,11 +59,16 @@ class PvaPyClient:
   def subscribe(self, client_id: str, pv_name: str):
     """Subscribe a single client to a PV."""
     if pv_name not in self._channels:
-      ch = Channel(pv_name, self._provider)
-      ch.subscribe("monitor", self._on_update(pv_name))
-      ch.startMonitor()
-      self._channels[pv_name] = ch
-      self._subscribers[pv_name] = set()
+        if "://" in pv_name:
+            pv_provider, _, pv = pv_name.partition("://")
+            provider = ProviderType.CA if pv_provider.lower() == "ca" else ProviderType.PVA
+            ch = Channel(pv, provider)
+        else:
+            ch = Channel(pv_name, self._default_provider)
+        ch.subscribe("monitor", self._on_update(pv_name))
+        ch.startMonitor()
+        self._channels[pv_name] = ch
+        self._subscribers[pv_name] = set()
 
     self._subscribers[pv_name].add(client_id)
 
