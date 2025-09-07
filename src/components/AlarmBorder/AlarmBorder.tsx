@@ -20,7 +20,7 @@ interface AlarmBorderProps {
  */
 const AlarmBorder: React.FC<AlarmBorderProps> = ({ alarmData, children, enable }) => {
   const getBorderColor = (): string | null => {
-    if (!alarmData) return null; // disconnected, no border
+    if (!alarmData) return COLORS.disconnected;
     switch (alarmData.severity) {
       case 0: // NO_ALARM
         return null;
@@ -31,7 +31,7 @@ const AlarmBorder: React.FC<AlarmBorderProps> = ({ alarmData, children, enable }
       case 3: // INVALID
         return COLORS.invalid;
       default:
-        return null;
+        return COLORS.disconnected;
     }
   };
 
