@@ -30,6 +30,11 @@
   --off-color: #ac0000;
   --graph-line-color: #0353a4;
   --mid-dark-blue: #023e7d;
+  /* epics alarm border colors */
+  --minor: #c4c100;
+  --major: #c40000;
+  --invalid: #5b00c4;
+  --disconnected: #5b00c4;
 }
 
 body {

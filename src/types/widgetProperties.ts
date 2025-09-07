@@ -51,7 +51,9 @@ export const PROPERTY_SCHEMAS = {
   // EPICS
   pvName:          defineProp({ selType: "text", label: "PV Name", value: "" as string, category: "EPICS" }),
   pvNames:         defineProp({ selType: "pvList", label: "PV Names", value: {} as Record<string, string>, category: "EPICS" }),
-  precisionFromPV: defineProp({ selType: "boolean", label: "Disabled", value: true as boolean, category: "EPICS" }),
+  precisionFromPV: defineProp({ selType: "boolean", label: "Precision from PV", value: true as boolean, category: "EPICS" }),
+  unitsFromPV:     defineProp({ selType: "boolean", label: "Units from PV", value: true as boolean, category: "EPICS" }),
+  alarmBorder:     defineProp({ selType: "boolean", label: "Alarm Border", value: true as boolean, category: "EPICS" }),
   actionValue:     defineProp({ selType: "text", label: "Action Value", value: 1 as number | string, category: "EPICS" }),
   // Specific Properties
   // BitIndicator

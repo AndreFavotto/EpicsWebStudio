@@ -10,7 +10,7 @@ export type PVValue = number | number[] | string | string[];
  * @property status - Status code of the alarm
  * @property message - Human-readable alarm message
  */
-interface Alarm {
+export interface Alarm {
   severity: number;
   status: number;
   message: string;
@@ -22,7 +22,7 @@ interface Alarm {
  * @property nanoseconds - Nanoseconds fraction of the second
  * @property userTag - Optional user-defined tag
  */
-interface TimeStamp {
+export interface TimeStamp {
   secondsPastEpoch: number;
   nanoseconds: number;
   userTag: number;
@@ -38,7 +38,7 @@ interface TimeStamp {
  * @property form - Optional display format (e.g., "linear", "log", "enum")
  * @property choices - Optional list of choices if PV is enumerated
  */
-interface Display {
+export interface Display {
   limitLow?: number;
   limitHigh?: number;
   description?: string;
@@ -54,7 +54,7 @@ interface Display {
  * @property limitHigh - Optional high control limit
  * @property minStep - Optional minimum step increment allowed
  */
-interface Control {
+export interface Control {
   limitLow?: number;
   limitHigh?: number;
   minStep?: number;
@@ -73,7 +73,7 @@ interface Control {
  * @property highAlarmSeverity - Optional severity for high alarm
  * @property hysteresis - Optional hysteresis for alarm transitions
  */
-interface ValueAlarm {
+export interface ValueAlarm {
   active?: boolean;
   lowAlarmLimit?: number;
   lowWarningLimit?: number;
