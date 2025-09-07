@@ -40,8 +40,8 @@ const AlarmBorder: React.FC<AlarmBorderProps> = ({ alarmData, children, enable }
   const style: CSSProperties = {
     width: "100%",
     height: "100%",
-    border: borderColor ? `2px ${borderColor === COLORS.disconnected ? "dashed" : "solid"} ${borderColor}` : undefined,
-    borderRadius: "4px",
+    border: borderColor ? `4px ${borderColor === COLORS.disconnected ? "dashed" : "solid"} ${borderColor}` : undefined,
+    borderRadius: "2px",
     boxSizing: "border-box",
   };
 
