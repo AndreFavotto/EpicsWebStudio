@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import type { WidgetUpdate } from "../../../types/widgets";
 import { useEditorContext } from "../../../context/useEditorContext";
 import { EDIT_MODE, RUNTIME_MODE } from "../../../constants/constants";
@@ -6,9 +6,14 @@ import AlarmBorder from "../../AlarmBorder/AlarmBorder";
 
 const InputFieldComp: React.FC<WidgetUpdate> = ({ data }) => {
   const { mode, writePVValue } = useEditorContext();
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState<string | number>("");
   const p = data.editableProperties;
   const pvData = data.pvData;
+
+  useEffect(() => {
+    // cleanup local input value
+    if (mode == EDIT_MODE) setInputValue("");
+  }, [mode]);
 
   if (!p.visible?.value) return null;
   const isEditMode = mode === EDIT_MODE;
