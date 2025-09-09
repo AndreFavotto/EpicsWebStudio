@@ -474,7 +474,7 @@ export function useWidgetManager() {
    * Export current widgets to JSON file.
    */
   const downloadWidgets = useCallback(async () => {
-    const defaultName = "ews-opi.json";
+    const defaultName = "weiss-opi.json";
     const simplified = editorWidgets.map(
       (widget) =>
         ({

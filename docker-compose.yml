@@ -1,24 +1,24 @@
 services:
-  epicswebstudio:
+  weiss:
     build:
       target: prod
       args:
         GIT_REPO: ${GIT_REPO}
         GIT_TAG: ${GIT_TAG}
         PROD_PORT: ${PROD_PORT}
-    image: epicswebstudio:${GIT_TAG}
-    container_name: epicswebstudio
+    image: weiss:${GIT_TAG}
+    container_name: weiss
     network_mode: "host"
     environment:
       - NODE_ENV=production
     depends_on:
-      - epicswebstudio-pvapyws
+      - weiss-pvapyws
 
-  epicswebstudio-pvapyws:
+  weiss-pvapyws:
     build:
       context: ./pvaPyWS
-    image: epicswebstudio-pvapyws:${GIT_TAG}
-    container_name: epicswebstudio-pvapyws
+    image: weiss-pvapyws:${GIT_TAG}
+    container_name: weiss-pvapyws
     network_mode: "host"
     restart: always
     environment:

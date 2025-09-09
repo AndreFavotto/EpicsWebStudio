@@ -41,7 +41,7 @@ export const FRONT_UI_ZIDX = parseInt(
 );
 
 /** URL of the project source repository */
-export const APP_SRC_URL = "https://github.com/AndreFavotto/epicsWebStudio";
+export const APP_SRC_URL = "https://github.com/AndreFavotto/weiss";
 
 /** Editor mode string (design time) */
 export const EDIT_MODE = "edit";

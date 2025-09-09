@@ -1,8 +1,8 @@
-# EPICS Web Studio
+# WEISS - Web EPICS Interface Studio
 
-No-code web drag and drop OPI builder for EPICS applications.
+This is a no-code drag and drop tool for EPICS web operation interfaces.
 
-> NOTE: Follow the app development and mapped improvements on [EWS Project Dashboard](https://github.com/users/AndreFavotto/projects/2)
+Follow the app development and mapped improvements on [WEISS Project Dashboard](https://github.com/users/AndreFavotto/projects/2)
 
 ## Dependencies
 
@@ -35,7 +35,7 @@ In the [examples folder](./examples/) you will find an EPICS IOC and one OPI rea
 
 > If you are running the IOC in a different machine than the web app, make sure to edit `EPICS_PVA_ADDR_LIST`/`EPICS_CA_ADDR_LIST` with the host address (see [.env](.env.example))
 
-2. Launch EWS and click in the upload but ton (up arrow in the nav bar). Select the file [example-opi.json](./examples/example-opi.json). Edit it as you will.
+2. Launch WEISS and click in the upload but ton (up arrow in the nav bar). Select the file [example-opi.json](./examples/example-opi.json). Edit it as you will.
    Whenever you are ready, clik the "Preview" button to start communication. You should see something similar to this:
 
 ![Example image](./public/example.png)

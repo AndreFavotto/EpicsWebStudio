@@ -5,7 +5,7 @@ import { useWidgetManager } from "./useWidgetManager";
 import type { ExportedWidget } from "../types/widgets";
 
 /**
- * Hook that manages global UI state for the EPICS Web Studio interface.
+ * Hook that manages global UI state for the Web EPICS Interface Studio interface.
  *
  * Responsibilities:
  * - Tracks editor mode (`edit` vs `runtime`).
