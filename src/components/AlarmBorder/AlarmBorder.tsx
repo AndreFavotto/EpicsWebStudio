@@ -1,7 +1,8 @@
 import React from "react";
 import type { ReactNode, CSSProperties } from "react";
 import type { Alarm } from "../../types/pvaPyWS";
-import { COLORS } from "../../constants/constants";
+import { COLORS, RUNTIME_MODE } from "../../constants/constants";
+import { useEditorContext } from "../../context/useEditorContext";
 
 interface AlarmBorderProps {
   alarmData?: Alarm;
@@ -19,6 +20,7 @@ interface AlarmBorderProps {
  *   - INVALID → COLORS.invalid
  */
 const AlarmBorder: React.FC<AlarmBorderProps> = ({ alarmData, children, enable }) => {
+  const { mode } = useEditorContext();
   const getBorderColor = (): string | null => {
     if (!alarmData) return COLORS.disconnected;
     switch (alarmData.severity) {
@@ -40,12 +42,12 @@ const AlarmBorder: React.FC<AlarmBorderProps> = ({ alarmData, children, enable }
   const style: CSSProperties = {
     width: "100%",
     height: "100%",
-    border: borderColor ? `4px ${borderColor === COLORS.disconnected ? "dashed" : "solid"} ${borderColor}` : undefined,
+    border: borderColor ? `3px ${borderColor === COLORS.disconnected ? "dashed" : "solid"} ${borderColor}` : undefined,
     borderRadius: "2px",
     boxSizing: "border-box",
   };
 
-  return enable ? (
+  return enable && mode == RUNTIME_MODE ? (
     <div style={style} title={alarmData?.message}>
       {children}
     </div>
