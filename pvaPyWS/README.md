@@ -12,5 +12,5 @@ The CA/PVA library used is [pvaPy](https://github.com/epics-base/pvaPy), and the
    Users may want to use a widget linked directly to something like `pva://myPV.DESC`, or even operate devices with various
   fields other than VAL, as it is done for the [motor record](https://epics.anl.gov/bcda/synApps/motor/motorRecord.html).
   As of now, PVWS does not support direct field subscription (at least not without workarounds).
-- Simplified source code: only the required parts are defined and easily tailored to EWS.
+- Simplified source code: only the required parts are defined and easily tailored to WEISS.
 - Application decoupling
