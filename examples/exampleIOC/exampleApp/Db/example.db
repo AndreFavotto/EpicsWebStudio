@@ -63,8 +63,6 @@ record(ai, "test:ai") {
   field(HIGH, "7")
   field(LOW, "3")
   field(LOLO, "0")
-  field(DRVH, "10")
-  field(DRVL, "0")
   field(HHSV, "MAJOR")
   field(HSV, "MINOR")
   field(LSV, "MINOR")
