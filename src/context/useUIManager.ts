@@ -77,7 +77,7 @@ export default function useUIManager(
       if (saved) {
         try {
           const parsed = JSON.parse(saved) as ExportedWidget[];
-          loadWidgets(parsed);
+          if (parsed.length > 1) loadWidgets(parsed);
         } catch (err) {
           console.error("Failed to load widgets from localStorage:", err);
         }

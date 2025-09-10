@@ -52,7 +52,12 @@ export function useWidgetManager() {
   const [selectedWidgetIDs, setSelectedWidgetIDs] = useState<string[]>([]);
   const clipboard = useRef<Widget[]>([]);
   const copiedGroupBounds = useRef({ x: 0, y: 0, width: 0, height: 0 });
-  const selectedWidgets = editorWidgets.filter((w) => selectedWidgetIDs.includes(w.id));
+
+  const selectedWidgets = useMemo(
+    () => editorWidgets.filter((w) => selectedWidgetIDs.includes(w.id)),
+    [editorWidgets, selectedWidgetIDs]
+  );
+
   const editingWidgets = useMemo(() => {
     return selectedWidgets.length > 0
       ? selectedWidgets
@@ -61,7 +66,6 @@ export function useWidgetManager() {
 
   const groupBounds = useMemo(() => {
     if (selectedWidgets.length === 0) return null;
-
     const left = Math.min(...selectedWidgets.map((w) => w.editableProperties.x!.value));
     const top = Math.min(...selectedWidgets.map((w) => w.editableProperties.y!.value));
     const right = Math.max(
@@ -86,18 +90,21 @@ export function useWidgetManager() {
    */
   const updateEditorWidgetList = useCallback(
     (newWidgets: Widget[] | ((prev: Widget[]) => Widget[]), keepHistory = true) => {
-      if (keepHistory) {
-        setUndoStack((prev) => {
-          const updated = [...prev, deepCloneWidgetList(editorWidgets)];
-          return updated.length > MAX_HISTORY ? updated.slice(1) : updated;
-        });
-        setRedoStack([]);
-      }
-      setEditorWidgets((prev) =>
-        typeof newWidgets === "function" ? newWidgets(deepCloneWidgetList(prev)) : newWidgets
-      );
+      setEditorWidgets((prev) => {
+        const prevClone = deepCloneWidgetList(prev);
+
+        if (keepHistory) {
+          setUndoStack((prevUndo) => {
+            const updated = [...prevUndo, prevClone];
+            return updated.length > MAX_HISTORY ? updated.slice(1) : updated;
+          });
+          setRedoStack([]);
+        }
+
+        return typeof newWidgets === "function" ? newWidgets(prevClone) : newWidgets;
+      });
     },
-    [editorWidgets]
+    []
   );
 
   /**
@@ -105,30 +112,33 @@ export function useWidgetManager() {
    * @param updates Object mapping widget IDs to property updates
    * @param keepHistory Whether to store this change in undo stack
    */
-  const batchWidgetUpdate = (updates: MultiWidgetPropertyUpdates, keepHistory = true) => {
-    const idsToUpdate = new Set(Object.keys(updates));
-    updateEditorWidgetList(
-      (prev) =>
-        prev.map((w) => {
-          if (!idsToUpdate.has(w.id)) return w;
-          const changes = updates[w.id];
-          const updatedProps: WidgetProperties = { ...w.editableProperties };
-          for (const [k, v] of Object.entries(changes)) {
-            const propName = k as PropertyKey;
-            if (!updatedProps[propName]) {
-              console.warn(`tried updating inexistent property ${propName} on ${w.id}`);
-              continue;
+  const batchWidgetUpdate = useCallback(
+    (updates: MultiWidgetPropertyUpdates, keepHistory = true) => {
+      const idsToUpdate = new Set(Object.keys(updates));
+      updateEditorWidgetList(
+        (prev) =>
+          prev.map((w) => {
+            if (!idsToUpdate.has(w.id)) return w;
+            const changes = updates[w.id];
+            const updatedProps: WidgetProperties = { ...w.editableProperties };
+            for (const [k, v] of Object.entries(changes)) {
+              const propName = k as PropertyKey;
+              if (!updatedProps[propName]) {
+                console.warn(`tried updating inexistent property ${propName} on ${w.id}`);
+                continue;
+              }
+              updatedProps[propName].value = v;
             }
-            updatedProps[propName].value = v;
-          }
-          return {
-            ...w,
-            editableProperties: updatedProps,
-          };
-        }),
-      keepHistory
-    );
-  };
+            return {
+              ...w,
+              editableProperties: updatedProps,
+            };
+          }),
+        keepHistory
+      );
+    },
+    [updateEditorWidgetList]
+  );
 
   /**
    * Get a widget by its ID.
@@ -151,10 +161,13 @@ export function useWidgetManager() {
    * @param changes Object mapping property keys to new values
    * @param keepHistory Whether to store this change in undo stack
    */
-  const updateWidgetProperties = (id: string, changes: PropertyUpdates, keepHistory = true) => {
-    const updates: MultiWidgetPropertyUpdates = { [id]: changes };
-    batchWidgetUpdate(updates, keepHistory);
-  };
+  const updateWidgetProperties = useCallback(
+    (id: string, changes: PropertyUpdates, keepHistory = true) => {
+      const updates: MultiWidgetPropertyUpdates = { [id]: changes };
+      batchWidgetUpdate(updates, keepHistory);
+    },
+    [batchWidgetUpdate]
+  );
 
   type ReorderDirection = "forward" | "backward" | "front" | "back";
 
@@ -162,70 +175,70 @@ export function useWidgetManager() {
    * Move selected widgets one step in the selected diretion on the z-axis.
    *  @param direction "forward" | "backward" | "front" | "back"
    */
-  const reorderWidgets = (direction: ReorderDirection) => {
-    updateEditorWidgetList((prev) => {
-      // Always keep GridZone fixed at index 0
-      const [gridZone, ...widgets] = prev;
-      const others = widgets.filter((w) => !selectedWidgetIDs.includes(w.id));
-      const moving = widgets.filter((w) => selectedWidgetIDs.includes(w.id));
+  const reorderWidgets = useCallback(
+    (direction: ReorderDirection) => {
+      if (selectedWidgetIDs.length === 0) return;
 
-      if (moving.length === 0) return prev;
+      updateEditorWidgetList((prev) => {
+        const [gridZone, ...widgets] = prev;
+        const others = widgets.filter((w) => !selectedWidgetIDs.includes(w.id));
+        const moving = widgets.filter((w) => selectedWidgetIDs.includes(w.id));
 
-      let newWidgets: Widget[] = [];
+        if (moving.length === 0) return prev;
 
-      switch (direction) {
-        case "forward": {
-          const maxIdx = Math.max(...moving.map((w) => widgets.findIndex((p) => p.id === w.id)));
-          const insertPos = Math.min(maxIdx + 1, others.length);
-          const before = others.slice(0, insertPos);
-          const after = others.slice(insertPos);
-          newWidgets = [...before, ...moving, ...after];
-          break;
+        let newWidgets: Widget[] = [];
+
+        switch (direction) {
+          case "forward": {
+            const maxIdx = Math.max(...moving.map((w) => widgets.findIndex((p) => p.id === w.id)));
+            const insertPos = Math.min(maxIdx + 1, others.length);
+            const before = others.slice(0, insertPos);
+            const after = others.slice(insertPos);
+            newWidgets = [...before, ...moving, ...after];
+            break;
+          }
+          case "backward": {
+            const minIdx = Math.min(...moving.map((w) => widgets.findIndex((p) => p.id === w.id)));
+            const insertPos = Math.max(minIdx - 1, 0);
+            const before = others.slice(0, insertPos);
+            const after = others.slice(insertPos);
+            newWidgets = [...before, ...moving, ...after];
+            break;
+          }
+          case "front":
+            newWidgets = [...others, ...moving];
+            break;
+          case "back":
+            newWidgets = [...moving, ...others];
+            break;
         }
 
-        case "backward": {
-          const minIdx = Math.min(...moving.map((w) => widgets.findIndex((p) => p.id === w.id)));
-          // ensure we don't insert below index 0
-          const insertPos = Math.max(minIdx - 1, 0);
-          const before = others.slice(0, insertPos);
-          const after = others.slice(insertPos);
-          newWidgets = [...before, ...moving, ...after];
-          break;
-        }
+        return [gridZone, ...newWidgets];
+      });
+    },
+    [selectedWidgetIDs, updateEditorWidgetList]
+  );
 
-        case "front":
-          newWidgets = [...others, ...moving];
-          break;
-
-        case "back":
-          newWidgets = [...moving, ...others];
-          break;
-      }
-
-      return [gridZone, ...newWidgets];
-    });
-  };
-
-  const stepForward = () => {
+  const stepForward = useCallback(() => {
     reorderWidgets("forward");
-  };
+  }, [reorderWidgets]);
 
-  const stepBackwards = () => {
+  const stepBackwards = useCallback(() => {
     reorderWidgets("backward");
-  };
+  }, [reorderWidgets]);
 
-  const bringToFront = () => {
+  const bringToFront = useCallback(() => {
     reorderWidgets("front");
-  };
+  }, [reorderWidgets]);
 
-  const sendToBack = () => {
+  const sendToBack = useCallback(() => {
     reorderWidgets("back");
-  };
+  }, [reorderWidgets]);
 
   /**
    * Align selected widgets by the left margin.
    */
-  const alignLeft = () => {
+  const alignLeft = useCallback(() => {
     if (selectedWidgets.length < 2) return;
     const leftX = Math.min(...selectedWidgets.map((w) => w.editableProperties.x?.value ?? 0));
     const updates: MultiWidgetPropertyUpdates = {};
@@ -233,12 +246,12 @@ export function useWidgetManager() {
       updates[w.id] = { x: leftX };
     });
     batchWidgetUpdate(updates);
-  };
+  }, [selectedWidgets, batchWidgetUpdate]);
 
   /**
    * Align selected widgets by the right margin.
    */
-  const alignRight = () => {
+  const alignRight = useCallback(() => {
     if (selectedWidgets.length < 2) return;
     const rightX = Math.max(
       ...selectedWidgets.map((w) => (w.editableProperties.x?.value ?? 0) + (w.editableProperties.width?.value ?? 0))
@@ -249,12 +262,12 @@ export function useWidgetManager() {
       updates[w.id] = { x: rightX - w.editableProperties.width.value };
     });
     batchWidgetUpdate(updates);
-  };
+  }, [selectedWidgets, batchWidgetUpdate]);
 
   /**
    * Align selected widgets by the top margin.
    */
-  const alignTop = () => {
+  const alignTop = useCallback(() => {
     if (selectedWidgets.length < 2) return;
     const topY = Math.min(...selectedWidgets.map((w) => w.editableProperties.y?.value ?? 0));
     const updates: MultiWidgetPropertyUpdates = {};
@@ -262,12 +275,12 @@ export function useWidgetManager() {
       updates[w.id] = { y: topY };
     });
     batchWidgetUpdate(updates);
-  };
+  }, [selectedWidgets, batchWidgetUpdate]);
 
   /**
    * Align selected widgets by the bottom margin.
    */
-  const alignBottom = () => {
+  const alignBottom = useCallback(() => {
     if (selectedWidgets.length < 2) return;
     const bottomY = Math.max(
       ...selectedWidgets.map((w) => (w.editableProperties.y?.value ?? 0) + (w.editableProperties.height?.value ?? 0))
@@ -278,12 +291,12 @@ export function useWidgetManager() {
       updates[w.id] = { y: bottomY - w.editableProperties.height.value };
     });
     batchWidgetUpdate(updates);
-  };
+  }, [selectedWidgets, batchWidgetUpdate]);
 
   /**
    * Align selected widgets by the horizontal center.
    */
-  const alignHorizontalCenter = () => {
+  const alignHorizontalCenter = useCallback(() => {
     if (selectedWidgets.length < 2) return;
     const minX = Math.min(...selectedWidgets.map((w) => w.editableProperties.x?.value ?? 0));
     const maxX = Math.max(
@@ -297,12 +310,12 @@ export function useWidgetManager() {
       updates[w.id] = { x: centerX - w.editableProperties.width.value / 2 };
     });
     batchWidgetUpdate(updates);
-  };
+  }, [selectedWidgets, batchWidgetUpdate]);
 
   /**
    * Align selected widgets by the vertical center.
    */
-  const alignVerticalCenter = () => {
+  const alignVerticalCenter = useCallback(() => {
     if (selectedWidgets.length < 2) return;
     const minY = Math.min(...selectedWidgets.map((w) => w.editableProperties.y?.value ?? 0));
     const maxY = Math.max(
@@ -316,13 +329,14 @@ export function useWidgetManager() {
       updates[w.id] = { y: centerY - w.editableProperties.height.value / 2 };
     });
     batchWidgetUpdate(updates);
-  };
+  }, [selectedWidgets, batchWidgetUpdate]);
 
   /**
    * Distribute selected widgets (3 or more) horizontally.
    * @warning Functionality not tested yet!
    */
-  const distributeHorizontal = () => {
+
+  const distributeHorizontal = useCallback(() => {
     if (selectedWidgets.length < 3) return;
 
     const sorted = [...selectedWidgets].sort(
@@ -348,13 +362,13 @@ export function useWidgetManager() {
     });
 
     batchWidgetUpdate(updates);
-  };
+  }, [selectedWidgets, batchWidgetUpdate]);
 
   /**
    * Distribute selected widgets (3 or more) vertically.
    * @warning Functionality not tested yet!
    */
-  const distributeVertical = () => {
+  const distributeVertical = useCallback(() => {
     if (selectedWidgets.length < 3) return;
 
     const sorted = [...selectedWidgets].sort(
@@ -380,7 +394,7 @@ export function useWidgetManager() {
     });
 
     batchWidgetUpdate(updates);
-  };
+  }, [selectedWidgets, batchWidgetUpdate]);
 
   /**
    * Undo the last editor state change.
@@ -389,28 +403,38 @@ export function useWidgetManager() {
     setUndoStack((prevUndo) => {
       if (prevUndo.length === 0) return prevUndo;
 
-      const prevState = prevUndo[prevUndo.length - 1];
+      const previousState = prevUndo[prevUndo.length - 1];
+
+      // Push current editorWidgets to redo stack
       setRedoStack((prevRedo) => {
-        const updated = [...prevRedo, deepCloneWidgetList(editorWidgets)];
-        return updated.length > MAX_HISTORY ? updated.slice(1) : updated;
+        const updatedRedo = [...prevRedo, deepCloneWidgetList(editorWidgets)];
+        return updatedRedo.length > MAX_HISTORY ? updatedRedo.slice(1) : updatedRedo;
       });
-      setEditorWidgets(prevState);
+
+      // Restore previous state
+      setEditorWidgets(previousState);
+
+      // Remove last from undo stack
       return prevUndo.slice(0, -1);
     });
   }, [editorWidgets]);
 
-  /**
-   * Redo the last undone editor state change.
-   */
   const handleRedo = useCallback(() => {
     setRedoStack((prevRedo) => {
       if (prevRedo.length === 0) return prevRedo;
+
       const nextState = prevRedo[prevRedo.length - 1];
+
+      // Push current editorWidgets to undo stack
       setUndoStack((prevUndo) => {
-        const updated = [...prevUndo, deepCloneWidgetList(editorWidgets)];
-        return updated.length > MAX_HISTORY ? updated.slice(1) : updated;
+        const updatedUndo = [...prevUndo, deepCloneWidgetList(editorWidgets)];
+        return updatedUndo.length > MAX_HISTORY ? updatedUndo.slice(1) : updatedUndo;
       });
+
+      // Restore next state
       setEditorWidgets(nextState);
+
+      // Remove last from redo stack
       return prevRedo.slice(0, -1);
     });
   }, [editorWidgets]);
@@ -588,53 +612,55 @@ export function useWidgetManager() {
    * Update a widget's PV data (single or multi-PV).
    * @param newPVData Updated PV data
    */
-  const updatePVData = (newPVData: PVData) => {
-    updateEditorWidgetList(
-      (prev) =>
-        prev.map((w) => {
-          // single PV case
-          if (w.editableProperties.pvName?.value === newPVData.pv) {
-            return {
-              ...w,
-              pvData: {
-                ...w.pvData,
-                ...newPVData,
-                value: newPVData.value ?? w.pvData?.value,
-              },
-            };
-          }
-
-          // multi PV case
-          if (w.editableProperties.pvNames) {
-            const updatedMultiPvData: MultiPvData = {
-              ...w.multiPvData,
-            };
-
-            for (const pv of Object.values(w.editableProperties.pvNames.value)) {
-              if (pv === newPVData.pv) {
-                updatedMultiPvData[pv] = {
-                  ...w.multiPvData?.[pv],
+  const updatePVData = useCallback(
+    (newPVData: PVData) => {
+      updateEditorWidgetList(
+        (prev) =>
+          prev.map((w) => {
+            // single PV case
+            if (w.editableProperties.pvName?.value === newPVData.pv) {
+              return {
+                ...w,
+                pvData: {
+                  ...w.pvData,
                   ...newPVData,
-                  value: newPVData.value ?? w.multiPvData?.[pv]?.value,
-                };
-              }
+                  value: newPVData.value ?? w.pvData?.value,
+                },
+              };
             }
 
-            return {
-              ...w,
-              multiPvData: updatedMultiPvData,
-            };
-          }
-          return w;
-        }),
-      false
-    );
-  };
+            // multi PV case
+            if (w.editableProperties.pvNames) {
+              const updatedMultiPvData: MultiPvData = { ...w.multiPvData };
+
+              for (const pv of Object.values(w.editableProperties.pvNames.value)) {
+                if (pv === newPVData.pv) {
+                  updatedMultiPvData[pv] = {
+                    ...w.multiPvData?.[pv],
+                    ...newPVData,
+                    value: newPVData.value ?? w.multiPvData?.[pv]?.value,
+                  };
+                }
+              }
+
+              return {
+                ...w,
+                multiPvData: updatedMultiPvData,
+              };
+            }
+
+            return w;
+          }),
+        false
+      );
+    },
+    [updateEditorWidgetList]
+  );
 
   /**
    * Clear/reset all PV data from widgets.
    */
-  const clearPVData = () => {
+  const clearPVData = useCallback(() => {
     updateEditorWidgetList(
       (prev) =>
         prev.map((w) => {
@@ -647,7 +673,7 @@ export function useWidgetManager() {
         }),
       false
     );
-  };
+  }, [updateEditorWidgetList]);
 
   /**
    * List of all PVs held by widgets.
