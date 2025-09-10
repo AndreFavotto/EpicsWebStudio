@@ -37,6 +37,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
     copyWidget,
     pasteWidget,
     downloadWidgets,
+    propertyEditorFocused,
   } = useEditorContext();
 
   const gridRef = useRef<HTMLDivElement>(null);
@@ -223,21 +224,25 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key.toLowerCase() === "z" && !e.shiftKey) {
+        if(propertyEditorFocused) return;
         e.preventDefault();
         handleUndo();
         return;
       }
       if ((e.ctrlKey && e.key.toLowerCase() === "y") || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "z")) {
+        if(propertyEditorFocused) return;
         e.preventDefault();
         handleRedo();
         return;
       }
       if (e.ctrlKey && e.key.toLowerCase() === "c") {
+        if(propertyEditorFocused) return;
         e.preventDefault();
         copyWidget();
         return;
       }
       if (e.ctrlKey && e.key.toLowerCase() === "v") {
+        if(propertyEditorFocused) return;
         e.preventDefault();
         pasteWidget(mousePosRef.current);
         return;

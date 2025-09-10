@@ -115,7 +115,7 @@ async def handler(ws: WebSocketServerProtocol):
 
 
 async def main():
-  async with websockets.serve(handler, "localhost", 8080):
+  async with websockets.serve(handler, "0.0.0.0", 8080):
     print("WebSocket server running on ws://localhost:8080")
     await asyncio.Future()
 
