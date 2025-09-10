@@ -589,43 +589,45 @@ export function useWidgetManager() {
    * @param newPVData Updated PV data
    */
   const updatePVData = (newPVData: PVData) => {
-    updateEditorWidgetList((prev) =>
-      prev.map((w) => {
-        // single PV case
-        if (w.editableProperties.pvName?.value === newPVData.pv) {
-          return {
-            ...w,
-            pvData: {
-              ...w.pvData,
-              ...newPVData,
-              value: newPVData.value ?? w.pvData?.value,
-            },
-          };
-        }
-
-        // multi PV case
-        if (w.editableProperties.pvNames) {
-          const updatedMultiPvData: MultiPvData = {
-            ...w.multiPvData,
-          };
-
-          for (const pv of Object.values(w.editableProperties.pvNames.value)) {
-            if (pv === newPVData.pv) {
-              updatedMultiPvData[pv] = {
-                ...w.multiPvData?.[pv],
+    updateEditorWidgetList(
+      (prev) =>
+        prev.map((w) => {
+          // single PV case
+          if (w.editableProperties.pvName?.value === newPVData.pv) {
+            return {
+              ...w,
+              pvData: {
+                ...w.pvData,
                 ...newPVData,
-                value: newPVData.value ?? w.multiPvData?.[pv]?.value,
-              };
-            }
+                value: newPVData.value ?? w.pvData?.value,
+              },
+            };
           }
 
-          return {
-            ...w,
-            multiPvData: updatedMultiPvData,
-          };
-        }
-        return w;
-      })
+          // multi PV case
+          if (w.editableProperties.pvNames) {
+            const updatedMultiPvData: MultiPvData = {
+              ...w.multiPvData,
+            };
+
+            for (const pv of Object.values(w.editableProperties.pvNames.value)) {
+              if (pv === newPVData.pv) {
+                updatedMultiPvData[pv] = {
+                  ...w.multiPvData?.[pv],
+                  ...newPVData,
+                  value: newPVData.value ?? w.multiPvData?.[pv]?.value,
+                };
+              }
+            }
+
+            return {
+              ...w,
+              multiPvData: updatedMultiPvData,
+            };
+          }
+          return w;
+        }),
+      false
     );
   };
 

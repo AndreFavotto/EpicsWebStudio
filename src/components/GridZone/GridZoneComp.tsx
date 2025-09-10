@@ -223,26 +223,23 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (propertyEditorFocused) return;
       if (e.ctrlKey && e.key.toLowerCase() === "z" && !e.shiftKey) {
-        if(propertyEditorFocused) return;
         e.preventDefault();
         handleUndo();
         return;
       }
       if ((e.ctrlKey && e.key.toLowerCase() === "y") || (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "z")) {
-        if(propertyEditorFocused) return;
         e.preventDefault();
         handleRedo();
         return;
       }
       if (e.ctrlKey && e.key.toLowerCase() === "c") {
-        if(propertyEditorFocused) return;
         e.preventDefault();
         copyWidget();
         return;
       }
       if (e.ctrlKey && e.key.toLowerCase() === "v") {
-        if(propertyEditorFocused) return;
         e.preventDefault();
         pasteWidget(mousePosRef.current);
         return;
@@ -251,7 +248,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleUndo, handleRedo, copyWidget, pasteWidget, downloadWidgets, mousePosRef]);
+  }, [handleUndo, handleRedo, copyWidget, pasteWidget, downloadWidgets, mousePosRef, propertyEditorFocused]);
 
   return (
     <div

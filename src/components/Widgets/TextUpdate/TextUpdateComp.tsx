@@ -11,6 +11,19 @@ const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
 
   if (!p.visible?.value) return null;
 
+  const units = p.unitsFromPV?.value ? pvData?.display?.units : p.units?.value;
+  const precision = p.precisionFromPV?.value ? pvData?.display?.precision : p.precision?.value;
+
+  let displayValue = pvData?.value;
+
+  if (mode === RUNTIME_MODE && typeof pvData?.value === "number") {
+    if (typeof precision === "number" && precision > 0) {
+      displayValue = pvData.value.toFixed(precision);
+    }
+  } else if (mode !== RUNTIME_MODE) {
+    displayValue = p.pvName?.value ?? p.label?.value ?? "";
+  }
+
   return (
     <AlarmBorder alarmData={pvData?.alarm} enable={p.alarmBorder?.value ?? true}>
       <div
@@ -20,6 +33,8 @@ const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
           width: "100%",
           height: "100%",
           display: "flex",
+          paddingLeft: 5,
+          paddingRight: 5,
           justifyContent: FLEX_ALIGN_MAP[p.textHAlign?.value ?? "left"],
           alignItems: FLEX_ALIGN_MAP[p.textVAlign?.value ?? "middle"],
           backgroundColor: p.backgroundColor?.value,
@@ -34,7 +49,22 @@ const TextUpdateComp: React.FC<WidgetUpdate> = ({ data }) => {
           borderColor: p.borderColor?.value,
         }}
       >
-        {mode == RUNTIME_MODE ? pvData?.value : p.pvName?.value ?? p.label?.value}
+        {displayValue}
+        {units && (
+          <span
+            style={{
+              position: "absolute",
+              right: "8px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              color: p.textColor?.value,
+              fontSize: p.fontSize?.value,
+              pointerEvents: "none",
+            }}
+          >
+            {units}
+          </span>
+        )}
       </div>
     </AlarmBorder>
   );

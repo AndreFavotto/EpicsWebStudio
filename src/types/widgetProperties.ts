@@ -52,7 +52,9 @@ export const PROPERTY_SCHEMAS = {
   pvName:          defineProp({ selType: "text", label: "PV Name", value: "" as string, category: "EPICS" }),
   pvNames:         defineProp({ selType: "pvList", label: "PV Names", value: {} as Record<string, string>, category: "EPICS" }),
   precisionFromPV: defineProp({ selType: "boolean", label: "Precision from PV", value: true as boolean, category: "EPICS" }),
+  precision:       defineProp({ selType: "number", label: "Precision", value: -1 as number, category: "EPICS" }),
   unitsFromPV:     defineProp({ selType: "boolean", label: "Units from PV", value: true as boolean, category: "EPICS" }),
+  units:           defineProp({ selType: "text", label: "Units", value: "" as string, category: "EPICS" }),
   alarmBorder:     defineProp({ selType: "boolean", label: "Alarm Border", value: true as boolean, category: "EPICS" }),
   actionValue:     defineProp({ selType: "text", label: "Action Value", value: 1 as number | string, category: "EPICS" }),
   // Specific Properties
