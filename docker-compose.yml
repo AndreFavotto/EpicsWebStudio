@@ -1,6 +1,7 @@
 services:
   weiss:
     build:
+      context: "."
       target: prod
       args:
         GIT_REPO: ${GIT_REPO}
@@ -19,7 +20,8 @@ services:
       context: ./pvaPyWS
     image: weiss-pvapyws:${GIT_TAG}
     container_name: weiss-pvapyws
-    network_mode: "host"
+    ports:
+      - "8080:8080"
     restart: always
     environment:
       EPICS_DEFAULT_PROTOCOL: ${EPICS_DEFAULT_PROTOCOL}

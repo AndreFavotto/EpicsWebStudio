@@ -129,21 +129,23 @@ export default function NavBar() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography
-            noWrap
-            component="div"
-            sx={{
-              fontSize: 22,
-              ml: 4,
-              mr: 3,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".5rem",
-              textDecoration: "none",
-            }}
-          >
-            WEISS
-          </Typography>
+          <Tooltip title= "Web EPICS Interface Studio">
+            <Typography
+              noWrap
+              component="div"
+              sx={{
+                fontSize: 22,
+                ml: 4,
+                mr: 3,
+                fontFamily: "monospace",
+                fontWeight: 700,
+                letterSpacing: ".5rem",
+                textDecoration: "none",
+              }}
+            >
+              WEISS
+            </Typography>
+          </Tooltip>
           <FormControlLabel
             control={
               <ModeSwitch

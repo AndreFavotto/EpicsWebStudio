@@ -37,6 +37,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
     copyWidget,
     pasteWidget,
     downloadWidgets,
+    propertyEditorFocused,
   } = useEditorContext();
 
   const gridRef = useRef<HTMLDivElement>(null);
@@ -222,6 +223,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (propertyEditorFocused) return;
       if (e.ctrlKey && e.key.toLowerCase() === "z" && !e.shiftKey) {
         e.preventDefault();
         handleUndo();
@@ -246,7 +248,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleUndo, handleRedo, copyWidget, pasteWidget, downloadWidgets, mousePosRef]);
+  }, [handleUndo, handleRedo, copyWidget, pasteWidget, downloadWidgets, mousePosRef, propertyEditorFocused]);
 
   return (
     <div
@@ -278,7 +280,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
         }}
       >
-        <WidgetRenderer scale={zoom} ensureGridCoordinate={ensureGridCoordinate} setIsDragging={setIsDragging} />
+        <WidgetRenderer scale={zoom} ensureGridCoordinate={ensureGridCoordinate} setIsDragging={setIsDragging} isPanning={isPanning}/>
       </div>
       {!disableSelecto && (
         <Selecto

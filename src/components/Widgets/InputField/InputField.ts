@@ -20,5 +20,7 @@ export const InputField: Widget = {
     pvName: PROPERTY_SCHEMAS.pvName,
     disabled: PROPERTY_SCHEMAS.disabled,
     alarmBorder: PROPERTY_SCHEMAS.alarmBorder,
+    units: PROPERTY_SCHEMAS.units,
+    unitsFromPV: PROPERTY_SCHEMAS.unitsFromPV,
   },
 } as const;

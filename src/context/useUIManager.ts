@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import usePvaPyWS from "./usePvaPyWS";
 import { EDIT_MODE, GRID_ID, type Mode } from "../constants/constants";
 import { useWidgetManager } from "./useWidgetManager";
@@ -52,20 +52,23 @@ export default function useUIManager(
    *
    * @param newMode The mode to switch to ("edit" | "runtime").
    */
-  const updateMode = (newMode: Mode) => {
-    const isEdit = newMode == EDIT_MODE;
-    if (isEdit) {
-      ws.current?.close();
-      ws.current = null;
-      clearPVData();
-    } else {
-      setSelectedWidgetIDs([]);
-      setWdgSelectorOpen(false);
-      startNewSession();
-    }
-    updateWidgetProperties(GRID_ID, { gridLineVisible: isEdit }, false);
-    setMode(newMode);
-  };
+  const updateMode = useCallback(
+    (newMode: Mode) => {
+      const isEdit = newMode == EDIT_MODE;
+      if (isEdit) {
+        ws.current?.close();
+        ws.current = null;
+        clearPVData();
+      } else {
+        setSelectedWidgetIDs([]);
+        setWdgSelectorOpen(false);
+        startNewSession();
+      }
+      updateWidgetProperties(GRID_ID, { gridLineVisible: isEdit }, false);
+      setMode(newMode);
+    },
+    [updateWidgetProperties, clearPVData, setSelectedWidgetIDs, startNewSession, ws]
+  );
 
   /**
    * Load widgets from localStorage on component mount.
@@ -77,7 +80,7 @@ export default function useUIManager(
       if (saved) {
         try {
           const parsed = JSON.parse(saved) as ExportedWidget[];
-          loadWidgets(parsed);
+          if (parsed.length > 1) loadWidgets(parsed);
         } catch (err) {
           console.error("Failed to load widgets from localStorage:", err);
         }

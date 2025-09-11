@@ -20,5 +20,9 @@ export const TextUpdate: Widget = {
     backgroundColor: { ...PROPERTY_SCHEMAS.backgroundColor, value: COLORS.readColor },
     pvName: PROPERTY_SCHEMAS.pvName,
     alarmBorder: PROPERTY_SCHEMAS.alarmBorder,
+    unitsFromPV: PROPERTY_SCHEMAS.unitsFromPV,
+    units: PROPERTY_SCHEMAS.units,
+    precisionFromPV: PROPERTY_SCHEMAS.precisionFromPV,
+    precision: PROPERTY_SCHEMAS.precision,
   },
 } as const;

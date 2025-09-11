@@ -1,3 +1,4 @@
+import React from "react";
 import { EditorContext } from "./useEditorContext";
 import { useWidgetManager } from "./useWidgetManager";
 import usePvaPyWS from "./usePvaPyWS";
@@ -35,10 +36,15 @@ export const EditorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     widgetManager.loadWidgets
   );
 
-  const value: EditorContextType = {
-    ...widgetManager,
-    ...ws,
-    ...ui,
-  };
+  // Memoize context value
+  const value = React.useMemo<EditorContextType>(
+    () => ({
+      ...widgetManager,
+      ...ws,
+      ...ui,
+    }),
+    [widgetManager, ws, ui]
+  );
+
   return <EditorContext.Provider value={value}>{children}</EditorContext.Provider>;
 };
