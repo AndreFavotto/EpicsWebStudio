@@ -10,6 +10,7 @@ interface RendererProps {
   scale: number;
   ensureGridCoordinate: (coord: number) => number;
   setIsDragging: React.Dispatch<React.SetStateAction<boolean>>;
+  isPanning: boolean;
 }
 
 /**
@@ -26,7 +27,7 @@ interface RendererProps {
  * @param ensureGridCoordinate Function to snap items to grid (if snap activated)
  * @param setIsDragging Callback to indicate dragging state
  */
-const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, setIsDragging }) => {
+const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, setIsDragging, isPanning }) => {
   const {
     mode,
     editorWidgets,
@@ -135,7 +136,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
           id="groupBox"
           bounds="window"
           scale={scale}
-          disableDragging={mode != EDIT_MODE}
+          disableDragging={mode != EDIT_MODE || isPanning}
           size={{ width: groupBounds.width, height: groupBounds.height }}
           position={{ x: groupBounds.x, y: groupBounds.y }}
           onDrag={() => setIsDragging(true)}
@@ -159,6 +160,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
                   height: w.editableProperties.height!.value,
                   left: w.editableProperties.x!.value - groupBounds.x,
                   top: w.editableProperties.y!.value - groupBounds.y,
+                  pointerEvents: isPanning ? "none" : "auto"
                 }}
               >
                 {renderWidget(w)}
@@ -185,8 +187,8 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
             scale={scale}
             id={w.id}
             className={`selectable ${isOnlySelected ? "selected" : ""}`}
-            disableDragging={mode != EDIT_MODE}
-            enableResizing={mode == EDIT_MODE}
+            disableDragging={mode != EDIT_MODE || isPanning}
+            enableResizing={mode == EDIT_MODE && !isPanning}
             onDrag={() => setIsDragging(true)}
             onDragStop={(_e, d) => handleDragStop(_e, d, w)}
             onResizeStart={() => setIsDragging(true)}

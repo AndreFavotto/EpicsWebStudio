@@ -280,7 +280,7 @@ const GridZoneComp: React.FC<WidgetUpdate> = ({ data }) => {
           transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
         }}
       >
-        <WidgetRenderer scale={zoom} ensureGridCoordinate={ensureGridCoordinate} setIsDragging={setIsDragging} />
+        <WidgetRenderer scale={zoom} ensureGridCoordinate={ensureGridCoordinate} setIsDragging={setIsDragging} isPanning={isPanning}/>
       </div>
       {!disableSelecto && (
         <Selecto
