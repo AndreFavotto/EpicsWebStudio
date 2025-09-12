@@ -61,6 +61,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
   }
 
   const handleDragStop = (_e: RndDragEvent, d: DraggableData, w: Widget) => {
+    if (w.editableProperties.x?.value == d.x && w.editableProperties.y?.value == d.y) return;
     setIsDragging(false);
     updateWidgetProperties(w.id, {
       x: ensureGridCoordinate(d.x),
@@ -72,6 +73,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
     setIsDragging(false);
     const newWidth = ensureGridCoordinate(parseInt(ref.style.width));
     const newHeight = ensureGridCoordinate(parseInt(ref.style.height));
+    if (w.editableProperties.width?.value == newWidth && w.editableProperties.height?.value == newHeight) return;
     const newX = ensureGridCoordinate(position.x);
     const newY = ensureGridCoordinate(position.y);
     updateWidgetProperties(w.id, { width: newWidth, height: newHeight, x: newX, y: newY });
@@ -160,7 +162,7 @@ const WidgetRenderer: React.FC<RendererProps> = ({ scale, ensureGridCoordinate, 
                   height: w.editableProperties.height!.value,
                   left: w.editableProperties.x!.value - groupBounds.x,
                   top: w.editableProperties.y!.value - groupBounds.y,
-                  pointerEvents: isPanning ? "none" : "auto"
+                  pointerEvents: isPanning ? "none" : "auto",
                 }}
               >
                 {renderWidget(w)}
