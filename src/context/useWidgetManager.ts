@@ -90,21 +90,19 @@ export function useWidgetManager() {
    */
   const updateEditorWidgetList = useCallback(
     (newWidgets: Widget[] | ((prev: Widget[]) => Widget[]), keepHistory = true) => {
+      const currentState = deepCloneWidgetList(editorWidgets);
+      if (keepHistory) {
+        setUndoStack((prevUndo) => {
+          const updated = [...prevUndo, currentState];
+          return updated.length > MAX_HISTORY ? updated.slice(1) : updated;
+        });
+        setRedoStack([]);
+      }
       setEditorWidgets((prev) => {
-        const prevClone = deepCloneWidgetList(prev);
-
-        if (keepHistory) {
-          setUndoStack((prevUndo) => {
-            const updated = [...prevUndo, prevClone];
-            return updated.length > MAX_HISTORY ? updated.slice(1) : updated;
-          });
-          setRedoStack([]);
-        }
-
-        return typeof newWidgets === "function" ? newWidgets(prevClone) : newWidgets;
+        return typeof newWidgets === "function" ? newWidgets(prev) : newWidgets;
       });
     },
-    []
+    [editorWidgets]
   );
 
   /**
@@ -400,44 +398,36 @@ export function useWidgetManager() {
    * Undo the last editor state change.
    */
   const handleUndo = useCallback(() => {
+    const currentState = deepCloneWidgetList(editorWidgets);
     setUndoStack((prevUndo) => {
       if (prevUndo.length === 0) return prevUndo;
-
       const previousState = prevUndo[prevUndo.length - 1];
-
-      // Push current editorWidgets to redo stack
-      setRedoStack((prevRedo) => {
-        const updatedRedo = [...prevRedo, deepCloneWidgetList(editorWidgets)];
-        return updatedRedo.length > MAX_HISTORY ? updatedRedo.slice(1) : updatedRedo;
-      });
-
-      // Restore previous state
       setEditorWidgets(previousState);
-
-      // Remove last from undo stack
       return prevUndo.slice(0, -1);
     });
-  }, [editorWidgets]);
+    setRedoStack((prevRedo) => {
+      if (undoStack.length === 0) return prevRedo;
+      const updatedRedo = [...prevRedo, currentState];
+      return updatedRedo.length > MAX_HISTORY ? updatedRedo.slice(1) : updatedRedo;
+    });
+  }, [editorWidgets, undoStack]);
 
+  /**
+   * Redo the last editor state change.
+   */
   const handleRedo = useCallback(() => {
     setRedoStack((prevRedo) => {
       if (prevRedo.length === 0) return prevRedo;
-
       const nextState = prevRedo[prevRedo.length - 1];
-
-      // Push current editorWidgets to undo stack
-      setUndoStack((prevUndo) => {
-        const updatedUndo = [...prevUndo, deepCloneWidgetList(editorWidgets)];
-        return updatedUndo.length > MAX_HISTORY ? updatedUndo.slice(1) : updatedUndo;
-      });
-
-      // Restore next state
       setEditorWidgets(nextState);
-
-      // Remove last from redo stack
       return prevRedo.slice(0, -1);
     });
-  }, [editorWidgets]);
+    setUndoStack((prevUndo) => {
+      if (redoStack.length == 0) return prevUndo;
+      const updatedUndo = [...prevUndo, deepCloneWidgetList(editorWidgets)];
+      return updatedUndo.length > MAX_HISTORY ? updatedUndo.slice(1) : updatedUndo;
+    });
+  }, [editorWidgets, redoStack]);
 
   /**
    * Copy currently selected widgets to clipboard.
