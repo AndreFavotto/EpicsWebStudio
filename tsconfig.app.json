@@ -21,7 +21,12 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+    /* alias path */
+    "baseUrl": ".",
+    "paths": {
+      "ReactAutomationStudio/*": ["./submodules/React-Automation-Studio/ReactApp/src/*"]
+    }
   },
   "include": ["src"]
 }
